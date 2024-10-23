@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace HomNayAnGiAPI.Models
 {
@@ -11,7 +10,7 @@ namespace HomNayAnGiAPI.Models
             RecipeComments = new HashSet<RecipeComment>();
             RecipeIngredients = new HashSet<RecipeIngredient>();
             RecipeSteps = new HashSet<RecipeStep>();
-            Users = new HashSet<User>();
+            UserFavorites = new HashSet<UserFavorite>();
         }
 
         public int RecipeId { get; set; }
@@ -26,19 +25,14 @@ namespace HomNayAnGiAPI.Models
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string? Image { get; set; }
-        public int IsPublic { get; set; }
         public string? Video { get; set; }
+        public int IsPublic { get; set; }
 
         public virtual RecipeCategory? Category { get; set; }
         public virtual NutritionFact? NutritionFact { get; set; }
-
-        [JsonIgnore]
         public virtual ICollection<RecipeComment> RecipeComments { get; set; }
-        [JsonIgnore]
         public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; }
-        [JsonIgnore]
         public virtual ICollection<RecipeStep> RecipeSteps { get; set; }
-
-        public virtual ICollection<User> Users { get; set; }
+        public virtual ICollection<UserFavorite> UserFavorites { get; set; }
     }
 }

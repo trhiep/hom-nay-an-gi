@@ -25,6 +25,7 @@ namespace HomNayAnGiAPI.Models
         public virtual DbSet<RecipeStep> RecipeSteps { get; set; } = null!;
         public virtual DbSet<StepImage> StepImages { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
+        public virtual DbSet<UserFavorite> UserFavorites { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -90,6 +91,11 @@ namespace HomNayAnGiAPI.Models
                 entity.ToTable("RecipeCategory");
 
                 entity.Property(e => e.CategoryName).HasMaxLength(255);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.RecipeCategories)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("RecipeCategory_User");
             });
 
             modelBuilder.Entity<RecipeComment>(entity =>
@@ -177,19 +183,23 @@ namespace HomNayAnGiAPI.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.Username).HasMaxLength(255);
+            });
 
-                entity.HasMany(d => d.Recipes)
-                    .WithMany(p => p.Users)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "UserFavorite",
-                        l => l.HasOne<Recipe>().WithMany().HasForeignKey("RecipeId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_7"),
-                        r => r.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_6"),
-                        j =>
-                        {
-                            j.HasKey("UserId", "RecipeId").HasName("UserFavorite_pk");
+            modelBuilder.Entity<UserFavorite>(entity =>
+            {
+                entity.ToTable("UserFavorite");
 
-                            j.ToTable("UserFavorite");
-                        });
+                entity.HasOne(d => d.Recipe)
+                    .WithMany(p => p.UserFavorites)
+                    .HasForeignKey(d => d.RecipeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_7");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.UserFavorites)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_6");
             });
 
             OnModelCreatingPartial(modelBuilder);

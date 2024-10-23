@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace HomNayAnGiAPI.Models
 {
@@ -17,7 +16,6 @@ namespace HomNayAnGiAPI.Models
         public string? Instruction { get; set; }
 
         public virtual Recipe? Recipe { get; set; }
-        [JsonIgnore]
         public virtual ICollection<StepImage> StepImages { get; set; }
     }
 }

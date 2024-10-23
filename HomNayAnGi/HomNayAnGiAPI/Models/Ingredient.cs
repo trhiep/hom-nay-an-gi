@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace HomNayAnGiAPI.Models
 {
@@ -15,7 +14,6 @@ namespace HomNayAnGiAPI.Models
         public string IngredientName { get; set; } = null!;
         public string? Description { get; set; }
 
-        [JsonIgnore]
         public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; }
     }
 }

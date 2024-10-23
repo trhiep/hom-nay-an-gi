@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace HomNayAnGiAPI.Models
 {
@@ -8,8 +7,9 @@ namespace HomNayAnGiAPI.Models
     {
         public User()
         {
+            RecipeCategories = new HashSet<RecipeCategory>();
             RecipeComments = new HashSet<RecipeComment>();
-            Recipes = new HashSet<Recipe>();
+            UserFavorites = new HashSet<UserFavorite>();
         }
 
         public int UserId { get; set; }
@@ -20,10 +20,8 @@ namespace HomNayAnGiAPI.Models
         public string Role { get; set; } = null!;
         public bool IsActive { get; set; }
 
-        [JsonIgnore]
+        public virtual ICollection<RecipeCategory> RecipeCategories { get; set; }
         public virtual ICollection<RecipeComment> RecipeComments { get; set; }
-
-        [JsonIgnore]
-        public virtual ICollection<Recipe> Recipes { get; set; }
+        public virtual ICollection<UserFavorite> UserFavorites { get; set; }
     }
 }

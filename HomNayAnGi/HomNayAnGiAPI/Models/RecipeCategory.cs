@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace HomNayAnGiAPI.Models
 {
@@ -13,8 +12,9 @@ namespace HomNayAnGiAPI.Models
 
         public int CategoryId { get; set; }
         public string CategoryName { get; set; } = null!;
+        public int? UserId { get; set; }
 
-        [JsonIgnore]
+        public virtual User? User { get; set; }
         public virtual ICollection<Recipe> Recipes { get; set; }
     }
 }
