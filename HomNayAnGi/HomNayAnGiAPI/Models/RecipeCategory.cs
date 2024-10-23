@@ -12,9 +12,9 @@ namespace HomNayAnGiAPI.Models
 
         public int CategoryId { get; set; }
         public string CategoryName { get; set; } = null!;
-        public int? UserId { get; set; }
+        public int? UserCreatedBy { get; set; }
 
-        public virtual User? User { get; set; }
+        public virtual User? UserCreatedByNavigation { get; set; }
         public virtual ICollection<Recipe> Recipes { get; set; }
     }
 }

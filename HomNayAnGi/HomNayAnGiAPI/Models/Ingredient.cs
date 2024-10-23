@@ -13,7 +13,9 @@ namespace HomNayAnGiAPI.Models
         public int IngredientId { get; set; }
         public string IngredientName { get; set; } = null!;
         public string? Description { get; set; }
+        public int? UserCreatedBy { get; set; }
 
+        public virtual User? UserCreatedByNavigation { get; set; }
         public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; }
     }
 }

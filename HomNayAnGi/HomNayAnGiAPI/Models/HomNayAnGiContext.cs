@@ -31,8 +31,11 @@ namespace HomNayAnGiAPI.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=localhost\\SQLEXPRESS;Initial Catalog=HomNayAnGi;User ID=sa;Password=12345678;TrustServerCertificate=True;");
+                var builder = new ConfigurationBuilder().
+                        SetBasePath(Directory.GetCurrentDirectory()).
+                    AddJsonFile("appsettings.json", optional: false);
+                IConfiguration con = builder.Build();
+                optionsBuilder.UseSqlServer(con.GetConnectionString("DBContext"));
             }
         }
 
@@ -43,6 +46,13 @@ namespace HomNayAnGiAPI.Models
                 entity.ToTable("Ingredient");
 
                 entity.Property(e => e.IngredientName).HasMaxLength(255);
+
+                entity.Property(e => e.UserCreatedBy).HasColumnName("User_CreatedBy");
+
+                entity.HasOne(d => d.UserCreatedByNavigation)
+                    .WithMany(p => p.Ingredients)
+                    .HasForeignKey(d => d.UserCreatedBy)
+                    .HasConstraintName("Ingredient_User");
             });
 
             modelBuilder.Entity<NutritionFact>(entity =>
@@ -92,9 +102,11 @@ namespace HomNayAnGiAPI.Models
 
                 entity.Property(e => e.CategoryName).HasMaxLength(255);
 
-                entity.HasOne(d => d.User)
+                entity.Property(e => e.UserCreatedBy).HasColumnName("User_CreatedBy");
+
+                entity.HasOne(d => d.UserCreatedByNavigation)
                     .WithMany(p => p.RecipeCategories)
-                    .HasForeignKey(d => d.UserId)
+                    .HasForeignKey(d => d.UserCreatedBy)
                     .HasConstraintName("RecipeCategory_User");
             });
 
@@ -122,9 +134,6 @@ namespace HomNayAnGiAPI.Models
 
             modelBuilder.Entity<RecipeIngredient>(entity =>
             {
-                entity.HasKey(e => new { e.RecipeId, e.IngredientId })
-                    .HasName("RecipeIngredient_pk");
-
                 entity.ToTable("RecipeIngredient");
 
                 entity.Property(e => e.Unit).HasMaxLength(50);
