@@ -17,11 +17,13 @@ namespace HomNayAnGiAPI.Models
         }
 
         public virtual DbSet<Ingredient> Ingredients { get; set; } = null!;
+        public virtual DbSet<Meal> Meals { get; set; } = null!;
         public virtual DbSet<NutritionFact> NutritionFacts { get; set; } = null!;
         public virtual DbSet<Recipe> Recipes { get; set; } = null!;
         public virtual DbSet<RecipeCategory> RecipeCategories { get; set; } = null!;
         public virtual DbSet<RecipeComment> RecipeComments { get; set; } = null!;
         public virtual DbSet<RecipeIngredient> RecipeIngredients { get; set; } = null!;
+        public virtual DbSet<RecipeMeal> RecipeMeals { get; set; } = null!;
         public virtual DbSet<RecipeStep> RecipeSteps { get; set; } = null!;
         public virtual DbSet<StepImage> StepImages { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
@@ -52,6 +54,13 @@ namespace HomNayAnGiAPI.Models
                     .WithMany(p => p.Ingredients)
                     .HasForeignKey(d => d.CreatedBy)
                     .HasConstraintName("Ingredient_User");
+            });
+
+            modelBuilder.Entity<Meal>(entity =>
+            {
+                entity.ToTable("Meal");
+
+                entity.Property(e => e.MealName).HasMaxLength(100);
             });
 
             modelBuilder.Entity<NutritionFact>(entity =>
@@ -146,6 +155,23 @@ namespace HomNayAnGiAPI.Models
                     .HasForeignKey(d => d.RecipeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_2");
+            });
+
+            modelBuilder.Entity<RecipeMeal>(entity =>
+            {
+                entity.ToTable("RecipeMeal");
+
+                entity.HasOne(d => d.Meal)
+                    .WithMany(p => p.RecipeMeals)
+                    .HasForeignKey(d => d.MealId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("RecipeMeal_Meal");
+
+                entity.HasOne(d => d.Recipe)
+                    .WithMany(p => p.RecipeMeals)
+                    .HasForeignKey(d => d.RecipeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("RecipeMeal_Recipe");
             });
 
             modelBuilder.Entity<RecipeStep>(entity =>

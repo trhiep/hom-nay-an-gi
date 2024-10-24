@@ -9,6 +9,7 @@ namespace HomNayAnGiAPI.Models
         {
             RecipeComments = new HashSet<RecipeComment>();
             RecipeIngredients = new HashSet<RecipeIngredient>();
+            RecipeMeals = new HashSet<RecipeMeal>();
             RecipeSteps = new HashSet<RecipeStep>();
             UserFavorites = new HashSet<UserFavorite>();
         }
@@ -32,6 +33,7 @@ namespace HomNayAnGiAPI.Models
         public virtual NutritionFact? NutritionFact { get; set; }
         public virtual ICollection<RecipeComment> RecipeComments { get; set; }
         public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; }
+        public virtual ICollection<RecipeMeal> RecipeMeals { get; set; }
         public virtual ICollection<RecipeStep> RecipeSteps { get; set; }
         public virtual ICollection<UserFavorite> UserFavorites { get; set; }
     }
