@@ -26,6 +26,7 @@ namespace HomNayAnGiAPI.Models
         public virtual DbSet<StepImage> StepImages { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
         public virtual DbSet<UserFavorite> UserFavorites { get; set; } = null!;
+        public virtual DbSet<UserRefreshToken> UserRefreshTokens { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -47,11 +48,9 @@ namespace HomNayAnGiAPI.Models
 
                 entity.Property(e => e.IngredientName).HasMaxLength(255);
 
-                entity.Property(e => e.UserCreatedBy).HasColumnName("User_CreatedBy");
-
-                entity.HasOne(d => d.UserCreatedByNavigation)
+                entity.HasOne(d => d.CreatedByNavigation)
                     .WithMany(p => p.Ingredients)
-                    .HasForeignKey(d => d.UserCreatedBy)
+                    .HasForeignKey(d => d.CreatedBy)
                     .HasConstraintName("Ingredient_User");
             });
 
@@ -102,11 +101,9 @@ namespace HomNayAnGiAPI.Models
 
                 entity.Property(e => e.CategoryName).HasMaxLength(255);
 
-                entity.Property(e => e.UserCreatedBy).HasColumnName("User_CreatedBy");
-
-                entity.HasOne(d => d.UserCreatedByNavigation)
+                entity.HasOne(d => d.CreatedByNavigation)
                     .WithMany(p => p.RecipeCategories)
-                    .HasForeignKey(d => d.UserCreatedBy)
+                    .HasForeignKey(d => d.CreatedBy)
                     .HasConstraintName("RecipeCategory_User");
             });
 
@@ -209,6 +206,25 @@ namespace HomNayAnGiAPI.Models
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_6");
+            });
+
+            modelBuilder.Entity<UserRefreshToken>(entity =>
+            {
+                entity.ToTable("UserRefreshToken");
+
+                entity.Property(e => e.UserRefreshTokenId).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeviceId).HasColumnName("DeviceID");
+
+                entity.Property(e => e.ExpiresAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.UserRefreshTokens)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("UserRefreshToken_User_fk");
             });
 
             OnModelCreatingPartial(modelBuilder);

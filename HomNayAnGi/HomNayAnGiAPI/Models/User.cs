@@ -11,6 +11,7 @@ namespace HomNayAnGiAPI.Models
             RecipeCategories = new HashSet<RecipeCategory>();
             RecipeComments = new HashSet<RecipeComment>();
             UserFavorites = new HashSet<UserFavorite>();
+            UserRefreshTokens = new HashSet<UserRefreshToken>();
         }
 
         public int UserId { get; set; }
@@ -25,5 +26,6 @@ namespace HomNayAnGiAPI.Models
         public virtual ICollection<RecipeCategory> RecipeCategories { get; set; }
         public virtual ICollection<RecipeComment> RecipeComments { get; set; }
         public virtual ICollection<UserFavorite> UserFavorites { get; set; }
+        public virtual ICollection<UserRefreshToken> UserRefreshTokens { get; set; }
     }
 }

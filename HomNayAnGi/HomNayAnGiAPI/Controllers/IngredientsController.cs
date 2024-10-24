@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiAPI.Models;
+using HomNayAnGiAPI.Models.DTO;
 
 namespace HomNayAnGiAPI.Controllers
 {
@@ -22,13 +23,25 @@ namespace HomNayAnGiAPI.Controllers
 
         // GET: api/Ingredients
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Ingredient>>> GetIngredients()
+        public async Task<ActionResult<IEnumerable<IngredientDTO>>> GetIngredients()
         {
           if (_context.Ingredients == null)
           {
               return NotFound();
           }
-            return await _context.Ingredients.ToListAsync();
+          var ingredients = await _context.Ingredients.ToListAsync();
+            List<IngredientDTO> ingredientDTOs = new List<IngredientDTO>();
+            foreach (var item in ingredients)
+            {
+                ingredientDTOs.Add(new IngredientDTO()
+                {
+                    IngredientId = item.IngredientId,
+                    IngredientName = item.IngredientName,
+                    Description = item.Description,
+                    CreatedBy = item.CreatedBy
+                });
+            }
+            return ingredientDTOs;
         }
 
         // GET: api/Ingredients/5
