@@ -256,8 +256,6 @@ namespace HomNayAnGiAPI.Models
             {
                 entity.ToTable("UserRefreshToken");
 
-                entity.Property(e => e.UserRefreshTokenId).ValueGeneratedNever();
-
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeviceId).HasColumnName("DeviceID");

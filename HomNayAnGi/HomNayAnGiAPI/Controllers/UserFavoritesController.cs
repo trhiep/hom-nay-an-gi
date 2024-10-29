@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using HomNayAnGiAPI.Models;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Humanizer.Localisation.TimeToClockNotation;
+using HomNayAnGiAPI.Models.DTO;
 
 namespace HomNayAnGiAPI.Controllers
 {
@@ -26,10 +27,10 @@ namespace HomNayAnGiAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserFavorite>>> GetUserFavorites()
         {
-          if (_context.UserFavorites == null)
-          {
-              return NotFound();
-          }
+            if (_context.UserFavorites == null)
+            {
+                return NotFound();
+            }
             return await _context.UserFavorites.ToListAsync();
         }
 
@@ -37,10 +38,10 @@ namespace HomNayAnGiAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<UserFavorite>> GetUserFavorite(int id)
         {
-          if (_context.UserFavorites == null)
-          {
-              return NotFound();
-          }
+            if (_context.UserFavorites == null)
+            {
+                return NotFound();
+            }
             var userFavorite = await _context.UserFavorites.FindAsync(id);
 
             if (userFavorite == null)
@@ -82,29 +83,33 @@ namespace HomNayAnGiAPI.Controllers
         }
 
         // POST: api/UserFavorites
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        //hàm này nhận userId và RecipeId xong parse sang int rồi lưu vào bảng UserFavorite
         [HttpPost]
-        public async Task<ActionResult<UserFavorite>> PostUserFavorite(UserFavorite userFavorite)
+        public async Task<ActionResult<UserFavorite>> PostUserFavorite(UserFavoriteDTO userFavorite)
         {
-          if (_context.UserFavorites == null)
-          {
-              return Problem("Entity set 'HomNayAnGiContext.UserFavorites'  is null.");
-          }
-            _context.UserFavorites.Add(userFavorite);
+            if (_context.UserFavorites == null)
+            {
+                return Problem("Entity set 'HomNayAnGiContext.UserFavorites'  is null.");
+            }
+            UserFavorite uf = new UserFavorite();
+            uf.UserId = int.Parse(userFavorite.UserId);
+            uf.RecipeId = int.Parse(userFavorite.RecipeId);
+            _context.UserFavorites.Add(uf);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUserFavorite", new { id = userFavorite.UserFavoriteId }, userFavorite);
+            return Ok();
         }
 
         // DELETE: api/UserFavorites/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUserFavorite(int id)
+        //hàm này nhận về string userFavoriteId rồi xóa
+        [HttpDelete("{userFavoriteId}")]
+        public async Task<IActionResult> DeleteUserFavorite(string userFavoriteId)
         {
             if (_context.UserFavorites == null)
             {
                 return NotFound();
             }
-            var userFavorite = await _context.UserFavorites.FindAsync(id);
+            var userFavorite = await _context.UserFavorites.FindAsync(int.Parse(userFavoriteId));
             if (userFavorite == null)
             {
                 return NotFound();
@@ -138,6 +143,17 @@ namespace HomNayAnGiAPI.Controllers
             }
 
             return userFavorite;
+        }
+
+        //hàm này lấy ra list UserFavorite theo userId
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<IEnumerable<UserFavorite>>> GetAllMyFavoriteRecipe(string userId)
+        {
+            if (_context.UserFavorites == null)
+            {
+                return NotFound();
+            }
+            return await _context.UserFavorites.Include(uf=>uf.Recipe).Where(uf=>uf.UserId == int.Parse(userId)).ToListAsync();
         }
     }
 }
