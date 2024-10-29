@@ -9,10 +9,5 @@ namespace HomNayAnGiAPI.Models
         public string Otpstring { get; set; } = null!;
         public int RequestAttemptsRemains { get; set; }
         public DateTime ExpiresAt { get; set; }
-        
-        public override string ToString()
-        {
-            return $"SignupOtp [SignupRequestId={SignupRequestId}, Otpstring={Otpstring}, RequestAttemptsRemains={RequestAttemptsRemains}, ExpiresAt={ExpiresAt}]";
-        }
     }
 }

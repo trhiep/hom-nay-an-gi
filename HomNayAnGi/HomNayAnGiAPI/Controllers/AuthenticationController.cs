@@ -26,13 +26,13 @@ namespace HomNayAnGiAPI.Controllers
         public async Task<IActionResult> Login(LoginModel loginModel)
         {
             // Lấy ra thông tin người dùng đã submit lên API
-            if (loginModel != null && loginModel.UsernameOrEmail != null && loginModel.Password != null)
+            if (loginModel != null && loginModel.Username != null && loginModel.Password != null)
             {
-                
-                var user = await GetUser(loginModel.UsernameOrEmail, loginModel.Password);
-
+                var user = await GetUser(loginModel.Username, loginModel.Password);
                 if (user != null)
                 {
+                    await DeleteOldRefreshToken(user, loginModel.DeviceId);
+                    
                     string accessToken = JwtHelper.GenerateJwtToken(_configuration, user);
                     string refreshToken = JwtHelper.GenerateRefreshToken();
 
@@ -40,7 +40,8 @@ namespace HomNayAnGiAPI.Controllers
                     {
                         UserId = user.UserId,
                         RefreshToken = refreshToken,
-                        ExpiresAt = DateTime.UtcNow.AddMonths(1),
+                        CreatedAt = DateTime.Now,
+                        ExpiresAt = DateTime.Now.AddMonths(1),
                         DeviceId = loginModel.DeviceId ?? null,
                     };
 
@@ -61,6 +62,19 @@ namespace HomNayAnGiAPI.Controllers
             else
             {
                 return BadRequest();
+            }
+        }
+
+        private async Task DeleteOldRefreshToken(User user, string deviceId)
+        {
+            var oldTokens =
+                await _context.UserRefreshTokens.Where(x => x.UserId == user.UserId && x.DeviceId.Equals(deviceId))
+                    .FirstOrDefaultAsync();
+
+            if (oldTokens != null)
+            {
+                _context.UserRefreshTokens.Remove(oldTokens);
+                await _context.SaveChangesAsync();
             }
         }
 
@@ -196,11 +210,10 @@ namespace HomNayAnGiAPI.Controllers
             await _context.SaveChangesAsync();
         }
 
-        private async Task<User> GetUser(string userNameOrEmail, string password)
+        private async Task<User> GetUser(string username, string password)
         {
             return await _context.Users
-                .Where(u => (u.Username.ToLower() == userNameOrEmail.ToLower() || u.Email.ToLower() == userNameOrEmail.ToLower())
-                            && u.Password == password)
+                .Where(u => u.Username.ToLower().Equals(username))
                 .FirstOrDefaultAsync();
         }
 
