@@ -42,7 +42,7 @@ namespace HomNayAnGiAPI.Controllers
                         RefreshToken = refreshToken,
                         CreatedAt = DateTime.Now,
                         ExpiresAt = DateTime.Now.AddMonths(1),
-                        DeviceId = loginModel.DeviceId ?? null,
+                        DeviceId = loginModel.DeviceId,
                     };
 
                     await _context.UserRefreshTokens.AddAsync(userToken);
@@ -213,7 +213,7 @@ namespace HomNayAnGiAPI.Controllers
         private async Task<User> GetUser(string username, string password)
         {
             return await _context.Users
-                .Where(u => u.Username.ToLower().Equals(username))
+                .Where(u => u.Username.ToLower().Equals(username) && u.Password.Equals(PasswordHelper.HashPasswordSHA256(password)))
                 .FirstOrDefaultAsync();
         }
 

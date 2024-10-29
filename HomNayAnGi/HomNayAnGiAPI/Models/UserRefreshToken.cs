@@ -10,7 +10,7 @@ namespace HomNayAnGiAPI.Models
         public string? RefreshToken { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? ExpiresAt { get; set; }
-        public string? DeviceId { get; set; }
+        public string DeviceId { get; set; }
 
         public virtual User User { get; set; } = null!;
     }
