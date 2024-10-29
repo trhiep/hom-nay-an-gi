@@ -65,6 +65,22 @@ namespace HomNayAnGiAPI.Controllers
             }
         }
 
+        [HttpPost("logout/{deviceId}")]
+        public async Task<ApiResponse<string>> Logout(string deviceId)
+        {
+            var refreshToken = await _context.UserRefreshTokens.Where(urt => urt.DeviceId.Equals(deviceId))
+                .FirstOrDefaultAsync();
+            if (refreshToken != null)
+            {
+                _context.Remove(refreshToken);
+                int result = await _context.SaveChangesAsync();
+                ApiResponse<string> response = new ApiResponse<string>(result < 1 ? "Có lỗi xảy ra" : "Đăng xuất thành công");
+                
+                return response;
+            }
+            return new ApiResponse<string>(404, "Không tìm thấy refresh token cho api này");
+        }
+
         private async Task DeleteOldRefreshToken(User user, string deviceId)
         {
             var oldTokens =
