@@ -25,6 +25,7 @@ namespace HomNayAnGiAPI.Models
         public virtual DbSet<RecipeIngredient> RecipeIngredients { get; set; } = null!;
         public virtual DbSet<RecipeMeal> RecipeMeals { get; set; } = null!;
         public virtual DbSet<RecipeStep> RecipeSteps { get; set; } = null!;
+        public virtual DbSet<SignupOtp> SignupOtps { get; set; } = null!;
         public virtual DbSet<StepImage> StepImages { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
         public virtual DbSet<UserFavorite> UserFavorites { get; set; } = null!;
@@ -34,11 +35,8 @@ namespace HomNayAnGiAPI.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                var builder = new ConfigurationBuilder().
-                        SetBasePath(Directory.GetCurrentDirectory()).
-                    AddJsonFile("appsettings.json", optional: false);
-                IConfiguration con = builder.Build();
-                optionsBuilder.UseSqlServer(con.GetConnectionString("DBContext"));
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Data Source=localhost\\SQLEXPRESS;Initial Catalog=HomNayAnGi;User ID=sa;Password=12345678;TrustServerCertificate=True;");
             }
         }
 
@@ -185,6 +183,25 @@ namespace HomNayAnGiAPI.Models
                     .WithMany(p => p.RecipeSteps)
                     .HasForeignKey(d => d.RecipeId)
                     .HasConstraintName("FK_4");
+            });
+
+            modelBuilder.Entity<SignupOtp>(entity =>
+            {
+                entity.HasKey(e => e.SignupRequestId)
+                    .HasName("SignupOTP_pk");
+
+                entity.ToTable("SignupOTP");
+
+                entity.Property(e => e.SignupRequestId)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ExpiresAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Otpstring)
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .HasColumnName("OTPString");
             });
 
             modelBuilder.Entity<StepImage>(entity =>
