@@ -25,6 +25,7 @@ namespace HomNayAnGiAPI.Models
         public virtual DbSet<RecipeIngredient> RecipeIngredients { get; set; } = null!;
         public virtual DbSet<RecipeMeal> RecipeMeals { get; set; } = null!;
         public virtual DbSet<RecipeStep> RecipeSteps { get; set; } = null!;
+        public virtual DbSet<SignupOtp> SignupOtps { get; set; } = null!;
         public virtual DbSet<StepImage> StepImages { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
         public virtual DbSet<UserFavorite> UserFavorites { get; set; } = null!;
@@ -35,7 +36,7 @@ namespace HomNayAnGiAPI.Models
             if (!optionsBuilder.IsConfigured)
             {
                 var builder = new ConfigurationBuilder().
-                        SetBasePath(Directory.GetCurrentDirectory()).
+                    SetBasePath(Directory.GetCurrentDirectory()).
                     AddJsonFile("appsettings.json", optional: false);
                 IConfiguration con = builder.Build();
                 optionsBuilder.UseSqlServer(con.GetConnectionString("DBContext"));
@@ -187,6 +188,25 @@ namespace HomNayAnGiAPI.Models
                     .HasConstraintName("FK_4");
             });
 
+            modelBuilder.Entity<SignupOtp>(entity =>
+            {
+                entity.HasKey(e => e.SignupRequestId)
+                    .HasName("SignupOTP_pk");
+
+                entity.ToTable("SignupOTP");
+
+                entity.Property(e => e.SignupRequestId)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ExpiresAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Otpstring)
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .HasColumnName("OTPString");
+            });
+
             modelBuilder.Entity<StepImage>(entity =>
             {
                 entity.ToTable("StepImage");
@@ -237,8 +257,6 @@ namespace HomNayAnGiAPI.Models
             modelBuilder.Entity<UserRefreshToken>(entity =>
             {
                 entity.ToTable("UserRefreshToken");
-
-                entity.Property(e => e.UserRefreshTokenId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
