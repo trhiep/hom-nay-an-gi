@@ -35,8 +35,11 @@ namespace HomNayAnGiAPI.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=localhost\\SQLEXPRESS;Initial Catalog=HomNayAnGi;User ID=sa;Password=12345678;TrustServerCertificate=True;");
+                var builder = new ConfigurationBuilder().
+                    SetBasePath(Directory.GetCurrentDirectory()).
+                    AddJsonFile("appsettings.json", optional: false);
+                IConfiguration con = builder.Build();
+                optionsBuilder.UseSqlServer(con.GetConnectionString("DBContext"));
             }
         }
 
@@ -254,8 +257,6 @@ namespace HomNayAnGiAPI.Models
             modelBuilder.Entity<UserRefreshToken>(entity =>
             {
                 entity.ToTable("UserRefreshToken");
-
-                entity.Property(e => e.UserRefreshTokenId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
