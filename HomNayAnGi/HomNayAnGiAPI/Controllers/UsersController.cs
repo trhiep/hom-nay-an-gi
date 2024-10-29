@@ -48,6 +48,25 @@ namespace HomNayAnGiAPI.Controllers
 
             return user;
         }
+        
+        // GET: api/Users/5
+        [HttpGet("get-by-username/{username}")]
+        public async Task<ActionResult<User>> GetUserByUsername(string username)
+        {
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _context.Users.Where(x => x.Username.Equals(username)).FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return user;
+        }
 
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
