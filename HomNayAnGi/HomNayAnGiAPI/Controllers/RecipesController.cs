@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiAPI.Models;
+using HomNayAnGiAPI.Models.APIModel;
+using HomNayAnGiAPI.Models.DTO.Recipe;
 
 namespace HomNayAnGiAPI.Controllers
 {
@@ -83,16 +85,24 @@ namespace HomNayAnGiAPI.Controllers
         // POST: api/Recipes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Recipe>> PostRecipe(Recipe recipe)
+        public async Task<ApiResponse<int>> PostRecipe(RecipeCreateRequest recipeCreateRequestModel)
         {
-          if (_context.Recipes == null)
-          {
-              return Problem("Entity set 'HomNayAnGiContext.Recipes'  is null.");
-          }
-            _context.Recipes.Add(recipe);
-            await _context.SaveChangesAsync();
+            var user = await _context.Users.Where(x => x.Username.Equals(recipeCreateRequestModel.Username))
+                .FirstOrDefaultAsync();
+            Recipe newRecipe = new Recipe()
+            {
+                RecipeName = recipeCreateRequestModel.RecipeName,
+                Description = recipeCreateRequestModel.Description,
+                PrepTime = recipeCreateRequestModel.PrepTime,
+                CookTime = recipeCreateRequestModel.CookTime,
+                DifficultyLevel = recipeCreateRequestModel.DifficultyLevel,
+                UserId = user?.UserId,
+                CategoryId = recipeCreateRequestModel.CategoryId
+            };
 
-            return CreatedAtAction("GetRecipe", new { id = recipe.RecipeId }, recipe);
+            _context.Recipes.Add(newRecipe);
+            int result = await _context.SaveChangesAsync();
+            return new ApiResponse<int>(result, "");
         }
 
         // DELETE: api/Recipes/5
