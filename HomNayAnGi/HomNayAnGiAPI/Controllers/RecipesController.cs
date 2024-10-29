@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiAPI.Models;
+using HomNayAnGiAPI.Models.DTO;
 
 namespace HomNayAnGiAPI.Controllers
 {
@@ -22,23 +23,51 @@ namespace HomNayAnGiAPI.Controllers
 
         // GET: api/Recipes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipes()
+        public async Task<ActionResult<IEnumerable<RecipeDTO>>> GetRecipes()
         {
-          if (_context.Recipes == null)
-          {
-              return NotFound();
-          }
-            return await _context.Recipes.ToListAsync();
+            if (_context.Recipes == null)
+            {
+                return NotFound();
+            }
+            return await _context.Recipes.Include(x => x.Category).Select(
+
+     item => new Models.DTO.RecipeDTO
+     {
+         RecipeId = item.RecipeId,
+         CategoryName = item.Category.CategoryName,
+         Description = item.Description,
+         CookTime = item.CookTime,
+         PrepTime = item.PrepTime,
+         Servings = item.Servings,
+         DifficultyLevel = item.DifficultyLevel,
+         UserId = item.UserId,
+         CreatedAt = item.CreatedAt,
+         UpdatedAt = item.UpdatedAt,
+         Image = item.Image,
+         Video = item.Video,
+         IsPublic = item.IsPublic
+     }
+     ).ToListAsync();
         }
 
+        //// GET: api/Recipes
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipes()
+        //{
+        //    if (_context.Recipes == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return await _context.Recipes.ToListAsync();
+        //}
         // GET: api/Recipes/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Recipe>> GetRecipe(int id)
         {
-          if (_context.Recipes == null)
-          {
-              return NotFound();
-          }
+            if (_context.Recipes == null)
+            {
+                return NotFound();
+            }
             var recipe = await _context.Recipes.FindAsync(id);
 
             if (recipe == null)
@@ -85,10 +114,10 @@ namespace HomNayAnGiAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Recipe>> PostRecipe(Recipe recipe)
         {
-          if (_context.Recipes == null)
-          {
-              return Problem("Entity set 'HomNayAnGiContext.Recipes'  is null.");
-          }
+            if (_context.Recipes == null)
+            {
+                return Problem("Entity set 'HomNayAnGiContext.Recipes'  is null.");
+            }
             _context.Recipes.Add(recipe);
             await _context.SaveChangesAsync();
 
