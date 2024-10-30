@@ -6,8 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiAPI.Models;
-using HomNayAnGiAPI.Models.APIModel;
-using HomNayAnGiAPI.Models.DTO.Recipe;
+using HomNayAnGiAPI.Models.DTO;
 
 namespace HomNayAnGiAPI.Controllers
 {
@@ -23,6 +22,35 @@ namespace HomNayAnGiAPI.Controllers
         }
 
         // GET: api/Recipes
+        [HttpGet("get-list-recipe-dto")]
+        public async Task<ActionResult<IEnumerable<RecipeDTO>>> GetRecipesDTO()
+        {
+            if (_context.Recipes == null)
+            {
+                return NotFound();
+            }
+            return await _context.Recipes.Include(x => x.Category).Select(
+
+             item => new RecipeDTO
+             {
+                 RecipeId = item.RecipeId,
+                 CategoryName = item.Category.CategoryName,
+                 Description = item.Description,
+                 CookTime = item.CookTime,
+                 PrepTime = item.PrepTime,
+                 Servings = item.Servings,
+                 DifficultyLevel = item.DifficultyLevel,
+                 UserId = item.UserId,
+                 CreatedAt = item.CreatedAt,
+                 UpdatedAt = item.UpdatedAt,
+                 Image = item.Image,
+                 Video = item.Video,
+                 IsPublic = item.IsPublic
+             }
+         ).ToListAsync();
+        }
+
+        // GET: api/Recipes
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipes()
         {
@@ -33,7 +61,6 @@ namespace HomNayAnGiAPI.Controllers
 
             return await _context.Recipes.ToListAsync();
         }
-
         // GET: api/Recipes/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Recipe>> GetRecipe(int id)
