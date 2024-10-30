@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiAPI.Models;
 using HomNayAnGiAPI.Models.APIModel;
+using HomNayAnGiAPI.Models.DTO.Recipe;
 
 namespace HomNayAnGiAPI.Controllers
 {
@@ -50,6 +51,30 @@ namespace HomNayAnGiAPI.Controllers
             }
 
             return recipeStep;
+        }
+        
+        // GET: api/RecipeSteps/5
+        [HttpGet("recipe/{id}")]
+        public async Task<ActionResult<List<RecipeStepDTO>>> GetRecipeStepsByRecipeId(int id)
+        {
+            if (_context.RecipeSteps == null)
+            {
+                return NotFound();
+            }
+
+            var recipeSteps = await _context.RecipeSteps
+                .Where(x => x.RecipeId == id)
+                .Select(item => new RecipeStepDTO()
+                {
+                    StepId = item.StepId,
+                    Instruction = item.Instruction,
+                    RecipeId = item.RecipeId,
+                    StepNumber = item.StepNumber
+                })
+                .OrderBy(x => x.StepNumber)
+                .ToListAsync();
+    
+            return Ok(recipeSteps);
         }
 
         // PUT: api/RecipeSteps/5
