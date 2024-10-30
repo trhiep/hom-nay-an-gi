@@ -33,13 +33,11 @@ namespace HomNayAnGiAPI.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+
             if (!optionsBuilder.IsConfigured)
             {
-                var builder = new ConfigurationBuilder().
-                    SetBasePath(Directory.GetCurrentDirectory()).
-                    AddJsonFile("appsettings.json", optional: false);
-                IConfiguration con = builder.Build();
-                optionsBuilder.UseSqlServer(con.GetConnectionString("DBContext"));
+                optionsBuilder.UseSqlServer(config.GetConnectionString("DBContext"));
             }
         }
 
