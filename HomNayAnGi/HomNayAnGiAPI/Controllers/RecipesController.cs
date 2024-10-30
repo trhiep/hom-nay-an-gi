@@ -33,19 +33,19 @@ namespace HomNayAnGiAPI.Controllers
 
      item => new Models.DTO.RecipeDTO
      {
-         RecipeId = item.RecipeId,
-         CategoryName = item.Category.CategoryName,
-         Description = item.Description,
-         CookTime = item.CookTime,
-         PrepTime = item.PrepTime,
-         Servings = item.Servings,
-         DifficultyLevel = item.DifficultyLevel,
-         UserId = item.UserId,
-         CreatedAt = item.CreatedAt,
-         UpdatedAt = item.UpdatedAt,
-         Image = item.Image,
-         Video = item.Video,
-         IsPublic = item.IsPublic
+         RecipeId = item.RecipeId.ToString(),
+         CategoryName = item.Category.CategoryName.ToString(),
+         Description = item.Description.ToString(),
+         CookTime = item.CookTime.ToString(),
+         PrepTime = item.PrepTime.ToString(),
+         Servings = item.Servings.ToString(),
+         DifficultyLevel = item.DifficultyLevel.ToString(),
+         UserId = item.UserId.ToString(),
+         CreatedAt = item.CreatedAt.ToString(),
+         UpdatedAt = item.UpdatedAt.ToString(),
+         Image = item.Image.ToString(),
+         Video = item.Video.ToString(),
+         IsPublic = item.IsPublic.ToString()
      }
      ).ToListAsync();
         }
