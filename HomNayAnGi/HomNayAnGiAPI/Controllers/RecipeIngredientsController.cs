@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiAPI.Models;
+using HomNayAnGiAPI.Models.APIModel;
+using HomNayAnGiAPI.Models.DTO.Recipe;
 
 namespace HomNayAnGiAPI.Controllers
 {
@@ -83,30 +85,24 @@ namespace HomNayAnGiAPI.Controllers
         // POST: api/RecipeIngredients
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<RecipeIngredient>> PostRecipeIngredient(RecipeIngredient recipeIngredient)
+        public async Task<ActionResult<ApiResponse<int>>> PostRecipeIngredient(RecipeIngredientCreateModel recipeIngredientCreateModel)
         {
-          if (_context.RecipeIngredients == null)
-          {
-              return Problem("Entity set 'HomNayAnGiContext.RecipeIngredients'  is null.");
-          }
-            _context.RecipeIngredients.Add(recipeIngredient);
-            try
+            Console.WriteLine("ĐÃ VÀO POST");
+            Console.WriteLine(recipeIngredientCreateModel.ToString());
+            foreach (var recipeIngredient in recipeIngredientCreateModel.RecipeIngredients)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (RecipeIngredientExists(recipeIngredient.RecipeId))
+                RecipeIngredient newRecipeIngredient = new RecipeIngredient()
                 {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
+                    RecipeId = recipeIngredientCreateModel.RecipeId,
+                    IngredientId = recipeIngredient.IngredientId,
+                    Quantity = recipeIngredient.Quantity,
+                    Unit = recipeIngredient.Unit
+                };
+                _context.RecipeIngredients.Add(newRecipeIngredient);
             }
 
-            return CreatedAtAction("GetRecipeIngredient", new { id = recipeIngredient.RecipeId }, recipeIngredient);
+            await _context.SaveChangesAsync();
+            return Ok(new ApiResponse<int>(201));
         }
 
         // DELETE: api/RecipeIngredients/5

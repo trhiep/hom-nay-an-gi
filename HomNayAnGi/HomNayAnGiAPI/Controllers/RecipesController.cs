@@ -26,10 +26,11 @@ namespace HomNayAnGiAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipes()
         {
-          if (_context.Recipes == null)
-          {
-              return NotFound();
-          }
+            if (_context.Recipes == null)
+            {
+                return NotFound();
+            }
+
             return await _context.Recipes.ToListAsync();
         }
 
@@ -37,10 +38,11 @@ namespace HomNayAnGiAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Recipe>> GetRecipe(int id)
         {
-          if (_context.Recipes == null)
-          {
-              return NotFound();
-          }
+            if (_context.Recipes == null)
+            {
+                return NotFound();
+            }
+
             var recipe = await _context.Recipes.FindAsync(id);
 
             if (recipe == null)
@@ -49,6 +51,42 @@ namespace HomNayAnGiAPI.Controllers
             }
 
             return recipe;
+        }
+
+        // GET: api/Recipes/user/tranhiep
+        [HttpGet("user/{username}")]
+        public async Task<ActionResult<IEnumerable<RecipeDTO>>> GetRecipesOfAnUser(String username)
+        {
+            Console.WriteLine(username);
+            if (_context.Recipes == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username.ToLower().Equals(username.ToLower()));
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return await _context.Recipes.Where(x => x.UserId == user.UserId).Select(
+                item => new RecipeDTO
+                {
+                    RecipeId = item.RecipeId,
+                    RecipeName = item.RecipeName,
+                    CategoryName = item.Category.CategoryName,
+                    Description = item.Description,
+                    CookTime = item.CookTime,
+                    PrepTime = item.PrepTime,
+                    Servings = item.Servings,
+                    DifficultyLevel = item.DifficultyLevel,
+                    UserId = item.UserId,
+                    CreatedAt = item.CreatedAt,
+                    UpdatedAt = item.UpdatedAt,
+                    Image = item.Image,
+                    Video = item.Video,
+                    IsPublic = item.IsPublic
+                }).ToListAsync();
         }
 
         // PUT: api/Recipes/5
@@ -95,15 +133,18 @@ namespace HomNayAnGiAPI.Controllers
                 Description = recipeCreateRequestModel.Description == "" ? null : recipeCreateRequestModel.Description,
                 PrepTime = recipeCreateRequestModel.PrepTime == 0 ? null : recipeCreateRequestModel.PrepTime,
                 CookTime = recipeCreateRequestModel.CookTime == 0 ? null : recipeCreateRequestModel.CookTime,
-                DifficultyLevel = recipeCreateRequestModel.DifficultyLevel == "" ? null : recipeCreateRequestModel.DifficultyLevel,
+                DifficultyLevel = recipeCreateRequestModel.DifficultyLevel == ""
+                    ? null
+                    : recipeCreateRequestModel.DifficultyLevel,
                 UserId = user?.UserId,
                 CategoryId = recipeCreateRequestModel.CategoryId == 0 ? null : recipeCreateRequestModel.CategoryId,
                 Image = recipeCreateRequestModel.Image == "" ? null : recipeCreateRequestModel.Image
             };
 
             _context.Recipes.Add(newRecipe);
-            int result = await _context.SaveChangesAsync();
-            return new ApiResponse<int>(result, "");
+            await _context.SaveChangesAsync();
+            int result = newRecipe.RecipeId;
+            return new ApiResponse<int>(result);
         }
 
         // DELETE: api/Recipes/5
@@ -114,6 +155,7 @@ namespace HomNayAnGiAPI.Controllers
             {
                 return NotFound();
             }
+
             var recipe = await _context.Recipes.FindAsync(id);
             if (recipe == null)
             {
