@@ -14,6 +14,14 @@ public class ApiResponse<T>
         Data = data;
     }
     
+    public ApiResponse(T data)
+    {
+        StatusCode = 200;
+        IsSuccess = true;
+        Message = "Request successful";
+        Data = data;
+    }
+    
     public ApiResponse(int statusCode, string message)
     {
         StatusCode = statusCode;
