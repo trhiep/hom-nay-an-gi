@@ -146,14 +146,15 @@ namespace HomNayAnGiAPI.Controllers
         }
 
         //hàm này lấy ra list UserFavorite theo userId
-        [HttpGet("{userId}")]
+        [HttpGet("get-all-recipe-favorite/{userId}")]
         public async Task<ActionResult<IEnumerable<UserFavorite>>> GetAllMyFavoriteRecipe(string userId)
         {
             if (_context.UserFavorites == null)
             {
                 return NotFound();
             }
-            return await _context.UserFavorites.Include(uf=>uf.Recipe).Where(uf=>uf.UserId == int.Parse(userId)).ToListAsync();
+
+            return await _context.UserFavorites.Where(uf => uf.UserId == int.Parse(userId)).ToListAsync();
         }
     }
 }
