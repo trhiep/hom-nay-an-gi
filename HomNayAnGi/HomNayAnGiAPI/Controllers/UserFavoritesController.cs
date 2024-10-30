@@ -102,17 +102,34 @@ namespace HomNayAnGiAPI.Controllers
 
         // DELETE: api/UserFavorites/5
         //hàm này nhận về string userFavoriteId rồi xóa
-        [HttpDelete("{userFavoriteId}")]
-        public async Task<IActionResult> DeleteUserFavorite(string userFavoriteId)
+        [HttpDelete("delete/{username}/{recipeId}")]
+        public async Task<IActionResult> DeleteUserFavorite(string username, string recipeId)
         {
             if (_context.UserFavorites == null)
             {
                 return NotFound();
             }
-            var userFavorite = await _context.UserFavorites.FindAsync(int.Parse(userFavoriteId));
+
+            // Get the UserId from the Users table based on the username
+            var userId = await _context.Users
+                .Where(u => u.Username.Equals(username))
+                .Select(u => u.UserId)
+                .SingleOrDefaultAsync();
+
+            // Check if the userId exists
+            if (userId == 0)
+            {
+                return NotFound("User not found");
+            }
+
+            // Find the UserFavorite record based on userId and recipeId
+            var userFavorite = await _context.UserFavorites
+                .Where(uf => uf.UserId == userId && uf.RecipeId == int.Parse(recipeId))
+                .FirstOrDefaultAsync();
+
             if (userFavorite == null)
             {
-                return NotFound();
+                return NotFound("User favorite not found");
             }
 
             _context.UserFavorites.Remove(userFavorite);
@@ -120,6 +137,7 @@ namespace HomNayAnGiAPI.Controllers
 
             return NoContent();
         }
+
 
         private bool UserFavoriteExists(int id)
         {

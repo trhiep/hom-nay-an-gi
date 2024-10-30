@@ -140,26 +140,5 @@ namespace HomNayAnGiAPI.Controllers
             return (_context.Users?.Any(e => e.UserId == id)).GetValueOrDefault();
         }
 
-        // Get user ID by username
-        [HttpGet("by-username/{username}")]
-        public async Task<ActionResult<string>> GetUserIdByUsername(string username)
-        {
-            if (_context.Users == null)
-            {
-                return NotFound();
-            }
-
-            var temp = await _context.Users.Where(u => u.Username.Equals(username)).FirstOrDefaultAsync();
-
-            // Check if the user was found
-            if (temp == null)
-            {
-                return NotFound($"No user found with username '{username}'");
-            }
-
-            string userId = temp.UserId.ToString();
-            return userId;
-        }
-
     }
 }
