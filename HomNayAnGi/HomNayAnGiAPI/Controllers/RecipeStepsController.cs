@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiAPI.Models;
+using HomNayAnGiAPI.Models.APIModel;
 
 namespace HomNayAnGiAPI.Controllers
 {
@@ -24,10 +25,11 @@ namespace HomNayAnGiAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RecipeStep>>> GetRecipeSteps()
         {
-          if (_context.RecipeSteps == null)
-          {
-              return NotFound();
-          }
+            if (_context.RecipeSteps == null)
+            {
+                return NotFound();
+            }
+
             return await _context.RecipeSteps.ToListAsync();
         }
 
@@ -35,10 +37,11 @@ namespace HomNayAnGiAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<RecipeStep>> GetRecipeStep(int id)
         {
-          if (_context.RecipeSteps == null)
-          {
-              return NotFound();
-          }
+            if (_context.RecipeSteps == null)
+            {
+                return NotFound();
+            }
+
             var recipeStep = await _context.RecipeSteps.FindAsync(id);
 
             if (recipeStep == null)
@@ -83,16 +86,26 @@ namespace HomNayAnGiAPI.Controllers
         // POST: api/RecipeSteps
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<RecipeStep>> PostRecipeStep(RecipeStep recipeStep)
+        public async Task<ActionResult<ApiResponse<int>>> PostRecipeStep(List<RecipeStep> recipeSteps)
         {
-          if (_context.RecipeSteps == null)
-          {
-              return Problem("Entity set 'HomNayAnGiContext.RecipeSteps'  is null.");
-          }
-            _context.RecipeSteps.Add(recipeStep);
-            await _context.SaveChangesAsync();
+            if (_context.RecipeSteps == null)
+            {
+                return Problem("Entity set 'HomNayAnGiContext.RecipeSteps'  is null.");
+            }
 
-            return CreatedAtAction("GetRecipeStep", new { id = recipeStep.StepId }, recipeStep);
+            foreach (var step in recipeSteps)
+            {
+                RecipeStep recipeStep = new RecipeStep()
+                {
+                    RecipeId = step.RecipeId,
+                    StepNumber = step.StepNumber,
+                    Instruction = step.Instruction
+                };
+                _context.RecipeSteps.Add(recipeStep);
+            }
+
+            int results = await _context.SaveChangesAsync();
+            return Ok(new ApiResponse<int>(results));
         }
 
         // DELETE: api/RecipeSteps/5
@@ -103,6 +116,7 @@ namespace HomNayAnGiAPI.Controllers
             {
                 return NotFound();
             }
+
             var recipeStep = await _context.RecipeSteps.FindAsync(id);
             if (recipeStep == null)
             {

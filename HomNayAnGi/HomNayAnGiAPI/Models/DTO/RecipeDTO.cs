@@ -2,7 +2,7 @@
 {
     public class RecipeDTO
     {
-      public int RecipeId { get; set; }
+        public int RecipeId { get; set; }
         public string? CategoryName { get; set; }
         public string RecipeName { get; set; } = null!;
         public string? Description { get; set; }

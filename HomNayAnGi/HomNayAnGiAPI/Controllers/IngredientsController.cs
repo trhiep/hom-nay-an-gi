@@ -61,6 +61,39 @@ namespace HomNayAnGiAPI.Controllers
 
             return ingredient;
         }
+        
+        [HttpGet("user/{username}")]
+        public async Task<ActionResult<Ingredient>> GetIngredientsForAnUser(String username)
+        {
+            if (_context.Ingredients == null)
+            {
+                return NotFound();
+            }
+            
+            var ingredients = await _context.Ingredients.Where(x =>  x.CreatedBy == null).ToListAsync();
+            var user = await _context.Users.Where(x => x.Username.Equals(username)).FirstOrDefaultAsync();
+            if (user != null)
+            {
+                ingredients.AddRange(_context.Ingredients.Where(x => x.CreatedBy == user.UserId));
+            }
+            
+            var responseIngredients = new List<IngredientDTO>();
+            foreach (var item in ingredients)
+            {
+                var dto = new IngredientDTO()
+                {
+                    IngredientId = item.IngredientId,
+                    IngredientName = item.IngredientName,
+                    Description = item.Description,
+                    CreatedBy = item.CreatedBy
+                };
+                responseIngredients.Add(dto);
+            }
+
+            responseIngredients = responseIngredients.OrderBy(x => x.IngredientName).ToList();
+            
+            return Ok(responseIngredients);
+        }
 
         // PUT: api/Ingredients/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -102,6 +135,8 @@ namespace HomNayAnGiAPI.Controllers
           {
               return Problem("Entity set 'HomNayAnGiContext.Ingredients'  is null.");
           }
+
+          Console.WriteLine("SUBMITED: " + ingredient.CreatedBy);
             _context.Ingredients.Add(ingredient);
             await _context.SaveChangesAsync();
 
