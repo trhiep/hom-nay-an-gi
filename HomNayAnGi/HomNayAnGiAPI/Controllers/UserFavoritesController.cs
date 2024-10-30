@@ -27,6 +27,7 @@ namespace HomNayAnGiAPI.Controllers
         [HttpGet("get-all-my-recipes/{username}")]
         public async Task<ActionResult<IEnumerable<Recipe>>> GetUserFavorites(string username)
         {
+            Console.WriteLine("đã vào đây");
             int? userId = await GetUserIdByName(username);
 
             if (userId == null)
@@ -34,18 +35,17 @@ namespace HomNayAnGiAPI.Controllers
                 return NotFound("User not found.");
             }
 
-            var userFavorites = await _context.UserFavorites
-                .Where(uf => uf.UserId == userId.Value)
-                .Include(uf => uf.Recipe) // Include related Recipe data
-                .Select(uf => uf.Recipe)  // Select only Recipe information
-                .ToListAsync();
+            var recipe = await _context.UserFavorites
+                        .Where(uf => uf.UserId == userId) // Lọc các bản ghi UserFavorite theo userId
+                        .Select(uf=>uf.Recipe)
+                        .ToListAsync(); // Chuyển đổi kết quả thành danh sách
 
-            if (!userFavorites.Any())
+            if (!recipe.Any())
             {
                 return NotFound("No favorite recipes found for this user.");
             }
 
-            return Ok(userFavorites);
+            return Ok(recipe);
         }
 
         private async Task<int?> GetUserIdByName(string username)
