@@ -50,6 +50,32 @@ namespace HomNayAnGiAPI.Controllers
 
             return recipeIngredient;
         }
+        
+        // GET: api/RecipeIngredients/5
+        [HttpGet("recipe/{id}")]
+        public async Task<ActionResult<List<RecipeIngredientDTO>>> GetRecipeIngredientByRecipeId(int id)
+        {
+            if (_context.RecipeIngredients == null)
+            {
+                return NotFound();
+            }
+    
+            var recipeIngredients = await _context.RecipeIngredients
+                .Where(x => x.RecipeId == id).Include(x => x.Ingredient)
+                .Select(item => new RecipeIngredientDTO
+                {
+                    RecipeIngredientId = item.IngredientId,
+                    RecipeId = item.RecipeId,
+                    IngredientId = item.IngredientId,
+                    IngredientName = item.Ingredient.IngredientName,
+                    Quantity = item.Quantity,
+                    Unit = item.Unit
+                })
+                .ToListAsync();
+    
+            return Ok(recipeIngredients);
+        }
+
 
         // PUT: api/RecipeIngredients/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

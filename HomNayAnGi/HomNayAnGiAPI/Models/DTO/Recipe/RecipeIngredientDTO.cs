@@ -5,6 +5,7 @@ public class RecipeIngredientDTO
     public int RecipeIngredientId { get; set; }
     public int RecipeId { get; set; }
     public int IngredientId { get; set; }
+    public string IngredientName { get; set; }
     public double? Quantity { get; set; }
     public string? Unit { get; set; }
     
