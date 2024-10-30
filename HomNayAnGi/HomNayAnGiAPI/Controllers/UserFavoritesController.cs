@@ -23,67 +23,42 @@ namespace HomNayAnGiAPI.Controllers
             _context = context;
         }
 
-        // GET: api/UserFavorites
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserFavorite>>> GetUserFavorites()
+        // GET: api/UserFavorites/get-all-my-recipes/{username}
+        [HttpGet("get-all-my-recipes/{username}")]
+        public async Task<ActionResult<IEnumerable<Recipe>>> GetUserFavorites(string username)
         {
-            if (_context.UserFavorites == null)
+            int? userId = await GetUserIdByName(username);
+
+            if (userId == null)
             {
-                return NotFound();
+                return NotFound("User not found.");
             }
-            return await _context.UserFavorites.ToListAsync();
+
+            var userFavorites = await _context.UserFavorites
+                .Where(uf => uf.UserId == userId.Value)
+                .Include(uf => uf.Recipe) // Include related Recipe data
+                .Select(uf => uf.Recipe)  // Select only Recipe information
+                .ToListAsync();
+
+            if (!userFavorites.Any())
+            {
+                return NotFound("No favorite recipes found for this user.");
+            }
+
+            return Ok(userFavorites);
         }
 
-        // GET: api/UserFavorites/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<UserFavorite>> GetUserFavorite(int id)
+        private async Task<int?> GetUserIdByName(string username)
         {
-            if (_context.UserFavorites == null)
-            {
-                return NotFound();
-            }
-            var userFavorite = await _context.UserFavorites.FindAsync(id);
-
-            if (userFavorite == null)
-            {
-                return NotFound();
-            }
-
-            return userFavorite;
-        }
-
-        // PUT: api/UserFavorites/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUserFavorite(int id, UserFavorite userFavorite)
-        {
-            if (id != userFavorite.UserFavoriteId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(userFavorite).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserFavoriteExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            // Get the UserId from the Users table based on the username
+            return await _context.Users
+                .Where(u => u.Username.Equals(username))
+                .Select(u => u.UserId)
+                .SingleOrDefaultAsync();
         }
 
         // POST: api/UserFavorites
-        //hàm này nhận userId và RecipeId xong parse sang int rồi lưu vào bảng UserFavorite
+        //hàm này nhận username và recipeid xong parse sang int rồi lưu vào bảng UserFavorite
         [HttpPost]
         public async Task<ActionResult<UserFavorite>> PostUserFavorite(UserFavoriteDTO userFavorite)
         {
@@ -101,7 +76,7 @@ namespace HomNayAnGiAPI.Controllers
         }
 
         // DELETE: api/UserFavorites/5
-        //hàm này nhận về string userFavoriteId rồi xóa
+        //hàm này nhận về string username và recipeid rồi xóa
         [HttpDelete("delete/{username}/{recipeId}")]
         public async Task<IActionResult> DeleteUserFavorite(string username, string recipeId)
         {
@@ -110,12 +85,7 @@ namespace HomNayAnGiAPI.Controllers
                 return NotFound();
             }
 
-            // Get the UserId from the Users table based on the username
-            var userId = await _context.Users
-                .Where(u => u.Username.Equals(username))
-                .Select(u => u.UserId)
-                .SingleOrDefaultAsync();
-
+            int? userId = await GetUserIdByName(username);
             // Check if the userId exists
             if (userId == 0)
             {
@@ -138,22 +108,17 @@ namespace HomNayAnGiAPI.Controllers
             return NoContent();
         }
 
-
-        private bool UserFavoriteExists(int id)
-        {
-            return (_context.UserFavorites?.Any(e => e.UserFavoriteId == id)).GetValueOrDefault();
-        }
-
         //hàm này check xem user đấy đã add favourite recipe chưa
-        [HttpGet("{userId}/{recipeId}")]
-        public async Task<ActionResult<UserFavorite>> GetUserFavouriteByUserIdRecipeId(string userId, string recipeId)
+        [HttpGet("{username}/{recipeId}")]
+        public async Task<ActionResult<UserFavorite>> GetUserFavouriteByUserIdRecipeId(string username, string recipeId)
         {
             if (_context.UserFavorites == null)
             {
                 return NotFound();
             }
+            int? userId = await GetUserIdByName(username);
             var userFavorite = await _context.UserFavorites
-                .Where(uf => uf.UserId == int.Parse(userId) && uf.RecipeId == int.Parse(recipeId))
+                .Where(uf => uf.UserId == userId && uf.RecipeId == int.Parse(recipeId))
                 .FirstOrDefaultAsync();
             if (userFavorite == null)
             {
@@ -161,18 +126,6 @@ namespace HomNayAnGiAPI.Controllers
             }
 
             return userFavorite;
-        }
-
-        //hàm này lấy ra list UserFavorite theo userId
-        [HttpGet("get-all-recipe-favorite/{userId}")]
-        public async Task<ActionResult<IEnumerable<UserFavorite>>> GetAllMyFavoriteRecipe(string userId)
-        {
-            if (_context.UserFavorites == null)
-            {
-                return NotFound();
-            }
-
-            return await _context.UserFavorites.Where(uf => uf.UserId == int.Parse(userId)).ToListAsync();
         }
     }
 }
