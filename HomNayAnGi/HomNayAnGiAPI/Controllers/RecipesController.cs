@@ -92,12 +92,13 @@ namespace HomNayAnGiAPI.Controllers
             Recipe newRecipe = new Recipe()
             {
                 RecipeName = recipeCreateRequestModel.RecipeName,
-                Description = recipeCreateRequestModel.Description,
-                PrepTime = recipeCreateRequestModel.PrepTime,
-                CookTime = recipeCreateRequestModel.CookTime,
-                DifficultyLevel = recipeCreateRequestModel.DifficultyLevel,
+                Description = recipeCreateRequestModel.Description == "" ? null : recipeCreateRequestModel.Description,
+                PrepTime = recipeCreateRequestModel.PrepTime == 0 ? null : recipeCreateRequestModel.PrepTime,
+                CookTime = recipeCreateRequestModel.CookTime == 0 ? null : recipeCreateRequestModel.CookTime,
+                DifficultyLevel = recipeCreateRequestModel.DifficultyLevel == "" ? null : recipeCreateRequestModel.DifficultyLevel,
                 UserId = user?.UserId,
-                CategoryId = recipeCreateRequestModel.CategoryId
+                CategoryId = recipeCreateRequestModel.CategoryId == 0 ? null : recipeCreateRequestModel.CategoryId,
+                Image = recipeCreateRequestModel.Image == "" ? null : recipeCreateRequestModel.Image
             };
 
             _context.Recipes.Add(newRecipe);
