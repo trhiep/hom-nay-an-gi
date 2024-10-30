@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiAPI.Models;
+using HomNayAnGiAPI.Models.APIModel;
+using HomNayAnGiAPI.Models.DTO.Recipe;
 
 namespace HomNayAnGiAPI.Controllers
 {
@@ -29,6 +31,38 @@ namespace HomNayAnGiAPI.Controllers
               return NotFound();
           }
             return await _context.RecipeCategories.ToListAsync();
+        }
+        
+        [HttpGet("user/{username}")]
+        public async Task<ActionResult<IEnumerable<RecipeCategoryDTO>>> GetRecipeCategoriesForAnUser(String username)
+        {
+            if (_context.RecipeCategories == null)
+            {
+                return NotFound();
+            }
+
+            var recipeCategories = await _context.RecipeCategories.Where(x =>  x.CreatedBy == null).ToListAsync();
+            var user = await _context.Users.Where(x => x.Username.Equals(username)).FirstOrDefaultAsync();
+            if (user != null)
+            {
+                recipeCategories.AddRange(_context.RecipeCategories.Where(x => x.CreatedBy == user.UserId));
+            }
+
+            var responseCates = new List<RecipeCategoryDTO>();
+            foreach (var item in recipeCategories)
+            {
+                var dto = new RecipeCategoryDTO()
+                {
+                    CategoryId = item.CategoryId,
+                    CategoryName = item.CategoryName,
+                    CreatedBy = item.CreatedBy
+                };
+                responseCates.Add(dto);
+            }
+
+            responseCates = responseCates.OrderBy(x => x.CategoryName).ToList();
+            
+            return Ok(responseCates);
         }
 
         // GET: api/RecipeCategories/5
