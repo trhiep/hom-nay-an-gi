@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiAPI.Models;
+using System.Numerics;
 
 namespace HomNayAnGiAPI.Controllers
 {
@@ -40,6 +41,25 @@ namespace HomNayAnGiAPI.Controllers
               return NotFound();
           }
             var user = await _context.Users.FindAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return user;
+        }
+        
+        // GET: api/Users/5
+        [HttpGet("get-by-username/{username}")]
+        public async Task<ActionResult<User>> GetUserByUsername(string username)
+        {
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _context.Users.Where(x => x.Username.Equals(username)).FirstOrDefaultAsync();
 
             if (user == null)
             {
@@ -119,5 +139,6 @@ namespace HomNayAnGiAPI.Controllers
         {
             return (_context.Users?.Any(e => e.UserId == id)).GetValueOrDefault();
         }
+
     }
 }
