@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiAPI.Models;
-using HomNayAnGiAPI.Models.DTO;
+using HomNayAnGiAPI.Models.APIModel;
+using HomNayAnGiAPI.Models.DTO.Recipe;
+using RecipeDTO = HomNayAnGiAPI.Models.DTO.RecipeDTO;
 
 namespace HomNayAnGiAPI.Controllers
 {
