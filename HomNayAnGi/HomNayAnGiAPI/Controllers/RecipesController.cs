@@ -38,6 +38,7 @@ namespace HomNayAnGiAPI.Controllers
                  RecipeId = item.RecipeId,
                  RecipeName = item.RecipeName,
                  CategoryName = item.Category.CategoryName,
+                 RecipeName = item.RecipeName,
                  Description = item.Description,
                  CookTime = item.CookTime,
                  PrepTime = item.PrepTime,
