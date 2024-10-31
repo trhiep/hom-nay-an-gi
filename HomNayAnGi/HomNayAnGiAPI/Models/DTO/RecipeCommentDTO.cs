@@ -2,11 +2,11 @@
 {
     public class RecipeCommentDTO
     {
-        public int CommentId { get; set; }
-        public int? RecipeId { get; set; }
-        public int? UserId { get; set; }
+        public string? CommentId { get; set; }
+        public string? RecipeId { get; set; }
+        public string? UserId { get; set; }
         public string? Comment { get; set; }
-        public int? Rating { get; set; }
+        public string? Rating { get; set; }
         public string? CreatedAt { get; set; } // Store as string for easier parsing
     }
 }

@@ -32,11 +32,11 @@ namespace HomNayAnGiAPI.Controllers
                 .Where(rc => rc.RecipeId == recipeId)
                 .Select(rc => new RecipeCommentDTO
                 {
-                    CommentId = rc.CommentId,
-                    RecipeId = rc.RecipeId,
-                    UserId = rc.UserId,
-                    Comment = rc.Comment,
-                    Rating = rc.Rating,
+                    CommentId = rc.CommentId.ToString(),
+                    RecipeId = rc.RecipeId.ToString(),
+                    UserId = rc.UserId.ToString(),
+                    Comment = rc.Comment.ToString(),
+                    Rating = rc.Rating.ToString(),
                     CreatedAt = rc.CreatedAt.ToString()
                 })
                 .ToListAsync();
@@ -54,17 +54,17 @@ namespace HomNayAnGiAPI.Controllers
 
             var recipeComment = new RecipeComment
             {
-                RecipeId = recipeCommentDto.RecipeId,
-                UserId = recipeCommentDto.UserId,
+                RecipeId = int.Parse(recipeCommentDto.RecipeId),
+                UserId = int.Parse(recipeCommentDto.UserId),
                 Comment = recipeCommentDto.Comment,
-                Rating = recipeCommentDto.Rating,
+                Rating = recipeCommentDto.Rating == null ? 0 : int.Parse(recipeCommentDto.Rating),
                 CreatedAt = DateTime.Now
             };
 
             _context.RecipeComments.Add(recipeComment);
             await _context.SaveChangesAsync();
 
-            recipeCommentDto.CommentId = recipeComment.CommentId;
+            recipeCommentDto.CommentId = recipeComment.CommentId.ToString();
             return Ok(recipeCommentDto);
         }
 
@@ -97,7 +97,7 @@ namespace HomNayAnGiAPI.Controllers
         [HttpPut("update-comment/{recipeCommentId}/{username}/{recipeId}")]
         public async Task<IActionResult> UpdateRecipeComment(string recipeCommentId, string username, string recipeId, RecipeCommentDTO recipeCommentDto)
         {
-            if (int.Parse(recipeCommentId) != recipeCommentDto.CommentId || int.Parse(recipeId) != recipeCommentDto.RecipeId)
+            if (recipeCommentId != recipeCommentDto.CommentId || recipeId != recipeCommentDto.RecipeId)
             {
                 return BadRequest();
             }
@@ -114,7 +114,7 @@ namespace HomNayAnGiAPI.Controllers
             }
 
             recipeComment.Comment = recipeCommentDto.Comment;
-            recipeComment.Rating = recipeCommentDto.Rating;
+            recipeComment.Rating = Int32.Parse(recipeCommentDto.Rating);
             recipeComment.CreatedAt = DateTime.Parse(recipeCommentDto.CreatedAt);
 
             _context.Entry(recipeComment).State = EntityState.Modified;
