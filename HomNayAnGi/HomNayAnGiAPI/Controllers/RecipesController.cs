@@ -36,6 +36,7 @@ namespace HomNayAnGiAPI.Controllers
              item => new RecipeDTO
              {
                  RecipeId = item.RecipeId,
+                 RecipeName = item.RecipeName,
                  CategoryName = item.Category.CategoryName,
                  Description = item.Description,
                  CookTime = item.CookTime,
