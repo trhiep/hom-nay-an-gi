@@ -178,23 +178,33 @@ namespace HomNayAnGiAPI.Controllers
 
         // DELETE: api/Recipes/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRecipe(int id)
+        public async Task<ApiResponse<int>> DeleteRecipe(int id)
         {
-            if (_context.Recipes == null)
+
+            var recipeIngredients = await _context.RecipeIngredients.Where(x => x.RecipeId == id).ToListAsync();
+            if (recipeIngredients != null)
             {
-                return NotFound();
+                _context.RecipeIngredients.RemoveRange(recipeIngredients);
+                await _context.SaveChangesAsync();
             }
 
+            var recipeSteps = await _context.RecipeSteps.Where(x => x.RecipeId == id).ToListAsync();
+            if (recipeSteps != null)
+            {
+                _context.RecipeSteps.RemoveRange(recipeSteps);
+                await _context.SaveChangesAsync();
+            }
+            
             var recipe = await _context.Recipes.FindAsync(id);
             if (recipe == null)
             {
-                return NotFound();
+                return new ApiResponse<int>(404, "Không tìm thấy recipe");
             }
 
             _context.Recipes.Remove(recipe);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return new ApiResponse<int>(203);
         }
 
         private bool RecipeExists(int id)
