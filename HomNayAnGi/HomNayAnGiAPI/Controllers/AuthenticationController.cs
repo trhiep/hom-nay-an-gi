@@ -146,10 +146,10 @@ namespace HomNayAnGiAPI.Controllers
                 await _context.SaveChangesAsync();
                 
                 // Send otp to user
-                // var t = new Thread(() => EmailHelper.SendEmailMultiThread(signupRequest.Email
-                //     , "Mã OTP xác minh đăng ký tài khoản"
-                //     , $"Xin chào {signupRequest.Username}, đây là mã OTP xác minh đăng ký tài khoản tại Hôm nay ăn gì của bạn: <strong>{signupOtp.OtpString}</strong>."));
-                // t.Start();
+                var t = new Thread(() => EmailHelper.SendEmailMultiThread(signupRequest.Email
+                    , "Mã OTP xác minh đăng ký tài khoản"
+                    , $"Xin chào {signupRequest.Username}, đây là mã OTP xác minh đăng ký tài khoản tại Hôm nay ăn gì của bạn: <strong>{signupOtp.Otpstring}</strong>."));
+                t.Start();
                 
                 return Ok(signupResponse);
             }
