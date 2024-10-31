@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiAPI.Models;
+using HomNayAnGiAPI.Models.DTO;
 
 namespace HomNayAnGiAPI.Controllers
 {
@@ -20,44 +20,102 @@ namespace HomNayAnGiAPI.Controllers
             _context = context;
         }
 
-        // GET: api/RecipeComments
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<RecipeComment>>> GetRecipeComments()
+        // GET: api/RecipeComments/{recipeId}
+        [HttpGet("{recipeId}")]
+        public async Task<ActionResult<IEnumerable<RecipeCommentDTO>>> GetAllRecipeCommentsByRecipeId(int recipeId)
         {
-          if (_context.RecipeComments == null)
-          {
-              return NotFound();
-          }
-            return await _context.RecipeComments.ToListAsync();
+            if (_context.RecipeComments == null)
+            {
+                return NotFound();
+            }
+            var recipeComments = await _context.RecipeComments
+                .Where(rc => rc.RecipeId == recipeId)
+                .Select(rc => new RecipeCommentDTO
+                {
+                    CommentId = rc.CommentId,
+                    RecipeId = rc.RecipeId,
+                    UserId = rc.UserId,
+                    Comment = rc.Comment,
+                    Rating = rc.Rating,
+                    CreatedAt = rc.CreatedAt.ToString()
+                })
+                .ToListAsync();
+            return recipeComments;
         }
 
-        // GET: api/RecipeComments/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<RecipeComment>> GetRecipeComment(int id)
+        // POST: api/RecipeComments
+        [HttpPost]
+        public async Task<ActionResult<RecipeCommentDTO>> PostRecipeComment(RecipeCommentDTO recipeCommentDto)
         {
-          if (_context.RecipeComments == null)
-          {
-              return NotFound();
-          }
-            var recipeComment = await _context.RecipeComments.FindAsync(id);
+            if (_context.RecipeComments == null)
+            {
+                return Problem("Entity set 'HomNayAnGiContext.RecipeComments' is null.");
+            }
 
-            if (recipeComment == null)
+            var recipeComment = new RecipeComment
+            {
+                RecipeId = recipeCommentDto.RecipeId,
+                UserId = recipeCommentDto.UserId,
+                Comment = recipeCommentDto.Comment,
+                Rating = recipeCommentDto.Rating,
+                CreatedAt = DateTime.Now
+            };
+
+            _context.RecipeComments.Add(recipeComment);
+            await _context.SaveChangesAsync();
+
+            recipeCommentDto.CommentId = recipeComment.CommentId;
+            return Ok(recipeCommentDto);
+        }
+
+        // DELETE: api/RecipeComments/delete-comment/{recipeCommentId}/{username}/{recipeId}
+        [HttpDelete("delete-comment/{recipeCommentId}/{username}/{recipeId}")]
+        public async Task<IActionResult> DeleteRecipeComment(string recipeCommentId, string username, string recipeId)
+        {
+            if (_context.RecipeComments == null)
+            {
+                return NotFound();
+            }
+            var recipeComment = await _context.RecipeComments
+                .Include(x => x.User)
+                .Where(rc => rc.CommentId == int.Parse(recipeCommentId)
+                && rc.User.Username.Equals(username)
+                && rc.RecipeId == int.Parse(recipeId)).FirstOrDefaultAsync();
+
+            if (recipeComment == null || recipeComment.RecipeId != int.Parse(recipeId))
             {
                 return NotFound();
             }
 
-            return recipeComment;
+            _context.RecipeComments.Remove(recipeComment);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
-        // PUT: api/RecipeComments/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutRecipeComment(int id, RecipeComment recipeComment)
+        // PUT: api/RecipeComments/update-comment/{recipeCommentId}/{username}/{recipeId}
+        [HttpPut("update-comment/{recipeCommentId}/{username}/{recipeId}")]
+        public async Task<IActionResult> UpdateRecipeComment(string recipeCommentId, string username, string recipeId, RecipeCommentDTO recipeCommentDto)
         {
-            if (id != recipeComment.CommentId)
+            if (int.Parse(recipeCommentId) != recipeCommentDto.CommentId || int.Parse(recipeId) != recipeCommentDto.RecipeId)
             {
                 return BadRequest();
             }
+
+            var recipeComment = await _context.RecipeComments
+                .Include(x => x.User)
+                .Where(rc => rc.CommentId == int.Parse(recipeCommentId)
+                && rc.User.Username.Equals(username)
+                && rc.RecipeId == int.Parse(recipeId)).FirstOrDefaultAsync();
+
+            if (recipeComment == null || recipeComment.RecipeId != int.Parse(recipeId))
+            {
+                return NotFound();
+            }
+
+            recipeComment.Comment = recipeCommentDto.Comment;
+            recipeComment.Rating = recipeCommentDto.Rating;
+            recipeComment.CreatedAt = DateTime.Parse(recipeCommentDto.CreatedAt);
 
             _context.Entry(recipeComment).State = EntityState.Modified;
 
@@ -67,7 +125,7 @@ namespace HomNayAnGiAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!RecipeCommentExists(id))
+                if (!RecipeCommentExists(int.Parse(recipeCommentId)))
                 {
                     return NotFound();
                 }
@@ -77,42 +135,7 @@ namespace HomNayAnGiAPI.Controllers
                 }
             }
 
-            return NoContent();
-        }
-
-        // POST: api/RecipeComments
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<RecipeComment>> PostRecipeComment(RecipeComment recipeComment)
-        {
-          if (_context.RecipeComments == null)
-          {
-              return Problem("Entity set 'HomNayAnGiContext.RecipeComments'  is null.");
-          }
-            _context.RecipeComments.Add(recipeComment);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetRecipeComment", new { id = recipeComment.CommentId }, recipeComment);
-        }
-
-        // DELETE: api/RecipeComments/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRecipeComment(int id)
-        {
-            if (_context.RecipeComments == null)
-            {
-                return NotFound();
-            }
-            var recipeComment = await _context.RecipeComments.FindAsync(id);
-            if (recipeComment == null)
-            {
-                return NotFound();
-            }
-
-            _context.RecipeComments.Remove(recipeComment);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return Ok(recipeCommentDto);
         }
 
         private bool RecipeCommentExists(int id)
