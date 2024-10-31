@@ -22,14 +22,15 @@ namespace HomNayAnGiAPI.Controllers
 
         // GET: api/RecipeComments/{recipeId}
         [HttpGet("{recipeId}")]
-        public async Task<ActionResult<IEnumerable<RecipeCommentDTO>>> GetAllRecipeCommentsByRecipeId(int recipeId)
+        public async Task<ActionResult<IEnumerable<RecipeCommentDTO>>> GetAllRecipeCommentsByRecipeId(string recipeId)
         {
+            Console.WriteLine("-----------------------đã chạy vào đâyasdfasldfj;askljdf;lkasjf;lkasd------------------------------------");
             if (_context.RecipeComments == null)
             {
                 return NotFound();
             }
             var recipeComments = await _context.RecipeComments
-                .Where(rc => rc.RecipeId == recipeId)
+                .Where(rc => rc.RecipeId == int.Parse(recipeId))
                 .Select(rc => new RecipeCommentDTO
                 {
                     CommentId = rc.CommentId.ToString(),
@@ -40,7 +41,7 @@ namespace HomNayAnGiAPI.Controllers
                     CreatedAt = rc.CreatedAt.ToString()
                 })
                 .ToListAsync();
-            return recipeComments;
+            return Ok(recipeComments);
         }
 
         // POST: api/RecipeComments
