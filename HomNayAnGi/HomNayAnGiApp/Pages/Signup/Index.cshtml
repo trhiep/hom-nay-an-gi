@@ -15,13 +15,13 @@
                 <div class="col-12">
                     <label>Tên đăng nhập</label>
                     <input asp-for="SignupViewModel.Username" class="form-control bg-light border-0 px-4" style="height: 55px;" id="username" required>
-                    <div class="invalid-feedback">Tên đăng nhập không được để trống.</div>
+                    <div class="invalid-feedback" id="invalid-username-feedback">Tên đăng nhập không được để trống.</div>
                     <span asp-validation-for="SignupViewModel.Username" class="text-danger"></span>
                 </div>
                 <div class="col-12">
                     <label>Email</label>
                     <input asp-for="SignupViewModel.Email" class="form-control bg-light border-0 px-4" style="height: 55px;" id="email" required>
-                    <div class="invalid-feedback">Vui lòng nhập địa chỉ email hợp lệ.</div>
+                    <div class="invalid-feedback" id="invalid-email-feedback">Vui lòng nhập địa chỉ email hợp lệ.</div>
                     <span asp-validation-for="SignupViewModel.Email" class="text-danger"></span>
                 </div>
                 <div class="col-12">
@@ -50,12 +50,16 @@
                 </div>
             </div>
         </form>
+        <input value="@Model.IsEmailExisted" id="IsEmailExisted" type="hidden" />
+        <input value="@Model.IsUsernameExisted" id="IsUsernameExisted" type="hidden" />
     </div>
     <div class="col-lg-3"></div>
 </div>
 
 @section Scripts {
     <script>
+        checkExistedField();
+
         // Regular expressions for email and password validation
         const emailPattern = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
         const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@@$!%*?&])[A-Za-z\d@@$!%*?&]{8,}$/;
@@ -119,6 +123,22 @@
             const isConfirmPasswordValid = validateConfirmPassword();
 
             return isUsernameValid && isEmailValid && isPasswordValid && isConfirmPasswordValid;
+        }
+
+        function checkExistedField() {
+            const isEmailExisted = document.getElementById("IsEmailExisted").value;
+            if (isEmailExisted != "") {
+                const email = document.getElementById("email");
+                email.classList.add("is-invalid");
+                document.getElementById("invalid-email-feedback").innerText = "Email đã tồn tại.";
+            }
+
+            const IsUsernameExisted = document.getElementById("IsUsernameExisted").value;
+            if (IsUsernameExisted != "") {
+                const username = document.getElementById("username");
+                username.classList.add("is-invalid");
+                document.getElementById("invalid-username-feedback").innerText = "Tên đăng nhập đã tồn tại.";
+            }
         }
     </script>
 }

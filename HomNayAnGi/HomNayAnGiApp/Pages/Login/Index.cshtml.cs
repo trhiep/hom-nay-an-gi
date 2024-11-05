@@ -19,6 +19,11 @@ namespace HomNayAnGiApp.Pages.Login
             _httpClient.DefaultRequestHeaders.Accept.Add(contentType);
         }
 
+        [BindProperty(SupportsGet = true)]
+        public string ErrorMessage { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public string SuccessMessage { get; set; }
         public IActionResult OnGet()
         {
             Response.Cookies.Delete("accessToken");
@@ -27,7 +32,21 @@ namespace HomNayAnGiApp.Pages.Login
             {
                 return RedirectToPage("./Index");
             }
+            CheckAndSetToastMessage();
             return Page();
+        }
+
+        public void CheckAndSetToastMessage()
+        {
+            if (ErrorMessage != null)
+            {
+                ViewData["ErrorMessage"] = ErrorMessage;
+            }
+
+            if (SuccessMessage != null)
+            {
+                ViewData["SuccessMessage"] = SuccessMessage;
+            }
         }
 
         [BindProperty]

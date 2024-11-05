@@ -25,6 +25,8 @@ namespace HomNayAnGiApp.Pages.Signup
 
         [BindProperty]
         public SignupViewModel SignupViewModel { get; set; }
+        public bool IsEmailExisted { get; set; }
+        public bool IsUsernameExisted { get; set; }
         public async Task<IActionResult> OnPostAsync()
         {
             if (ModelState.IsValid)
@@ -44,13 +46,26 @@ namespace HomNayAnGiApp.Pages.Signup
                 {
                     string responseContent = await response.Content.ReadAsStringAsync();
                     dynamic tempData = JObject.Parse(responseContent);
-                    var signupResponse = JsonConvert.DeserializeObject<SignupResponse>(tempData.ToString());
+                    SignupResponse signupResponse = JsonConvert.DeserializeObject<SignupResponse>(tempData.ToString());
                     if (signupResponse != null)
                     {
                         if (signupResponse.InvalidFields == null)
                         {
                             HttpContext.Session.SetString("SignupRequest", JsonConvert.SerializeObject(signupRequestDto));
                             return RedirectToPage("/Signup/VerifyOTP");
+                        } else
+                        {
+                            if (signupResponse.InvalidFields.Contains("email"))
+                            {
+                                IsEmailExisted = true;
+                            }
+
+                            if (signupResponse.InvalidFields.Contains("username"))
+                            {
+                                IsUsernameExisted = true;
+                            }
+
+                            return Page();
                         }
                     }
                 }
