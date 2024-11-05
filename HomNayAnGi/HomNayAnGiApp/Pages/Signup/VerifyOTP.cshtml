@@ -1,0 +1,66 @@
+﻿@page
+@model HomNayAnGiApp.Pages.Signup.VerifyOTPModel
+@{
+}
+
+<div class="row mt-5">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <div class="border-start border-5 border-primary ps-5 mb-5" style="max-width: 600px;">
+            <h1 class="text-uppercase mb-0">XÁC MINH OTP</h1>
+            <span>Vui lòng nhập mã OTP đã được gửi về địa chỉ email của bạn và bấm xác nhận</span>
+        </div>
+        <form method="post" onsubmit="return validateOtpForm()">
+            <div class="row g-3">
+                <div class="col-12">
+                    <input asp-for="EnteredOtp" class="form-control bg-light border-0 px-4" style="height: 55px;" id="enterdOtp" placeholder="Nhập mã OTP vào đây" required>
+                    <div class="invalid-feedback">OTP phải là chuỗi có 6 chữ số.</div>
+                </div>
+                <div class="col-12">
+                    <button class="btn btn-primary w-100 py-3 text-white" type="submit">XÁC NHẬN</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-3"></div>
+</div>
+
+
+@section Scripts {
+    <script>
+        document.getElementById("enterdOtp").addEventListener("blur", validateOtpForm);
+
+        function validateOtpForm() {
+            const otpInput = document.getElementById("enterdOtp");
+            const otpPattern = /^\d{6}$/; // OTP phải là 6 chữ số
+            let isValid = true;
+
+            // Reset trạng thái lỗi
+            otpInput.classList.remove("is-invalid");
+
+            // Kiểm tra OTP
+            if (!otpPattern.test(otpInput.value.trim())) {
+                otpInput.classList.add("is-invalid");
+                isValid = false;
+            }
+
+            return isValid;
+        }
+    </script>
+
+    <style>
+        .otp-input {
+            width: 75px;
+            height: 75px;
+            text-align: center;
+            font-size: 28px;
+            -moz-appearance: textfield;
+        }
+
+            .otp-input::-webkit-outer-spin-button,
+            .otp-input::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+    </style>
+}
