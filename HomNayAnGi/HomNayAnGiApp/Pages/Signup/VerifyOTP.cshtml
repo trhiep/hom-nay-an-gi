@@ -14,13 +14,14 @@
             <div class="row g-3">
                 <div class="col-12">
                     <input asp-for="EnteredOtp" class="form-control bg-light border-0 px-4" style="height: 55px;" id="enterdOtp" placeholder="Nhập mã OTP vào đây" required>
-                    <div class="invalid-feedback">OTP phải là chuỗi có 6 chữ số.</div>
+                    <div class="invalid-feedback" id="invalid-otp-feedback">OTP phải là chuỗi có 6 chữ số.</div>
                 </div>
                 <div class="col-12">
                     <button class="btn btn-primary w-100 py-3 text-white" type="submit">XÁC NHẬN</button>
                 </div>
             </div>
         </form>
+        <input value="@Model.ErrorMessage" id="verifyOTPErrorMessage" type="hidden" />
     </div>
     <div class="col-md-3"></div>
 </div>
@@ -28,6 +29,7 @@
 
 @section Scripts {
     <script>
+        checkErrorMessage();
         document.getElementById("enterdOtp").addEventListener("blur", validateOtpForm);
 
         function validateOtpForm() {
@@ -42,9 +44,20 @@
             if (!otpPattern.test(otpInput.value.trim())) {
                 otpInput.classList.add("is-invalid");
                 isValid = false;
+                document.getElementById("invalid-otp-feedback").innerText = "OTP phải là chuỗi có 6 chữ số.";
             }
 
             return isValid;
+        }
+
+        function checkErrorMessage() {
+            const verifyOTPErrorMessage = document.getElementById("verifyOTPErrorMessage").value;
+            if (verifyOTPErrorMessage != "") {
+                const otpInput = document.getElementById("enterdOtp");
+                otpInput.classList.add("is-invalid");
+                isValid = false;
+                document.getElementById("invalid-otp-feedback").innerText = verifyOTPErrorMessage;
+            }
         }
     </script>
 

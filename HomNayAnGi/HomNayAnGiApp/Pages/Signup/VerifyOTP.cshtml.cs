@@ -1,3 +1,4 @@
+using HomNayAnGiApp.Models.APIModel;
 using HomNayAnGiApp.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -42,6 +43,8 @@ namespace HomNayAnGiApp.Pages.Signup
         [RegularExpression(@"^\d{6}$", ErrorMessage = "OTP Phải có 6 ký tự.")]
         [BindProperty]
         public string EnteredOtp { get; set; }
+
+        public string ErrorMessage { get; set; }
         public async Task<IActionResult> OnPostAsync()
         {
             if (ModelState.IsValid)
@@ -61,7 +64,20 @@ namespace HomNayAnGiApp.Pages.Signup
                 {
                     string responseContent = await response.Content.ReadAsStringAsync();
                     dynamic tempData = JObject.Parse(responseContent);
-                    return RedirectToPage("/Login/Index");
+                    ApiResponse<string> apiResponse = JsonConvert.DeserializeObject<ApiResponse<string>>(tempData.ToString());
+                    if (apiResponse.StatusCode == 400)
+                    {
+                        ErrorMessage = apiResponse.Message;
+                    }
+                    else if (apiResponse.StatusCode == 401)
+                    {
+                        return RedirectToPage("/Login/Index", new { ErrorMessage = apiResponse.Message });
+                    }
+                    else if (apiResponse.StatusCode == 201)
+                    {
+                        return RedirectToPage("/Login/Index", new { SuccessMessage = apiResponse.Message});
+                    }
+                    return Page();
                 }
                 ViewData["ErrorMessage"] = "Đã xảy ra lỗi trong quá trình xử lý. Vui lòng thử lại sau";
             }
