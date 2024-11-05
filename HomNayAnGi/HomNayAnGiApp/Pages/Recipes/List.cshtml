@@ -1,0 +1,128 @@
+﻿ @page
+ @model HomNayAnGiApp.Pages.RecipeManage.ListModel
+
+ @{
+     ViewData["Title"] = "List";
+ }
+
+ <h1>List</h1>
+
+ <p>
+     <a asp-page="Create">Create New</a>
+ </p>
+@*  <table class="table">
+     <thead>
+         <tr>
+             <th>
+                 @Html.DisplayNameFor(model => model.Recipe[0].RecipeName)
+             </th>
+             <th>
+                 @Html.DisplayNameFor(model => model.Recipe[0].Description)
+             </th>
+             <th>
+                 @Html.DisplayNameFor(model => model.Recipe[0].CookTime)
+             </th>
+             <th>
+                 @Html.DisplayNameFor(model => model.Recipe[0].PrepTime)
+             </th>
+             <th>
+                 @Html.DisplayNameFor(model => model.Recipe[0].Servings)
+             </th>
+             <th>
+                 @Html.DisplayNameFor(model => model.Recipe[0].DifficultyLevel)
+             </th>
+             <th>
+                 @Html.DisplayNameFor(model => model.Recipe[0].UserId)
+             </th>
+             <th>
+                 @Html.DisplayNameFor(model => model.Recipe[0].CreatedAt)
+             </th>
+             <th>
+                 @Html.DisplayNameFor(model => model.Recipe[0].UpdatedAt)
+             </th>
+             <th>
+                 @Html.DisplayNameFor(model => model.Recipe[0].Image)
+             </th>
+             <th>
+                 @Html.DisplayNameFor(model => model.Recipe[0].Video)
+             </th>
+             <th>
+                 @Html.DisplayNameFor(model => model.Recipe[0].IsPublic)
+             </th>
+             <th>
+                 @Html.DisplayNameFor(model => model.Recipe[0].Category)
+             </th>
+             <th></th>
+         </tr>
+     </thead>
+     <tbody>
+ @foreach (var item in Model.Recipe) {
+         <tr>
+             <td>
+                 @Html.DisplayFor(modelItem => item.RecipeName)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.Description)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.CookTime)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.PrepTime)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.Servings)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.DifficultyLevel)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.UserId)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.CreatedAt)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.UpdatedAt)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.Image)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.Video)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.IsPublic)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.Category.CategoryId)
+             </td>
+             <td>
+                 <a asp-page="./Edit" asp-route-id="@item.RecipeId">Edit</a> |
+                 <a asp-page="./Details" asp-route-id="@item.RecipeId">Details</a> |
+                 <a asp-page="./Delete" asp-route-id="@item.RecipeId">Delete</a>
+             </td>
+         </tr>
+ }
+     </tbody>
+ </table> *@
+@foreach (var item in Model.Recipe)
+{
+<div class="card">
+        <img src="@item.Image" alt="Bữa cơm nhà" class="card-image">
+    <div class="card-content">
+        <h3 class="card-title">Cả vườn hoa trong bữa cơm nhà</h3>
+        <p class="card-description">
+           @item.Description
+        </p>
+        <div class="card-info">
+                <span><i class="bi bi-clock"></i>@item.PrepTime phút</span> • <span><i class="bi bi-people"></i> @item.Servings người</span>
+            </div>
+        <div class="card-author">
+            <img src="path/to/avatar.jpg" alt="Annie Vo" class="author-avatar">
+            <span>Annie Vo</span>
+        </div>
+    </div>
+</div>
+<br />
+}

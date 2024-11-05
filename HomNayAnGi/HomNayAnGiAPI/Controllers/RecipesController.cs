@@ -31,7 +31,7 @@ namespace HomNayAnGiAPI.Controllers
             {
                 return NotFound();
             }
-            return await _context.Recipes.Include(x => x.Category).Select(
+            return await _context.Recipes.Include(x => x.Category).Include(x=>x.Us).Select(
 
              item => new RecipeDTO
              {
