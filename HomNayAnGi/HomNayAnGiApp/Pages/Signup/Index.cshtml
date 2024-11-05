@@ -1,0 +1,124 @@
+﻿@page
+@model HomNayAnGiApp.Pages.Signup.IndexModel
+@{
+    ViewData["Title"] = "Đăng ký";
+}
+
+<div class="row g-5 mt-3">
+    <div class="col-lg-3"></div>
+    <div class="col-lg-6">
+        <div class="border-start border-5 border-primary ps-5 mb-5" style="max-width: 600px;">
+            <h1 class="text-uppercase mb-0">ĐĂNG KÝ</h1>
+        </div>
+        <form method="post" onsubmit="return validateForm()">
+            <div class="row g-3">
+                <div class="col-12">
+                    <label>Tên đăng nhập</label>
+                    <input asp-for="SignupViewModel.Username" class="form-control bg-light border-0 px-4" style="height: 55px;" id="username" required>
+                    <div class="invalid-feedback">Tên đăng nhập không được để trống.</div>
+                    <span asp-validation-for="SignupViewModel.Username" class="text-danger"></span>
+                </div>
+                <div class="col-12">
+                    <label>Email</label>
+                    <input asp-for="SignupViewModel.Email" class="form-control bg-light border-0 px-4" style="height: 55px;" id="email" required>
+                    <div class="invalid-feedback">Vui lòng nhập địa chỉ email hợp lệ.</div>
+                    <span asp-validation-for="SignupViewModel.Email" class="text-danger"></span>
+                </div>
+                <div class="col-12">
+                    <label>Mật khẩu</label>
+                    <input asp-for="SignupViewModel.Password" type="password" class="form-control bg-light border-0 px-4" style="height: 55px;" id="password" required>
+                    <div class="invalid-feedback">
+                        Mật khẩu phải có ít nhất 8 ký tự, bao gồm 1 chữ in hoa, 1 chữ in thường, 1 số và 1 ký tự đặc biệt.
+                    </div>
+                    <span asp-validation-for="SignupViewModel.Password" class="text-danger"></span>
+                </div>
+                <div class="col-12">
+                    <label>Nhập lại mật khẩu</label>
+                    <input asp-for="SignupViewModel.ConfirmPassword" type="password" class="form-control bg-light border-0 px-4" style="height: 55px;" id="confirmPassword" required>
+                    <div class="invalid-feedback">Mật khẩu không khớp.</div>
+                    <span asp-validation-for="SignupViewModel.ConfirmPassword" class="text-danger"></span>
+                </div>
+                <div class="col-12">
+                    <button class="btn btn-primary w-100 py-3 text-white" type="submit">ĐĂNG KÝ</button>
+                    <a href="/ForgotPassword" style="float: right; font-style: italic; text-decoration: none; margin-top: 10px">Quên mật khẩu</a>
+                </div>
+                <div class="col-12 text-center">
+                    <label>Hoặc</label>
+                </div>
+                <div class="col-12">
+                    <a href="/Login" class="btn btn-outline-primary w-100 py-3">ĐĂNG NHẬP</a>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-3"></div>
+</div>
+
+@section Scripts {
+    <script>
+        // Regular expressions for email and password validation
+        const emailPattern = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+        const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@@$!%*?&])[A-Za-z\d@@$!%*?&]{8,}$/;
+
+        // Event listeners for validation on blur
+        document.getElementById("username").addEventListener("blur", validateUsername);
+        document.getElementById("email").addEventListener("blur", validateEmail);
+        document.getElementById("password").addEventListener("blur", validatePassword);
+        document.getElementById("confirmPassword").addEventListener("blur", validateConfirmPassword);
+
+        function validateUsername() {
+            const username = document.getElementById("username");
+            if (!username.value.trim()) {
+                username.classList.add("is-invalid");
+                return false;
+            } else {
+                username.classList.remove("is-invalid");
+                return true;
+            }
+        }
+
+        function validateEmail() {
+            const email = document.getElementById("email");
+            if (!emailPattern.test(email.value.trim())) {
+                email.classList.add("is-invalid");
+                return false;
+            } else {
+                email.classList.remove("is-invalid");
+                return true;
+            }
+        }
+
+        function validatePassword() {
+            const password = document.getElementById("password");
+            if (!passwordPattern.test(password.value.trim())) {
+                password.classList.add("is-invalid");
+                return false;
+            } else {
+                password.classList.remove("is-invalid");
+                return true;
+            }
+        }
+
+        function validateConfirmPassword() {
+            const password = document.getElementById("password");
+            const confirmPassword = document.getElementById("confirmPassword");
+            if (confirmPassword.value.trim() !== password.value.trim()) {
+                confirmPassword.classList.add("is-invalid");
+                return false;
+            } else {
+                confirmPassword.classList.remove("is-invalid");
+                return true;
+            }
+        }
+
+        // Main form validation on submit
+        function validateForm() {
+            const isUsernameValid = validateUsername();
+            const isEmailValid = validateEmail();
+            const isPasswordValid = validatePassword();
+            const isConfirmPasswordValid = validateConfirmPassword();
+
+            return isUsernameValid && isEmailValid && isPasswordValid && isConfirmPasswordValid;
+        }
+    </script>
+}
