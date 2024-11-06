@@ -30,6 +30,7 @@ namespace HomNayAnGiAPI.Models
         public int IsPublic { get; set; }
 
         public virtual RecipeCategory? Category { get; set; }
+        public virtual User? User { get; set; }
         public virtual NutritionFact? NutritionFact { get; set; }
         public virtual ICollection<RecipeComment> RecipeComments { get; set; }
         public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; }
