@@ -78,6 +78,7 @@ namespace HomNayAnGiAPI.Controllers
 
             var recipe = await _context.Recipes
                 .Where(x => x.RecipeId == id)
+                .Include(x => x.User)
                 .Include(x => x.Category)
                 .Include(x => x.RecipeMeals).ThenInclude(y => y.Meal)
                 .Include(x => x.RecipeIngredients).ThenInclude(y => y.Ingredient)
@@ -91,12 +92,6 @@ namespace HomNayAnGiAPI.Controllers
             }
 
             var recipeDto = _mapper.Map<RecipeDTO>(recipe);
-
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == recipeDto.UserId);
-            if (user != null)
-            {
-                recipeDto.CreatedByUsername = user.Username;
-            }
             return Ok(new ApiResponse<RecipeDTO>(recipeDto));
         }
 

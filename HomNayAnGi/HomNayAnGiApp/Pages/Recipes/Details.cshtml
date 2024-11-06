@@ -19,8 +19,14 @@
 <div class="bg-light p-3">
     <div class="card-body">
         <h1 class="card-title text-uppercase">Món @Model.RecipeDTO.RecipeName.ToLower()</h1>
-        <h6>Thể loại: @Model.RecipeDTO.CategoryName</h6>
-        <h6>Phù hợp với: @Model.RecipeDTO.RecipeMeals</h6>
+        @if (Model.RecipeDTO.CategoryName != null)
+        {
+            <h6>Thể loại: @Model.RecipeDTO.CategoryName</h6>
+        }
+        @if (Model.RecipeDTO.RecipeMeals != "")
+        {
+            <h6>Phù hợp với: @Model.RecipeDTO.RecipeMeals</h6>
+        }
         <h6>Đăng bởi: @Model.RecipeDTO.CreatedByUsername</h6>
         <h6>Ngày đăng: @Model.RecipeDTO.CreatedAt</h6>
         <p class="text-content">@Model.RecipeDTO.Description</p>
