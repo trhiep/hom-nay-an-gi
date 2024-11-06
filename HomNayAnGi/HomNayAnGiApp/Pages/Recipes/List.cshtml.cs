@@ -17,6 +17,8 @@ namespace HomNayAnGiApp.Pages.RecipeManage
     {
         private readonly HttpClient _httpClient;
         private string RecipeDtoUrl = "http://localhost:5000/api/Recipes/get-list-recipe-dto";
+        private string UserDtoUrl = "http://localhost:5000/api/Users/";
+
         public ListModel(HomNayAnGiApp.Models.HomNayAnGiContext context)
         {
             _httpClient = new HttpClient();
@@ -24,7 +26,13 @@ namespace HomNayAnGiApp.Pages.RecipeManage
             _httpClient.DefaultRequestHeaders.Accept.Add(contentType);
         }
 
-        public IList<RecipeDTO> Recipe { get;set; } = default!;
+        public IList<RecipeDTO> Recipe { get;set; } = default!;  
+
+        [BindProperty(SupportsGet = true)]
+        public string SearchTerm { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public string SearchBy { get; set; } // "name" or "category"
 
         public async Task OnGetAsync()
         {
@@ -35,6 +43,18 @@ namespace HomNayAnGiApp.Pages.RecipeManage
                 Recipe = JsonConvert.DeserializeObject<IList<RecipeDTO>>(filmsJSONString);
 
             }
+            if (!string.IsNullOrEmpty(SearchTerm))
+            {
+                if (SearchBy == "name")
+                {
+                    Recipe = Recipe.Where(r => r.RecipeName.ToLower().Contains(SearchTerm.ToLower())).ToList();
+                }
+                else if (SearchBy == "category")
+                {
+                    Recipe = Recipe.Where(r => r.CategoryName.ToLower().Contains(SearchTerm.ToLower())).ToList();
+                }
+            }
+           
 
         }
     }

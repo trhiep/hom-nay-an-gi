@@ -16,5 +16,6 @@
         public string? Image { get; set; }
         public string? Video { get; set; }
         public int IsPublic { get; set; }
+        internal var UserName { get; set; }
     }
 }

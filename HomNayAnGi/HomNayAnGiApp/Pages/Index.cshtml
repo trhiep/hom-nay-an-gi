@@ -41,14 +41,15 @@
                 @if (Model.RandomRecipe != null )
                 {
                     <div class="card">
-                        <img width="400" height="300" src="@Model.RandomRecipe.Image" alt="Bữa cơm nhà" class="card-image">
+                        <img style="height:250px" height="300" src="@Model.RandomRecipe.Image" alt="Bữa cơm nhà" class="card-image">
                         <div class="card-content">
                             <h3 class="card-title">Cả vườn hoa trong bữa cơm nhà</h3>
                             <p class="card-description">
                                 @Model.RandomRecipe.Description
                             </p>
                             <div class="card-info">
-                                <span><i class="bi bi-clock"></i> @Model.RandomRecipe.PrepTime phút</span> • <span><i class="bi bi-people"></i> @Model.RandomRecipe.Servings người</span>
+                                <span><i class="bi bi-clock"></i> @Model.RandomRecipe.PrepTime phút</span> • <span><i class="bi bi-people"></i> @Model.RandomRecipe.Servings người</span>•
+                                <span>   <i class="bi bi-book pt-5"></i> @Model.RandomRecipe.CategoryName</span>
                             </div>
                             @if(Model.UserByID != null)
                             {
