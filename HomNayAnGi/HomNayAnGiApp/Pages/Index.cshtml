@@ -35,14 +35,30 @@
                 </div>
             </div>
             <div class="col-md-12 col-lg-5">
-                <form onclick="getRandomRecipe()" method="post">
+                <form  method="post" asp-page-handler="RandomRecipe">
                     <button type="submit" class="btn btn-primary">Random Recipe</button>
                 </form>
-                @if (Model.RandomRecipe != null)
+                @if (Model.RandomRecipe != null )
                 {
-                    <div class="recipe">
-                        <h2 id="recipeTitle"></h2>
-                        <p id="recipeDescription"></p>
+                    <div class="card">
+                        <img width="400" height="300" src="@Model.RandomRecipe.Image" alt="Bữa cơm nhà" class="card-image">
+                        <div class="card-content">
+                            <h3 class="card-title">Cả vườn hoa trong bữa cơm nhà</h3>
+                            <p class="card-description">
+                                @Model.RandomRecipe.Description
+                            </p>
+                            <div class="card-info">
+                                <span><i class="bi bi-clock"></i> @Model.RandomRecipe.PrepTime phút</span> • <span><i class="bi bi-people"></i> @Model.RandomRecipe.Servings người</span>
+                            </div>
+                            @if(Model.UserByID != null)
+                            {
+                                <div class="card-author">
+                                    <i class="bi-person-fill" style="font-size: 23px; color: black;"></i>
+                                    <span> @Model.UserByID.Username </span>
+                                </div>
+                            }
+                        
+                        </div>
                     </div>
                 }
             </div>
@@ -989,18 +1005,12 @@
 </div>
 <!-- Tastimonial End --><script>
                             function getRandomRecipe() {
-                                fetch('Index?handler=RandomRecipe', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0].value
-                                    }
+                                fetch('RandomRecipe?handler=RandomRecipe')
+                                .then(response => response.json())
+                                .then(data => {
+                                    document.getElementById('recipeTitle').textContent = data.title;
+                                    document.getElementById('recipeDescription').textContent = data.description;
                                 })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        document.getElementById('recipeTitle').textContent = data.title;
-                                        document.getElementById('recipeDescription').textContent = data.description;
-                                    })
-                                    .catch(error => console.error('Error:', error));
+                                .catch(error => console.error('Error:', error));
                             }
 </script>

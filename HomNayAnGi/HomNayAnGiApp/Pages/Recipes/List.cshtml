@@ -4,125 +4,75 @@
  @{
      ViewData["Title"] = "List";
  }
+<body>
 
- <h1>List</h1>
-
- <p>
-     <a asp-page="Create">Create New</a>
- </p>
-@*  <table class="table">
-     <thead>
-         <tr>
-             <th>
-                 @Html.DisplayNameFor(model => model.Recipe[0].RecipeName)
-             </th>
-             <th>
-                 @Html.DisplayNameFor(model => model.Recipe[0].Description)
-             </th>
-             <th>
-                 @Html.DisplayNameFor(model => model.Recipe[0].CookTime)
-             </th>
-             <th>
-                 @Html.DisplayNameFor(model => model.Recipe[0].PrepTime)
-             </th>
-             <th>
-                 @Html.DisplayNameFor(model => model.Recipe[0].Servings)
-             </th>
-             <th>
-                 @Html.DisplayNameFor(model => model.Recipe[0].DifficultyLevel)
-             </th>
-             <th>
-                 @Html.DisplayNameFor(model => model.Recipe[0].UserId)
-             </th>
-             <th>
-                 @Html.DisplayNameFor(model => model.Recipe[0].CreatedAt)
-             </th>
-             <th>
-                 @Html.DisplayNameFor(model => model.Recipe[0].UpdatedAt)
-             </th>
-             <th>
-                 @Html.DisplayNameFor(model => model.Recipe[0].Image)
-             </th>
-             <th>
-                 @Html.DisplayNameFor(model => model.Recipe[0].Video)
-             </th>
-             <th>
-                 @Html.DisplayNameFor(model => model.Recipe[0].IsPublic)
-             </th>
-             <th>
-                 @Html.DisplayNameFor(model => model.Recipe[0].Category)
-             </th>
-             <th></th>
-         </tr>
-     </thead>
-     <tbody>
- @foreach (var item in Model.Recipe) {
-         <tr>
-             <td>
-                 @Html.DisplayFor(modelItem => item.RecipeName)
-             </td>
-             <td>
-                 @Html.DisplayFor(modelItem => item.Description)
-             </td>
-             <td>
-                 @Html.DisplayFor(modelItem => item.CookTime)
-             </td>
-             <td>
-                 @Html.DisplayFor(modelItem => item.PrepTime)
-             </td>
-             <td>
-                 @Html.DisplayFor(modelItem => item.Servings)
-             </td>
-             <td>
-                 @Html.DisplayFor(modelItem => item.DifficultyLevel)
-             </td>
-             <td>
-                 @Html.DisplayFor(modelItem => item.UserId)
-             </td>
-             <td>
-                 @Html.DisplayFor(modelItem => item.CreatedAt)
-             </td>
-             <td>
-                 @Html.DisplayFor(modelItem => item.UpdatedAt)
-             </td>
-             <td>
-                 @Html.DisplayFor(modelItem => item.Image)
-             </td>
-             <td>
-                 @Html.DisplayFor(modelItem => item.Video)
-             </td>
-             <td>
-                 @Html.DisplayFor(modelItem => item.IsPublic)
-             </td>
-             <td>
-                 @Html.DisplayFor(modelItem => item.Category.CategoryId)
-             </td>
-             <td>
-                 <a asp-page="./Edit" asp-route-id="@item.RecipeId">Edit</a> |
-                 <a asp-page="./Details" asp-route-id="@item.RecipeId">Details</a> |
-                 <a asp-page="./Delete" asp-route-id="@item.RecipeId">Delete</a>
-             </td>
-         </tr>
- }
-     </tbody>
- </table> *@
-@foreach (var item in Model.Recipe)
-{
-<div class="card">
-        <img src="@item.Image" alt="Bữa cơm nhà" class="card-image">
-    <div class="card-content">
-        <h3 class="card-title">Cả vườn hoa trong bữa cơm nhà</h3>
-        <p class="card-description">
-           @item.Description
-        </p>
-        <div class="card-info">
-                <span><i class="bi bi-clock"></i>@item.PrepTime phút</span> • <span><i class="bi bi-people"></i> @item.Servings người</span>
+    <div class="container my-5">
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="input-group align-items-center">
+                    <input type="search" id="searchInput" class="form-control" placeholder="Tìm kiếm công thức..." oninput="filterRecipes()" />
+                    <button class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
             </div>
-        <div class="card-author">
-            <img src="path/to/avatar.jpg" alt="Annie Vo" class="author-avatar">
-            <span>Annie Vo</span>
+            <div class="col-md-4">
+                <!-- Dropdown menu for Recipe Name -->
+                <select class="form-control mb-2" id="recipeNameDropdown" onchange="filterRecipes()">
+                    <option value="">Chọn kiểu tìm kiếm</option>
+                
+                </select>
+              
+            </div>
+        </div>
+
+        <div class="row" id="recipeList">
+            @foreach (var item in Model.Recipe)
+            {
+                <div class="col-md-4 recipe-card">
+                    <div class="card mb-4">
+                        <img style="height:250px" src="@item.Image" alt="Bữa cơm nhà" class="card-img-top">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.RecipeName</h5>
+                            <p class="card-text">@item.Description</p>
+                            <div class="card-info">
+                                <span><i class="bi bi-clock"></i> @item.PrepTime phút</span> •
+                                <span><i class="bi bi-people"></i> @item.Servings người</span>
+                            </div>
+                            <div class="card-author mt-3 d-flex align-items-center">
+                                <img src="path/to/avatar.jpg" alt="Annie Vo" class="author-avatar mr-2 rounded-circle" style="width:30px; height:30px;">
+                                <span>Annie Vo</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     </div>
-</div>
-<br />
+
+    <!-- Bootstrap and jQuery scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function filterRecipes() {
+            var searchInput = document.getElementById("searchInput").value.toLowerCase();
+            var selectedName = document.getElementById("recipeNameDropdown").value.toLowerCase();
+            var selectedCategory = document.getElementById("recipeCategoryDropdown").value.toLowerCase();
+
+            document.querySelectorAll(".recipe-card").forEach(function (card) {
+                var name = card.getAttribute("data-name").toLowerCase();
+                var category = card.getAttribute("data-category").toLowerCase();
+
+                // Kiểm tra điều kiện lọc
+                if ((name.includes(searchInput) || searchInput === "") &&
+                    (name.includes(selectedName) || selectedName === "") &&
+                    (category.includes(selectedCategory) || selectedCategory === "")) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        }
+    </script>
+</body>
 }
