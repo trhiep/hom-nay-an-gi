@@ -54,8 +54,7 @@ namespace HomNayAnGiApp.Pages.RecipeManage
                     Recipe = Recipe.Where(r => r.CategoryName.ToLower().Contains(SearchTerm.ToLower())).ToList();
                 }
             }
-           
-
+          
         }
     }
 }
