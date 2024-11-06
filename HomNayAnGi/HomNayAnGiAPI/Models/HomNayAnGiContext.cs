@@ -33,11 +33,10 @@ namespace HomNayAnGiAPI.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(config.GetConnectionString("DBContext"));
+                var conf = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+                optionsBuilder.UseSqlServer(conf.GetConnectionString("DBContext"));
             }
         }
 
@@ -98,6 +97,11 @@ namespace HomNayAnGiAPI.Models
                     .WithMany(p => p.Recipes)
                     .HasForeignKey(d => d.CategoryId)
                     .HasConstraintName("Recipe_RecipeCategory");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Recipes)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("Recipe_User_UserId_fk");
             });
 
             modelBuilder.Entity<RecipeCategory>(entity =>

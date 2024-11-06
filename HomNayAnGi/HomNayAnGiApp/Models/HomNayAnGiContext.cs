@@ -35,8 +35,8 @@ namespace HomNayAnGiApp.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                var conf = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-                optionsBuilder.UseSqlServer(conf.GetConnectionString("DBContext"));
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Data Source=36.50.135.145;Initial Catalog=HomNayAnGi;uid=sa;pwd=Tuananh2305@");
             }
         }
 
@@ -97,6 +97,11 @@ namespace HomNayAnGiApp.Models
                     .WithMany(p => p.Recipes)
                     .HasForeignKey(d => d.CategoryId)
                     .HasConstraintName("Recipe_RecipeCategory");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Recipes)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("Recipe_User_UserId_fk");
             });
 
             modelBuilder.Entity<RecipeCategory>(entity =>
