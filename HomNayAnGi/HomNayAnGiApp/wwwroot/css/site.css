@@ -16,3 +16,17 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%; /* Chiều cao bằng với chiều cao của thanh điều hướng */
+    text-decoration: none;
+}
+
+.brand-icon {
+    width: 50px; /* Chiều rộng cố định của hình ảnh */
+    max-height: 100%; /* Đảm bảo hình ảnh không vượt quá chiều cao thẻ a */
+    margin-right: 10px; /* Khoảng cách giữa hình ảnh và văn bản */
+}

@@ -1,0 +1,60 @@
+﻿@page
+@model HomNayAnGiApp.Pages.Login.IndexModel
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<div class="row g-5 mt-3">
+    <div class="col-lg-3"></div>
+    <div class="col-lg-6">
+        <div class="border-start border-5 border-primary ps-5 mb-5" style="max-width: 600px;">
+            <h1 class="text-uppercase mb-0">ĐĂNG NHẬP</h1>
+        </div>
+        <form method="post">
+            <div class="row g-3">
+                <div class="col-12">
+                    <label>Tên đăng nhập</label>
+                    <input asp-for="LoginRequestDto.Username" class="form-control bg-light border-0 px-4" style="height: 55px;" required>
+                </div>
+                <div class="col-12">
+                    <label>Mật khẩu</label>
+                    <input asp-for="LoginRequestDto.Password" type="password" class="form-control bg-light border-0 px-4" style="height: 55px;" required>
+                </div>
+                <div class="col-12">
+                    <input asp-for="LoginRequestDto.DeviceId" id="deviceId" type="hidden" required>
+                    <button class="btn btn-primary w-100 py-3 text-white" type="submit">ĐĂNG NHẬP</button>
+                    <a href="/ForgotPassword" style="float: right; font-style: italic; text-decoration: none; margin-top: 10px">Quên mật khẩu</a>
+                </div>
+                <div class="col-12 text-center">
+                    <label>Hoặc</label>
+                </div>
+                <div class="col-12">
+                    <a href="/Signup" class="btn btn-outline-primary w-100 py-3">ĐĂNG KÝ</a>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-3"></div>
+</div>
+
+@section Scripts {
+    <script>
+        function getAndSetDeviceId() {
+            let deviceId = localStorage.getItem("hnag_deviceId");
+
+            if (!deviceId) {
+                // If not found, generate and save a new deviceId
+                deviceId = generateDeviceId();
+                localStorage.setItem("hnag_deviceId", deviceId);
+                console.log("New deviceId generated and saved:", deviceId);
+            } else {
+                console.log("deviceId found in local storage:", deviceId);
+            }
+
+            // Set the deviceId in the input field
+            $("#deviceId").val(deviceId);
+        }
+
+        getAndSetDeviceId();
+    </script>
+}
