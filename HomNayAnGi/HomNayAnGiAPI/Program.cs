@@ -1,5 +1,7 @@
+using HomNayAnGiAPI.Mapping;
 using HomNayAnGiAPI.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -39,6 +41,8 @@ namespace HomNayAnGiAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddAutoMapper(typeof(MappingProfile));
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -48,13 +52,13 @@ namespace HomNayAnGiAPI
                 app.UseSwaggerUI();
             }
 
+            app.UseCors("AllowAll");
+
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
 
             app.UseAuthorization();
-
-            app.UseCors("AllowAll");
 
             app.MapControllers();
 
