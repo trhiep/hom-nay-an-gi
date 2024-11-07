@@ -35,26 +35,33 @@
                 </div>
             </div>
             <div class="col-md-12 col-lg-5">
-                <div id="carouselId" class="carousel slide position-relative" data-bs-ride="carousel">
-                    <div class="carousel-inner" role="listbox">
-                        <div class="carousel-item active rounded">
-                            <img src="img/hero-img-1.png" class="img-fluid w-100 h-100 bg-secondary rounded" alt="First slide">
-                            <a href="#" class="btn px-4 py-2 text-white rounded">Fruites</a>
-                        </div>
-                        <div class="carousel-item rounded">
-                            <img src="img/hero-img-2.jpg" class="img-fluid w-100 h-100 rounded" alt="Second slide">
-                            <a href="#" class="btn px-4 py-2 text-white rounded">Vesitables</a>
+                <form  method="post" asp-page-handler="RandomRecipe">
+                    <button type="submit" class="btn btn-primary">Random Recipe</button>
+                </form>
+                @if (Model.RandomRecipe != null )
+                {
+                    <div class="card">
+                        <img style="height:250px" height="300" src="@Model.RandomRecipe.Image" alt="Bữa cơm nhà" class="card-image">
+                        <div class="card-content">
+                            <h3 class="card-title">Cả vườn hoa trong bữa cơm nhà</h3>
+                            <p class="card-description">
+                                @Model.RandomRecipe.Description
+                            </p>
+                            <div class="card-info">
+                                <span><i class="bi bi-clock"></i> @Model.RandomRecipe.PrepTime phút</span> • <span><i class="bi bi-people"></i> @Model.RandomRecipe.Servings người</span>•
+                                <span>   <i class="bi bi-book pt-5"></i> @Model.RandomRecipe.CategoryName</span>
+                            </div>
+                            @if(Model.UserByID != null)
+                            {
+                                <div class="card-author">
+                                    <i class="bi-person-fill" style="font-size: 23px; color: black;"></i>
+                                    <span> @Model.UserByID.Username </span>
+                                </div>
+                            }
+                        
                         </div>
                     </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselId" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselId" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
-                </div>
+                }
             </div>
         </div>
     </div>
@@ -997,4 +1004,14 @@
         </div>
     </div>
 </div>
-<!-- Tastimonial End -->
+<!-- Tastimonial End --><script>
+                            function getRandomRecipe() {
+                                fetch('RandomRecipe?handler=RandomRecipe')
+                                .then(response => response.json())
+                                .then(data => {
+                                    document.getElementById('recipeTitle').textContent = data.title;
+                                    document.getElementById('recipeDescription').textContent = data.description;
+                                })
+                                .catch(error => console.error('Error:', error));
+                            }
+</script>

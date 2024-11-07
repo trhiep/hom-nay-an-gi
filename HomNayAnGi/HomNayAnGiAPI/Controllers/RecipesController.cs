@@ -34,7 +34,7 @@ namespace HomNayAnGiAPI.Controllers
             {
                 return NotFound();
             }
-            return await _context.Recipes.Include(x => x.Category).Select(
+            return await _context.Recipes.Include(x => x.Category).Include(x=>x.User).Select(
 
              item => new RecipeDTO
              {
@@ -47,6 +47,7 @@ namespace HomNayAnGiAPI.Controllers
                  Servings = item.Servings,
                  DifficultyLevel = item.DifficultyLevel,
                  UserId = item.UserId,
+                 UserName = item.User.Username,
                  CreatedAt = item.CreatedAt,
                  UpdatedAt = item.UpdatedAt,
                  Image = item.Image,
