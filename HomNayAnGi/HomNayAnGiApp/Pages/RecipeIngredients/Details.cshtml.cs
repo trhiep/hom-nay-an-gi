@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiApp.Models;
 
-namespace HomNayAnGiApp.Pages.RecipeIngredientManage
+namespace HomNayAnGiApp.Pages.RecipeIngredients
 {
     public class DetailsModel : PageModel
     {
@@ -18,23 +18,23 @@ namespace HomNayAnGiApp.Pages.RecipeIngredientManage
             _context = context;
         }
 
-      public RecipeIngredient RecipeIngredient { get; set; } = default!; 
+      public Ingredient Ingredient { get; set; } = default!; 
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.RecipeIngredients == null)
+            if (id == null || _context.Ingredients == null)
             {
                 return NotFound();
             }
 
-            var recipeingredient = await _context.RecipeIngredients.FirstOrDefaultAsync(m => m.RecipeIngredientId == id);
-            if (recipeingredient == null)
+            var ingredient = await _context.Ingredients.FirstOrDefaultAsync(m => m.IngredientId == id);
+            if (ingredient == null)
             {
                 return NotFound();
             }
             else 
             {
-                RecipeIngredient = recipeingredient;
+                Ingredient = ingredient;
             }
             return Page();
         }

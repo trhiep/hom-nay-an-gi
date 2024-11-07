@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiApp.Models;
 
-namespace HomNayAnGiApp.Pages.RecipeIngredientManage
+namespace HomNayAnGiApp.Pages.RecipeIngredients
 {
     public class DeleteModel : PageModel
     {
@@ -19,40 +19,40 @@ namespace HomNayAnGiApp.Pages.RecipeIngredientManage
         }
 
         [BindProperty]
-      public RecipeIngredient RecipeIngredient { get; set; } = default!;
+      public Ingredient Ingredient { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.RecipeIngredients == null)
+            if (id == null || _context.Ingredients == null)
             {
                 return NotFound();
             }
 
-            var recipeingredient = await _context.RecipeIngredients.FirstOrDefaultAsync(m => m.RecipeIngredientId == id);
+            var ingredient = await _context.Ingredients.FirstOrDefaultAsync(m => m.IngredientId == id);
 
-            if (recipeingredient == null)
+            if (ingredient == null)
             {
                 return NotFound();
             }
             else 
             {
-                RecipeIngredient = recipeingredient;
+                Ingredient = ingredient;
             }
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
-            if (id == null || _context.RecipeIngredients == null)
+            if (id == null || _context.Ingredients == null)
             {
                 return NotFound();
             }
-            var recipeingredient = await _context.RecipeIngredients.FindAsync(id);
+            var ingredient = await _context.Ingredients.FindAsync(id);
 
-            if (recipeingredient != null)
+            if (ingredient != null)
             {
-                RecipeIngredient = recipeingredient;
-                _context.RecipeIngredients.Remove(RecipeIngredient);
+                Ingredient = ingredient;
+                _context.Ingredients.Remove(Ingredient);
                 await _context.SaveChangesAsync();
             }
 
