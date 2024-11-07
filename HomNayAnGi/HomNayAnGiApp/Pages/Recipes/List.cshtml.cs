@@ -36,25 +36,29 @@ namespace HomNayAnGiApp.Pages.RecipeManage
 
         public async Task OnGetAsync()
         {
-            HttpResponseMessage response = await _httpClient.GetAsync(RecipeDtoUrl);
+            dynamic listRecipe;
+
+			HttpResponseMessage response = await _httpClient.GetAsync(RecipeDtoUrl);
             if (response.IsSuccessStatusCode)
             {
                 string filmsJSONString = await response.Content.ReadAsStringAsync();
-                Recipe = JsonConvert.DeserializeObject<IList<RecipeDTO>>(filmsJSONString);
+				Recipe = JsonConvert.DeserializeObject<IList<RecipeDTO>>(filmsJSONString);
 
             }
             if (!string.IsNullOrEmpty(SearchTerm))
             {
                 if (SearchBy == "name")
                 {
-                    Recipe = Recipe.Where(r => r.RecipeName.ToLower().Contains(SearchTerm.ToLower())).ToList();
+                    Recipe = Recipe.Where(r => r.RecipeName.ToLower().Contains(SearchTerm.ToLower().Trim())).ToList();
                 }
-                else if (SearchBy == "category")
+                if (SearchBy == "category")
                 {
                     Recipe = Recipe.Where(r => r.CategoryName.ToLower().Contains(SearchTerm.ToLower())).ToList();
                 }
             }
-          
-        }
+
+			
+
+		}
     }
 }

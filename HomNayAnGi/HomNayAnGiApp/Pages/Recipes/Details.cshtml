@@ -1,0 +1,259 @@
+﻿@page
+@model HomNayAnGiApp.Pages.Recipes.DetailsModel
+@{
+    ViewData["Title"] = $"Cách làm món {Model.RecipeDTO.RecipeName.ToLower()} ngon";
+}
+
+<style>
+    .fixed-image {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .text-content {
+        color: black;
+    }
+</style>
+
+<div class="bg-light p-3">
+    <div class="card-body">
+        <h1 class="card-title text-uppercase">Món @Model.RecipeDTO.RecipeName.ToLower()</h1>
+        @if (Model.RecipeDTO.CategoryName != null)
+        {
+            <h6>Thể loại: @Model.RecipeDTO.CategoryName</h6>
+        }
+        @if (Model.RecipeDTO.RecipeMeals != "")
+        {
+            <h6>Phù hợp với: @Model.RecipeDTO.RecipeMeals</h6>
+        }
+        <h6>Đăng bởi: @Model.RecipeDTO.CreatedByUsername</h6>
+        <h6>Ngày đăng: @Model.RecipeDTO.CreatedAt</h6>
+        <p class="text-content">@Model.RecipeDTO.Description</p>
+    </div>
+
+
+    @if (Model.RecipeDTO.Image != null)
+    {
+        <img src="@Model.RecipeDTO.Image" class="rounded mx-auto d-block img-fluid" width="100%" alt="..." />
+    }
+    else
+    {
+        <img src="https://res.cloudinary.com/dpnvzshsh/image/upload/v1730822295/HomNayAnGi/b77clhmpa6uheyrdtvfn.jpg" class="img-fluid" alt="..." />
+    }
+
+    <div class="row mt-3">
+        <div class="rounded">
+            <table class="table table-bordered text-center bg-white rounded">
+                <thead>
+                    <tr>
+                        <th class="text-content">Độ Khó</th>
+                        <th class="text-content">Chuẩn Bị</th>
+                        <th class="text-content">Chế Biến</th>
+                        <th class="text-content">Dành Cho</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        @if (Model.RecipeDTO.DifficultyLevel != null)
+                        {
+                            <td class="text-dark">@Model.RecipeDTO.DifficultyLevel</td>
+                        }
+                        else
+                        {
+                            <td class="text-dark">-</td>
+                        }
+
+                        @if (Model.RecipeDTO.PrepTime != null)
+                        {
+                            <td class="text-dark">@Model.RecipeDTO.PrepTime phút</td>
+                        }
+                        else
+                        {
+                            <td class="text-dark">-</td>
+                        }
+
+                        @if (Model.RecipeDTO.CookTime != null)
+                        {
+                            <td class="text-dark">@Model.RecipeDTO.CookTime phút</td>
+                        }
+                        else
+                        {
+                            <td class="text-dark">-</td>
+                        }
+
+                        @if (Model.RecipeDTO.Servings != null)
+                        {
+                            <td class="text-dark">@Model.RecipeDTO.Servings người</td>
+                        }
+                        else
+                        {
+                            <td class="text-dark">-</td>
+                        }
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+        @if (Model.RecipeDTO.RecipeIngredients != null && Model.RecipeDTO.RecipeIngredients.Count > 0)
+        {
+            <div class="col-lg-6 col-sm-12 mt-3">
+                <h4>DANH SÁCH NGUYÊN LIỆU</h4>
+                <ol class="list-group list-group-numbered" id="recipe-ingredient-list">
+                    @foreach (var recipeIngredient in Model.RecipeDTO.RecipeIngredients)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">@recipeIngredient.IngredientName</div>
+                                @recipeIngredient.Quantity @recipeIngredient.Unit
+                            </div>
+                        </li>
+                    }
+                </ol>
+            </div>
+        }
+
+        @if (Model.RecipeDTO.NutritionFact != null)
+        {
+            <div class="col-lg-6 col-sm-12 mt-3">
+                <h4>THÔNG TIN DINH DƯỠNG</h4>
+                <ol class="list-group list-group-numbered">
+
+                    @if (@Model.RecipeDTO.NutritionFact.Calories != null)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">Calo</div>
+                                @Model.RecipeDTO.NutritionFact.Calories kcal
+                            </div>
+                        </li>
+                    }
+
+                    @if (@Model.RecipeDTO.NutritionFact.Protein != null)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">Chất đạm</div>
+                                @Model.RecipeDTO.NutritionFact.Protein gam
+                            </div>
+                        </li>
+                    }
+
+                    @if (@Model.RecipeDTO.NutritionFact.Fat != null)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">Chất béo</div>
+                                @Model.RecipeDTO.NutritionFact.Fat miligam
+                            </div>
+                        </li>
+                    }
+
+                    @if (@Model.RecipeDTO.NutritionFact.Carbohydrates != null)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">Chất đường bột</div>
+                                @Model.RecipeDTO.NutritionFact.Carbohydrates gam
+                            </div>
+                        </li>
+                    }
+
+                    @if (@Model.RecipeDTO.NutritionFact.Fiber != null)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">Chất xơ</div>
+                                @Model.RecipeDTO.NutritionFact.Fiber gam
+                            </div>
+                        </li>
+                    }
+
+                    @if (@Model.RecipeDTO.NutritionFact.Sugar != null)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">Đường</div>
+                                @Model.RecipeDTO.NutritionFact.Sugar gam
+                            </div>
+                        </li>
+                    }
+                </ol>
+            </div>
+        }
+        
+    </div>
+
+    @if (Model.RecipeDTO.RecipeSteps != null && Model.RecipeDTO.RecipeSteps.Count() > 0)
+    {
+        <div class="row mt-3">
+            <h4>CÁC BƯỚC THỰC HIỆN</h4>
+            <div class="card mt-2">
+                <div class="card-body">
+                    <div>
+                        @foreach (var recipeStep in Model.RecipeDTO.RecipeSteps)
+                        {
+                            <h6>Bước @recipeStep.StepNumber</h6>
+                            <p class="text-content">@recipeStep.Instruction</p>
+                            @if (recipeStep.StepImages != null && recipeStep.StepImages.Count() > 0)
+                            {
+                                <div class="d-flex flex-wrap gap-1">
+                                    @foreach (var stepImage in recipeStep.StepImages)
+                                    {
+                                        <img src="@stepImage.ImageLink" class="img-thumbnail fixed-image" data-fancybox="@recipeStep.StepNumber" alt="@stepImage.ImageLink">
+                                    }
+                                </div>
+                            }
+                            <hr />
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            //loadRecipeIngredients();
+        });
+
+        async function loadRecipeIngredients() {
+            try {
+                const res = await fetch("http://localhost:5000/api/RecipeIngredients/recipe/" + @Model.RecipeDTO.RecipeId);
+                const recipeIngredients = await res.json();
+                const ingredientsList = document.getElementById('recipe-ingredient-list');
+                ingredientsList.innerHTML = '';
+
+                recipeIngredients.forEach(item => {
+                    const listItem = document.createElement('li');
+                    listItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start');
+
+                    const contentDiv = document.createElement('div');
+                    contentDiv.classList.add('ms-2', 'me-auto');
+
+                    const nameDiv = document.createElement('div');
+                    nameDiv.classList.add('fw-bold');
+                    nameDiv.textContent = item.ingredientName;
+
+                    const quantityText = document.createTextNode(`${item.quantity} ${item.unit}`);
+
+                    contentDiv.appendChild(nameDiv);
+                    contentDiv.appendChild(quantityText);
+
+                    listItem.appendChild(contentDiv);
+
+                    ingredientsList.appendChild(listItem);
+                });
+            } catch (error) {
+                console.error('Error fetching recipe ingredients:', error);
+            }
+        }
+
+    </script>
+}

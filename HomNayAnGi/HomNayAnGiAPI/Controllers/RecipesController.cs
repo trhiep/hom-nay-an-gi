@@ -8,7 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using HomNayAnGiAPI.Models;
 using HomNayAnGiAPI.Models.APIModel;
 using HomNayAnGiAPI.Models.DTO.Recipe;
-using RecipeDTO = HomNayAnGiAPI.Models.DTO.RecipeDTO;
+using RecipeDTO = HomNayAnGiAPI.Models.DTO.Recipe.RecipeDTO;
+using AutoMapper;
 
 namespace HomNayAnGiAPI.Controllers
 {
@@ -17,10 +18,12 @@ namespace HomNayAnGiAPI.Controllers
     public class RecipesController : ControllerBase
     {
         private readonly HomNayAnGiContext _context;
+        private readonly IMapper _mapper;
 
-        public RecipesController(HomNayAnGiContext context)
+        public RecipesController(HomNayAnGiContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Recipes
@@ -31,7 +34,7 @@ namespace HomNayAnGiAPI.Controllers
             {
                 return NotFound();
             }
-            return await _context.Recipes.Include(x => x.Category).Select(
+            return await _context.Recipes.Include(x => x.Category).Include(x=>x.User).Select(
 
              item => new RecipeDTO
              {
@@ -44,6 +47,7 @@ namespace HomNayAnGiAPI.Controllers
                  Servings = item.Servings,
                  DifficultyLevel = item.DifficultyLevel,
                  UserId = item.UserId,
+                 UserName = item.User.Username,
                  CreatedAt = item.CreatedAt,
                  UpdatedAt = item.UpdatedAt,
                  Image = item.Image,
@@ -66,21 +70,30 @@ namespace HomNayAnGiAPI.Controllers
         }
         // GET: api/Recipes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Recipe>> GetRecipe(int id)
+        public async Task<ActionResult<ApiResponse<RecipeDTO>>> GetRecipe(int id)
         {
             if (_context.Recipes == null)
             {
                 return NotFound();
             }
 
-            var recipe = await _context.Recipes.FindAsync(id);
+            var recipe = await _context.Recipes
+                .Where(x => x.RecipeId == id)
+                .Include(x => x.User)
+                .Include(x => x.Category)
+                .Include(x => x.RecipeMeals).ThenInclude(y => y.Meal)
+                .Include(x => x.RecipeIngredients).ThenInclude(y => y.Ingredient)
+                .Include(x => x.NutritionFact)
+                .Include(x => x.RecipeSteps).ThenInclude(y => y.StepImages)
+                .FirstOrDefaultAsync();
 
             if (recipe == null)
             {
                 return NotFound();
             }
 
-            return recipe;
+            var recipeDto = _mapper.Map<RecipeDTO>(recipe);
+            return Ok(new ApiResponse<RecipeDTO>(recipeDto));
         }
 
         // GET: api/Recipes/user/tranhiep
