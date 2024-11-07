@@ -35,8 +35,8 @@ namespace HomNayAnGiApp.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=36.50.135.145;Initial Catalog=HomNayAnGi;uid=sa;pwd=Tuananh2305@");
+                var conf = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+                optionsBuilder.UseSqlServer(conf.GetConnectionString("DBContext"));
             }
         }
 
@@ -129,6 +129,11 @@ namespace HomNayAnGiApp.Models
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
+
+                entity.HasOne(d => d.ParentComment)
+                    .WithMany(p => p.InverseParentComment)
+                    .HasForeignKey(d => d.ParentCommentId)
+                    .HasConstraintName("FK_RecipeComment_ParentComment");
 
                 entity.HasOne(d => d.Recipe)
                     .WithMany(p => p.RecipeComments)

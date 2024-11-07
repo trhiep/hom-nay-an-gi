@@ -24,23 +24,23 @@ namespace HomNayAnGiAPI.Controllers
         [HttpGet("{recipeId}")]
         public async Task<ActionResult<IEnumerable<RecipeCommentDTO>>> GetAllRecipeCommentsByRecipeId(string recipeId)
         {
-            Console.WriteLine("-----------------------đã chạy vào đâyasdfasldfj;askljdf;lkasjf;lkasd------------------------------------");
-            if (_context.RecipeComments == null)
-            {
-                return NotFound();
-            }
             var recipeComments = await _context.RecipeComments
+                .Include(rc => rc.User)
                 .Where(rc => rc.RecipeId == int.Parse(recipeId))
                 .Select(rc => new RecipeCommentDTO
                 {
                     CommentId = rc.CommentId.ToString(),
                     RecipeId = rc.RecipeId.ToString(),
                     UserId = rc.UserId.ToString(),
-                    Comment = rc.Comment.ToString(),
+                    Username = rc.User.Username,
+                    Comment = rc.Comment,
                     Rating = rc.Rating.ToString(),
-                    CreatedAt = rc.CreatedAt.ToString()
+                    CreatedAt = rc.CreatedAt.ToString(),
+                    ParentCommentId = rc.ParentCommentId.ToString()
                 })
+                .OrderByDescending(rc => rc.CreatedAt) // Newest comments first
                 .ToListAsync();
+
             return Ok(recipeComments);
         }
 
