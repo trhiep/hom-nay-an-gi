@@ -6,9 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using HomNayAnGiApp.Models;
-using Microsoft.EntityFrameworkCore;
 
-namespace HomNayAnGiApp.Pages.RecipeIngredientManage
+namespace HomNayAnGiApp.Pages.RecipeIngredients
 {
     public class CreateModel : PageModel
     {
@@ -21,24 +20,25 @@ namespace HomNayAnGiApp.Pages.RecipeIngredientManage
 
         public IActionResult OnGet()
         {
-        ViewData["IngredientId"] = new SelectList(_context.Ingredients, "IngredientId", "IngredientName");
-        ViewData["RecipeId"] = new SelectList(_context.Recipes, "RecipeId", "RecipeName");
+        ViewData["CreatedBy"] = new SelectList(_context.Users, "UserId", "UserId");
             return Page();
         }
 
         [BindProperty]
-        public RecipeIngredient RecipeIngredient { get; set; } = default!;
+        public Ingredient Ingredient { get; set; } = default!;
         
 
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-          if (!ModelState.IsValid || _context.RecipeIngredients == null || RecipeIngredient == null)
+          if (!ModelState.IsValid || _context.Ingredients == null || Ingredient == null)
             {
                 return Page();
             }
 
-            _context.RecipeIngredients.Add(RecipeIngredient);
+
+
+            _context.Ingredients.Add(Ingredient);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

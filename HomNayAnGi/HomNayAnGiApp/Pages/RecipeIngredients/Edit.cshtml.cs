@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiApp.Models;
 
-namespace HomNayAnGiApp.Pages.RecipeIngredientManage
+namespace HomNayAnGiApp.Pages.RecipeIngredients
 {
     public class EditModel : PageModel
     {
@@ -20,23 +20,22 @@ namespace HomNayAnGiApp.Pages.RecipeIngredientManage
         }
 
         [BindProperty]
-        public RecipeIngredient RecipeIngredient { get; set; } = default!;
+        public Ingredient Ingredient { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.RecipeIngredients == null)
+            if (id == null || _context.Ingredients == null)
             {
                 return NotFound();
             }
 
-            var recipeingredient =  await _context.RecipeIngredients.FirstOrDefaultAsync(m => m.RecipeIngredientId == id);
-            if (recipeingredient == null)
+            var ingredient =  await _context.Ingredients.FirstOrDefaultAsync(m => m.IngredientId == id);
+            if (ingredient == null)
             {
                 return NotFound();
             }
-            RecipeIngredient = recipeingredient;
-           ViewData["IngredientId"] = new SelectList(_context.Ingredients, "IngredientId", "IngredientId");
-           ViewData["RecipeId"] = new SelectList(_context.Recipes, "RecipeId", "RecipeId");
+            Ingredient = ingredient;
+           ViewData["CreatedBy"] = new SelectList(_context.Users, "UserId", "UserId");
             return Page();
         }
 
@@ -49,7 +48,7 @@ namespace HomNayAnGiApp.Pages.RecipeIngredientManage
                 return Page();
             }
 
-            _context.Attach(RecipeIngredient).State = EntityState.Modified;
+            _context.Attach(Ingredient).State = EntityState.Modified;
 
             try
             {
@@ -57,7 +56,7 @@ namespace HomNayAnGiApp.Pages.RecipeIngredientManage
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!RecipeIngredientExists(RecipeIngredient.RecipeIngredientId))
+                if (!IngredientExists(Ingredient.IngredientId))
                 {
                     return NotFound();
                 }
@@ -70,9 +69,9 @@ namespace HomNayAnGiApp.Pages.RecipeIngredientManage
             return RedirectToPage("./Index");
         }
 
-        private bool RecipeIngredientExists(int id)
+        private bool IngredientExists(int id)
         {
-          return (_context.RecipeIngredients?.Any(e => e.RecipeIngredientId == id)).GetValueOrDefault();
+          return (_context.Ingredients?.Any(e => e.IngredientId == id)).GetValueOrDefault();
         }
     }
 }

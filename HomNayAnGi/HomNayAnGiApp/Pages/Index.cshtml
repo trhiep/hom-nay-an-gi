@@ -55,7 +55,7 @@
                                                 <span><i class="bi bi-book pt-5"></i> @recipe.CategoryName</span>
                                             </div>
                                             <div class="card-author">
-                                                <i class="bi bi-person-fill" style="font-size: 23px; color: black;"></i>
+                                                <i class="bi bi-person-fill" style="font-size: 23px; color: black!important;"></i>
                                                 <span> @recipe.UserName </span>
                                             </div>
                                         </div>
@@ -78,8 +78,8 @@
             }
 
             <div class="col-12 d-flex justify-content-center mt-3">
-                <form method="post" asp-page-handler="RandomRecipe" style="max-width: 700px; width: 100%;">
-                    <button type="submit" class="btn btn-primary w-100">Random Recipe</button>
+                <form style="max-width: 700px; width: 100%;">
+                    <a href="/Recipes/List" type="submit" style="max-width=700px" class="btn btn-primary w-100">Xem tất cả công thức nấu ăn</a>
                 </form>
             </div>
         </div>
