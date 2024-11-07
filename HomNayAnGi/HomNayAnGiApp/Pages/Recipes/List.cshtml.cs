@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiApp.Models;
 using System.Net.Http.Headers;
-using HomNayAnGiAPI.Models.DTO;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using HomNayAnGiApp.Models.DTO;
 
 namespace HomNayAnGiApp.Pages.RecipeManage
 {
@@ -36,13 +36,12 @@ namespace HomNayAnGiApp.Pages.RecipeManage
 
         public async Task OnGetAsync()
         {
-            dynamic listRecipe;
-
 			HttpResponseMessage response = await _httpClient.GetAsync(RecipeDtoUrl);
             if (response.IsSuccessStatusCode)
             {
                 string filmsJSONString = await response.Content.ReadAsStringAsync();
-				Recipe = JsonConvert.DeserializeObject<IList<RecipeDTO>>(filmsJSONString);
+                //Hiển thị những recipe đc public
+				Recipe = JsonConvert.DeserializeObject<IList<RecipeDTO>>(filmsJSONString).Where(x=>x.IsPublic==1).ToList();
 
             }
             if (!string.IsNullOrEmpty(SearchTerm))
