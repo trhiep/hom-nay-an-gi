@@ -1,25 +1,26 @@
-﻿namespace HomNayAnGiApp.Middlewares
-{
-    public class JwtTokenMiddleware
-    {
-        private readonly RequestDelegate _next;
+﻿using System.Net.Http.Headers;
 
-        public JwtTokenMiddleware(RequestDelegate next)
+namespace HomNayAnGiApp.Middlewares
+{
+    public class JwtTokenMiddleware : DelegatingHandler
+    {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public JwtTokenMiddleware(IHttpContextAccessor httpContextAccessor)
         {
-            _next = next;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            // Lấy access token từ cookie
-            if (context.Request.Cookies.TryGetValue("accessToken", out var accessToken))
+            var token = _httpContextAccessor.HttpContext.Session.GetString("JwtToken");
+
+            if (!string.IsNullOrEmpty(token))
             {
-                // Thêm access token vào header
-                context.Request.Headers["Authorization"] = $"Bearer {accessToken}";
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
 
-            // Gọi middleware tiếp theo trong pipeline
-            await _next(context);
+            return await base.SendAsync(request, cancellationToken);
         }
     }
 }

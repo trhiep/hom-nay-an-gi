@@ -14,7 +14,7 @@ namespace HomNayAnGiApp.Pages
 
         public void OnGet()
         {
-
+            
         }
     }
 }

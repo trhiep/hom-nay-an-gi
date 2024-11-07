@@ -20,17 +20,17 @@ namespace HomNayAnGiApp.Pages.Login
         }
 
         [BindProperty(SupportsGet = true)]
-        public string ErrorMessage { get; set; }
+        public string? ErrorMessage { get; set; }
 
         [BindProperty(SupportsGet = true)]
-        public string SuccessMessage { get; set; }
+        public string? SuccessMessage { get; set; }
         public IActionResult OnGet()
         {
             Response.Cookies.Delete("accessToken");
             Request.Cookies.TryGetValue("accessToken", out var accessToken);
             if (accessToken != null)
             {
-                return RedirectToPage("./Index");
+                return RedirectToPage("/Index");
             }
             CheckAndSetToastMessage();
             return Page();
@@ -80,7 +80,7 @@ namespace HomNayAnGiApp.Pages.Login
                         });
                     }
 
-                    return RedirectToPage("./Index");
+                    return RedirectToPage("/Index");
                 }
                 else
                 {
@@ -89,6 +89,7 @@ namespace HomNayAnGiApp.Pages.Login
             }
             else
             {
+                ModelState.Values.SelectMany(v => v.Errors);
                 ViewData["ErrorMessage"] = "Vui lòng điền đầy đủ thông tin hợp lệ.";
             }
             return Page();
