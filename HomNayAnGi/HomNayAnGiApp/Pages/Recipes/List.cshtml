@@ -44,7 +44,9 @@
 		<div class="row" id="recipeList">
 			@foreach (var item in Model.Recipe)
 			{
-				<div class="card">
+				<a href="/Recipes/Details?id=@item.RecipeId" class="card">
+
+				
 					<img style="height:250px" height="300" src="@item.Image" alt="Bữa cơm nhà" class="card-image">
 					<div class="card-content">
 						<h3 class="card-title">@item.RecipeName</h3>
@@ -55,8 +57,13 @@
 							<span><i class="bi bi-clock"></i> @item.PrepTime phút</span> • <span><i class="bi bi-people"></i> @item.Servings người</span>•
 							<span>   <i class="bi bi-book pt-5"></i> @item.CategoryName</span>
 						</div>
+							<div class="card-author">
+								<i class="bi-person-fill" style="font-size: 23px; color: black;"></i>
+								<span> @item.UserName </span>
+							</div>
 					</div>
-				</div>
+		
+				</a>
 			}
 		</div>
 	</div>
