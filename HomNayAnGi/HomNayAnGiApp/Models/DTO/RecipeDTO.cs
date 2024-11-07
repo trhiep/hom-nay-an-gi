@@ -1,4 +1,4 @@
-﻿namespace HomNayAnGiApp.Models.DTO
+namespace HomNayAnGiApp.Models.DTO
 {
     public class RecipeDTO
     {
@@ -17,6 +17,7 @@
         public int? Servings { get; set; }
         public string? DifficultyLevel { get; set; }
         public int? UserId { get; set; }
+        public string? UserName {get; set;}
         public string? CreatedByUsername { get; set; }
         public string? RecipeMeals { get; set; }
         public DateTime? CreatedAt { get; set; }

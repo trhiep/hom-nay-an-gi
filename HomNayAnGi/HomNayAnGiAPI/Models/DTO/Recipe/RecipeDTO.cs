@@ -17,7 +17,8 @@
         public int? Servings { get; set; }
         public string? DifficultyLevel { get; set; }
         public int? UserId { get; set; }
-        public string CreatedByUsername { get; set; } = "Hôm Nay Ăn Gì";
+        public string? UserName { get; set; }
+		public string CreatedByUsername { get; set; } = "Hôm Nay Ăn Gì";
         public string? RecipeMeals { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

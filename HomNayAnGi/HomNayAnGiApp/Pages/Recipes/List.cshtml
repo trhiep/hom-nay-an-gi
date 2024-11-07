@@ -1,0 +1,63 @@
+﻿ @page
+ @model HomNayAnGiApp.Pages.RecipeManage.ListModel
+
+@{
+	ViewData["Title"] = "List";
+}
+<body>
+
+	<div class="container my-5">
+
+		<form method="get" class="mb-4">
+			<div class="row">
+				<div class="col-md-8">
+					<div class="input-group">
+						<input type="text" name="SearchTerm" class="form-control" placeholder="Tìm kiếm công thức..." value="@Model.SearchTerm" />
+						<button type="submit" class="btn btn-primary">
+							<i class="fas fa-search"></i>
+						</button>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<select name="SearchBy" class="form-control">
+						@if (@Model.SearchBy == "name")
+						{
+							<option value="name" selected>Tìm theo tên món</option>
+						}
+						else
+						{
+							<option value="name">Theo tên món</option>
+						}
+						@if (Model.SearchBy == "category")
+						{
+							<option value="category" selected>Theo loại món</option>
+						}
+						else
+						{
+							<option value="category">Theo loại món</option>
+						}
+					</select>
+				</div>
+			</div>
+		</form>
+
+		<div class="row" id="recipeList">
+			@foreach (var item in Model.Recipe)
+			{
+				<div class="card">
+					<img style="height:250px" height="300" src="@item.Image" alt="Bữa cơm nhà" class="card-image">
+					<div class="card-content">
+						<h3 class="card-title">@item.RecipeName</h3>
+						<p class="card-description">
+							@item.Description
+						</p>
+						<div class="card-info">
+							<span><i class="bi bi-clock"></i> @item.PrepTime phút</span> • <span><i class="bi bi-people"></i> @item.Servings người</span>•
+							<span>   <i class="bi bi-book pt-5"></i> @item.CategoryName</span>
+						</div>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+</body>

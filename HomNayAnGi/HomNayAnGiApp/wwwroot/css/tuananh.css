@@ -1,0 +1,56 @@
+﻿
+.card {
+    display: flex;
+    width: 100%;
+    max-width: 500px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+}
+
+.card-image {
+    width: inherit;
+    height: auto;
+    object-fit: cover;
+}
+
+.card-content {
+    padding: 16px;
+    flex: 1;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+    color: #333;
+}
+
+.card-description {
+    font-size: 14px;
+    color: #555;
+    margin: 8px 0;
+}
+
+.card-info {
+    font-size: 13px;
+    color: #777;
+    display: flex;
+    gap: 10px;
+}
+
+.card-author {
+    display: flex;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.author-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
