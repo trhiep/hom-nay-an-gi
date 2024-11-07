@@ -23,8 +23,8 @@ namespace HomNayAnGiApp.Pages.Login
                 var user = response.Content.ReadFromJsonAsync<User>().Result;
                 if (response.IsSuccessStatusCode)
                 {
-                            HttpContext.Session.SetString("SignupRequest", JsonConvert.SerializeObject(signupRequestDto));
-                            return RedirectToPage("/Signup/VerifyOTP");
+                        HttpContext.Session.SetString("SignupRequest", JsonConvert.SerializeObject(signupRequestDto));
+                        return RedirectToPage("/Signup/VerifyOTP");
                 }
                 return Page();
             }catch(Exception e)
