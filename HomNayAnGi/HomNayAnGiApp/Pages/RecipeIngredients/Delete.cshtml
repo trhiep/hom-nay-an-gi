@@ -1,0 +1,41 @@
+﻿@page
+@model HomNayAnGiApp.Pages.RecipeIngredients.DeleteModel
+
+@{
+    ViewData["Title"] = "Xóa Thành Phần";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-danger text-white text-center">
+                    <h2>Xóa Thành Phần</h2>
+                </div>
+                <div class="card-body">
+                    <h5 class="text-center text-danger">Bạn có chắc chắn muốn xóa mục này không?</h5>
+                    <hr />
+
+                    <dl class="row">
+                        <dt class="col-sm-4 fw-bold">Tên Thành Phần</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Ingredient.IngredientName)</dd>
+
+                        <dt class="col-sm-4 fw-bold">Mô Tả</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Ingredient.Description)</dd>
+
+                        <dt class="col-sm-4 fw-bold">Người Tạo</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Ingredient.CreatedByNavigation.UserId)</dd>
+                    </dl>
+
+                    <form method="post" class="mt-4">
+                        <input type="hidden" asp-for="Ingredient.IngredientId" />
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-danger">Xóa</button>
+                            <a asp-page="./Index" class="btn btn-secondary">Quay lại</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

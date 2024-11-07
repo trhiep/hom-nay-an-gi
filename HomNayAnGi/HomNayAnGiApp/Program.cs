@@ -2,9 +2,12 @@ using HomNayAnGiApp.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using HomNayAnGiApp.Models;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddDbContext<HomNayAnGiContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DBContext")));
 // Add services to the container.
 builder.Services.AddAuthentication(options =>
 {
@@ -30,7 +33,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddRazorPages();
-
+builder.Services.AddCors();
 builder.Services.AddSession();
 
 var app = builder.Build();

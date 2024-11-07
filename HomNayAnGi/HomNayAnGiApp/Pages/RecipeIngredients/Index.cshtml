@@ -1,0 +1,39 @@
+﻿@page
+@model HomNayAnGiApp.Pages.RecipeIngredients.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+<div class="container my-5">
+    <!-- Nút tạo mới -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="text-uppercase">Danh Sách Nguyên Liệu</h2>
+        <a asp-page="Create" class="btn btn-success">Thêm Nguyên Liệu Mới</a>
+    </div>
+
+    <!-- Bảng dữ liệu -->
+    <table class="table table-striped table-hover align-middle text-center shadow border">
+        <thead class="table-primary">
+            <tr>
+                <th class="border-end">Tên Nguyên Liệu</th>
+                <th class="border-end">Mô Tả</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Ingredient)
+            {
+                <tr>
+                    <td class="border-end">@Html.DisplayFor(modelItem => item.IngredientName)</td>
+                    <td class="border-end">@Html.DisplayFor(modelItem => item.Description)</td>
+                    <td>
+                        <a asp-page="./Edit" asp-route-id="@item.IngredientId" class="btn btn-warning btn-sm">Sửa</a>
+                        <a asp-page="./Details" asp-route-id="@item.IngredientId" class="btn btn-info btn-sm text-white">Chi Tiết</a>
+                        <a asp-page="./Delete" asp-route-id="@item.IngredientId" class="btn btn-danger btn-sm">Xóa</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
