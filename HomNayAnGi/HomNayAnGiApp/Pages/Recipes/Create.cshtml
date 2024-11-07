@@ -2,3 +2,89 @@
 @model HomNayAnGiApp.Pages.Recipes.CreateModel
 @{
 }
+
+<style>
+    #editor {
+        width: 100%;
+        min-height: 200px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-top: 10px;
+    }
+</style>
+
+<div class="row g-5 mt-3">
+    <div class="col-lg-3"></div>
+    <div class="col-lg-6">
+        <div class="border-start border-5 border-primary ps-5 mb-5" style="max-width: 600px;">
+            <h1 class="text-uppercase mb-0">TẠO CÔNG THỨC MỚI</h1>
+        </div>
+        <form method="post" onsubmit="return validateForm()">
+            <div class="row g-3">
+                <div class="col-12">
+                    <input asp-for="RecipeCreateRequestModel.Username" class="form-control bg-white border-0 px-4" style="height: 55px;" id="username" type="hidden" required>
+                </div>
+                <div class="col-12">
+                    <div class="row">
+                        <label>Danh mục món ăn</label>
+                        <div class="col-8">
+                            <select asp-for="RecipeCreateRequestModel.CategoryId" class="form-control bg-white border-0 px-4" style="height: 55px;" asp-items="ViewBag.CategoryId"></select>
+                        </div>
+                        <div class="col-4">
+                            <button type="button" class="btn btn-outline-primary w-100" style="height: 55px;">TẠO DANH MỤC</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label>Tên món ăn</label>
+                    <input asp-for="RecipeCreateRequestModel.RecipeName" class="form-control bg-white border-0 px-4" style="height: 55px;" required>
+                </div>
+                <div class="col-12">
+                    <label>Mô tả</label>
+                    <div id="editor" contenteditable="true" class="form-control bg-white border-0 px-4" style="min-height: 75px;"></div>
+                    <input asp-for="RecipeCreateRequestModel.Description" type="hidden">
+                </div>
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-6">
+                            <label>Thời gian nấu</label>
+                            <input asp-for="RecipeCreateRequestModel.CookTime" class="form-control bg-white border-0 px-4" style="height: 55px;" required>
+                        </div>
+                        <div class="col-6">
+                            <label>Thời gian chuẩn bị</label>
+                            <input asp-for="RecipeCreateRequestModel.PrepTime" class="form-control bg-white border-0 px-4" style="height: 55px;" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label>Phục vụ cho số người</label>
+                    <input asp-for="RecipeCreateRequestModel.Servings" class="form-control bg-white border-0 px-4" style="height: 55px;" required>
+                </div>
+                <div class="col-12">
+                    <label>Độ khó</label>
+                    <select asp-for="RecipeCreateRequestModel.DifficultyLevel" class="form-control bg-white border-0 px-4" style="height: 55px;">
+                        <option value="Dễ">Dễ</option>
+                        <option value="Trung bình">Trung bình</option>
+                        <option value="Khó">Khó</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label>Hình ảnh</label>
+                    <input asp-for="RecipeCreateRequestModel.Image" class="form-control bg-white border-0 px-4" style="height: 55px;" readonly>
+                </div>
+                <div class="col-12 mt-3">
+                    <button class="btn btn-primary w-100 py-3 text-white" type="submit">TẠO MỚI</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-3"></div>
+</div>
+
+<script>
+    function getHtmlContent() {
+        const editorContent = document.getElementById("editor").innerHTML;
+        document.getElementById("output").textContent = editorContent;
+    }
+</script>
+
