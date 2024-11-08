@@ -1,9 +1,11 @@
 using HomNayAnGiApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace HomNayAnGiApp.Pages.UsersPage
 {
+    [Authorize]
     public class ListModel : PageModel
     {
         public void OnGet()

@@ -1,5 +1,6 @@
 using HomNayAnGiApp.Models;
 using HomNayAnGiApp.Utils.JWTHelper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
@@ -9,6 +10,7 @@ using System.Xml.Linq;
 
 namespace HomNayAnGiApp.Pages.UsersPage
 {
+    [Authorize]
     public class UpdatePassModel : PageModel
     {
         private readonly HttpClient _httpClient;

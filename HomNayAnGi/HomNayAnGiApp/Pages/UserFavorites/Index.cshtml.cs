@@ -5,9 +5,11 @@ using Newtonsoft.Json;
 using HomNayAnGiApp.Models.DTO;
 using Microsoft.AspNetCore.Http;
 using HomNayAnGiApp.Utils.JWTHelper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HomNayAnGiApp.Pages.UserFavorites
 {
+    [Authorize]
     public class IndexModel : PageModel
     {
         private readonly HttpClient _httpClient;

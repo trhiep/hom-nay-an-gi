@@ -12,9 +12,11 @@ using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using System.Text.Json.Serialization;
 using HomNayAnGiApp.Models.APIModel;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HomNayAnGiApp.Pages.Recipes
 {
+    [Authorize]
     public class CreateModel : PageModel
     {
         private readonly HttpClient _httpClient;

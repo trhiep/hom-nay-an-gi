@@ -1,4 +1,5 @@
 using HomNayAnGiApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text;
@@ -7,6 +8,7 @@ using static HomNayAnGiApp.Pages.Recipes.CategoryModel;
 
 namespace HomNayAnGiApp.Pages.Recipes
 {
+    [Authorize]
     public class EditCategoryModel : PageModel
     {
      

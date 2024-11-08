@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
 using HomNayAnGiApp.Utils.JWTHelper;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HomNayAnGiApp.Pages.UserFavorites
 {
+    [Authorize]
     public class CreateModel : PageModel
     {
         private readonly HttpClient _httpClient;

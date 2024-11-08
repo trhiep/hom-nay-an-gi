@@ -229,6 +229,13 @@ namespace HomNayAnGiAPI.Controllers
 				_context.UserFavorites.RemoveRange(userFavorites);
 			}
 
+            // Xóa NutritrionFact
+            var nutritionFacrt = await _context.NutritionFacts.Where(x => x.RecipeId == id).FirstOrDefaultAsync();
+			if (nutritionFacrt != null)
+			{
+				_context.NutritionFacts.Remove(nutritionFacrt);
+			}
+
 			// Tìm Recipe
 			var recipe = await _context.Recipes.FindAsync(id);
 			if (recipe == null)

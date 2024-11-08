@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiApp.Models;
 using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using HomNayAnGiApp.Utils.JWTHelper;
 
 namespace HomNayAnGiApp.Pages.RecipeIngredients
 {
+    [Authorize]
     public class IndexModel : PageModel
     {
         private readonly HomNayAnGiApp.Models.HomNayAnGiContext _context;

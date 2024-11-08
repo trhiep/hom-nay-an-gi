@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using HomNayAnGiApp.Models;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HomNayAnGiApp.Pages.RecipeIngredients
 {
+    [Authorize]
     public class DetailsModel : PageModel
     {
         private readonly HomNayAnGiApp.Models.HomNayAnGiContext _context;

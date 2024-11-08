@@ -4,6 +4,58 @@
 	ViewData["Title"] = "List";
 }
 <body>
+	<style>
+		#recipeList1 {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			gap: 1.5rem;
+		}
+
+		.card {
+			border: 1px solid #ddd;
+			border-radius: 10px;
+			overflow: hidden;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			background-color: white;
+			transition: transform 0.3s;
+		}
+
+			.card:hover {
+				transform: translateY(-5px);
+			}
+
+		.card-body {
+			padding: 1.5rem;
+		}
+
+		.card-title {
+			font-size: 1.25rem;
+			font-weight: bold;
+			color: #333;
+		}
+
+		.card-description {
+			font-size: 1rem;
+			color: #666;
+			margin: 10px 0;
+		}
+
+		.card-info {
+			font-size: 0.875rem;
+			color: #888;
+		}
+
+		.card-author {
+			display: flex;
+			align-items: center;
+			font-size: 0.875rem;
+			color: #444;
+		}
+
+			.card-author i {
+				margin-right: 8px;
+			}
+	</style>
 
 	<div class="container my-5">
 
@@ -44,7 +96,7 @@
 		<div class="row" id="recipeList">
 			@foreach (var item in Model.Recipe)
 			{
-				<a href="/Recipes/Details?id=@item.RecipeId" class="card">
+				<a href="/Recipes/Details?id=@item.RecipeId" class="card col-md-5 m-5">
 					<img style="height:250px; padding-top:10px" height="300" src="@item.Image" alt="Bữa cơm nhà" class="card-image">
 					<div class="card-content">
 						<h3 class="card-title">@item.RecipeName</h3>
@@ -65,8 +117,8 @@
 							</div>
 		
 							<div>
-								<form method="post" asp-page-handler="UpdateRecipe" asp-route-id="@item.RecipeId">
-									<button type="submit" class="btn btn-danger btn-sm">Cập nhật</button>
+								<form method="post" asp-page-handler="UpdateRecipes" asp-route-id="@item.RecipeId">
+									<button type="submit" class="btn btn-outline-success btn-sm">Cập nhật</button>
 								</form>
 
 								<form method="post" asp-page-handler="DeleteRecipe" asp-route-id="@item.RecipeId" onsubmit="return confirm('Bạn có chắc chắn muốn xóa công thức này?');">
@@ -81,3 +133,4 @@
 		</div>
 	</div>
 </body>
+
