@@ -1,0 +1,72 @@
+﻿@page
+@using HomNayAnGiApp.Models
+@model HomNayAnGiApp.Pages.UsersPage.ListModel
+@{
+    ViewData["Title"] = "Quản lý người dùng";
+    List<User> products = ViewData["API"] as List<User>;
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="category-management">
+    <table>
+        <thead>
+            <tr>
+                <th>Tên người dùng </th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in products)
+            {
+                <tr>
+                    <td>@category.Username</td>
+                    <td>
+
+                        <form method="post" asp-page-handler="Delete" asp-route-id="@category.UserId" style="display:inline;">
+                            <button type="submit" class="btn btn-link" style="padding: 0; border: none; background: none; color: blue; cursor: pointer;">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .category-management {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    button {
+        padding: 5px 10px;
+        margin: 2px;
+        border: none;
+        background-color: #4CAF50;
+        color: white;
+        cursor: pointer;
+    }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+</style>
+
