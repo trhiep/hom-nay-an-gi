@@ -6,6 +6,7 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using HomNayAnGiApp.Models;
 using HomNayAnGiApp.Models.DTO;
+using HomNayAnGiApp.Utils.JWTHelper;
 
 namespace HomNayAnGiApp.Pages
 {
@@ -14,11 +15,12 @@ namespace HomNayAnGiApp.Pages
         private readonly HttpClient _httpClient;
         private string RecipeDtoUrl = "http://localhost:5000/api/Recipes/get-list-recipe-dto";
         private string UserDtoUrl = "http://localhost:5000/api/Users/";
+        private readonly IHttpContextAccessor _contextAccessor;
+        private string LoggedInUsername;
 
-
-        public IndexModel(ILogger<IndexModel> logger)
+        public IndexModel(ILogger<IndexModel> logger, IHttpContextAccessor contextAccessor )
         {
-
+            _contextAccessor = contextAccessor;
             _httpClient = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             _httpClient.DefaultRequestHeaders.Accept.Add(contentType);
@@ -34,35 +36,12 @@ namespace HomNayAnGiApp.Pages
             {
                 string recipeDtoJSONString = await response.Content.ReadAsStringAsync();
                 RandomRecipe = JsonConvert.DeserializeObject<IList<RecipeDTO>>(recipeDtoJSONString).Where(x=>x.IsPublic==1).ToList();
-
-                // Chọn ngẫu nhiên một công thức từ danh sách
             }
             
             return Page();
         }
         public async Task<IActionResult> OnPostRandomRecipeAsync()
         {
-            //// Gọi API để lấy danh sách các công thức nấu ăn
-            //HttpResponseMessage response = await _httpClient.GetAsync(RecipeDtoUrl);
-            //if (response.IsSuccessStatusCode)
-            //{
-            //    string filmsJSONString = await response.Content.ReadAsStringAsync();
-            //    var recipes = JsonConvert.DeserializeObject<IList<RecipeDTO>>(filmsJSONString).Where(x=>x.IsPublic==1).ToList();
-
-            //    // Chọn ngẫu nhiên một công thức từ danh sách
-            //    if (recipes != null && recipes.Count > 0)
-            //    {
-            //        var random = new Random();
-            //        int index = random.Next(recipes.Count);
-            //        RandomRecipe = recipes[index];
-            //    }
-            //}
-            //HttpResponseMessage responseUser = await _httpClient.GetAsync(UserDtoUrl + RandomRecipe.UserId);
-            //if (responseUser.IsSuccessStatusCode)
-            //{
-            //    string UserJSONString = await responseUser.Content.ReadAsStringAsync();
-            //    UserByID = JsonConvert.DeserializeObject<User>(UserJSONString);
-            //}
             return Page();
         }
     }

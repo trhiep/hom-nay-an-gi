@@ -4,6 +4,21 @@
 @{
     ViewData["Title"] = "Index";
 }
+<head>
+
+    <!-- Tuan Anh css-->
+    <link href="~/css/tuananh.css" rel="stylesheet" />
+
+
+    <style>
+        .disabled-link {
+            color: gray;       /* Màu xám để trông như bị vô hiệu hóa */
+            pointer-events: none; /* CSS ngăn chặn các sự kiện nhấp */
+            text-decoration: none; /* Bỏ gạch dưới */
+            cursor: not-allowed;   /* Con trỏ biểu thị không thể nhấp */
+        }
+    </style>
+</head>
 <div class="container my-5">
     <!-- Nút tạo mới -->
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -27,7 +42,18 @@
                     <td class="border-end">@Html.DisplayFor(modelItem => item.IngredientName)</td>
                     <td class="border-end">@Html.DisplayFor(modelItem => item.Description)</td>
                     <td>
-                        <a asp-page="./Edit" asp-route-id="@item.IngredientId" class="btn btn-warning btn-sm">Sửa</a>
+                        @if (Model.GetRole.Equals("ADMIN") && !string.IsNullOrEmpty(@item.CreatedBy.ToString()))
+                        {
+                            
+
+                            <a asp-page="./Edit" asp-route-id="@item.IngredientId" class="btn btn-warning btn-sm disabled-link">Sửa</a>
+                           
+                        }
+                        else
+                        {
+
+                           <a asp-page="./Edit" asp-route-id="@item.IngredientId" class="btn btn-warning btn-sm">Sửa</a>
+                        }
                         <a asp-page="./Details" asp-route-id="@item.IngredientId" class="btn btn-info btn-sm text-white">Chi Tiết</a>
                         <a asp-page="./Delete" asp-route-id="@item.IngredientId" class="btn btn-danger btn-sm">Xóa</a>
                     </td>
