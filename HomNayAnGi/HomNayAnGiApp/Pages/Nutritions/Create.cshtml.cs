@@ -29,18 +29,6 @@ namespace HomNayAnGiApp.Pages.Nutritions
 
         public async Task<IActionResult> OnGet(int Id)
         {
-            //// Lấy token từ cookie
-            //var accessToken = _httpContextAccessor.HttpContext?.Request.Cookies["accessToken"];
-            //if (string.IsNullOrEmpty(accessToken))
-            //{
-            //    return RedirectToPage("/Login/Index");
-            //}
-
-            //// Gán token vào header của HttpClient
-            //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-            //// Thực hiện các logic khác cho OnGet nếu cần, ví dụ: lấy danh mục giá trị dinh dưỡng từ API khác (nếu có)
-            ///
             if (Id == 0)
             {
                 return RedirectToPage("/Index");
@@ -51,6 +39,7 @@ namespace HomNayAnGiApp.Pages.Nutritions
             return Page();
         }
 
+
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -58,23 +47,20 @@ namespace HomNayAnGiApp.Pages.Nutritions
                 return Page();
             }
 
-            NutritionFactDTO.RecipeId = RecipeId;
-            // Serialize NutritionFactDTO thành JSON
+            NutritionFactDTO.RecipeId = RecipeId; // Gán RecipeId cho NutritionFactDTO
             var jsonContent = JsonConvert.SerializeObject(NutritionFactDTO);
             var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-            // Gửi yêu cầu POST đến API Nutrition
             var response = await _httpClient.PostAsync(NutritionUrl, content);
 
             if (response.IsSuccessStatusCode)
             {
                 return RedirectToPage($"/Recipes/Update", new { Id = RecipeId });
-                //return Page();
             }
 
-            // Nếu có lỗi khi gửi yêu cầu, hiển thị thông báo lỗi
             ModelState.AddModelError(string.Empty, "Lỗi khi lưu dữ liệu dinh dưỡng.");
             return Page();
         }
+
     }
 }
