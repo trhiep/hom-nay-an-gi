@@ -17,10 +17,16 @@
                 <div class="col-12">
                     <label>Mật khẩu mới </label>
                     <input type="password" id="pass1" name="pass1" class="form-control bg-light border-0 px-4" style="height: 55px;" required>
+                    <div class="invalid-feedback">
+                        Mật khẩu phải có ít nhất 8 ký tự, bao gồm 1 chữ in hoa, 1 chữ in thường, 1 số và 1 ký tự đặc biệt.
+                    </div>
                 </div>
                 <div class="col-12">
                     <label>Nhập lại mật khẩu mới</label>
                     <input type="password" id="pass2" name="pass2" class="form-control bg-light border-0 px-4" style="height: 55px;" required>
+                    <div class="invalid-feedback">
+                        Mật khẩu phải có ít nhất 8 ký tự, bao gồm 1 chữ in hoa, 1 chữ in thường, 1 số và 1 ký tự đặc biệt.
+                    </div>
                 </div>
                 <div class="col-12">
                     <button class="btn btn-primary w-100 py-3 text-white" type="submit">ĐỔI MẬT KHẨU</button>
@@ -44,3 +50,38 @@
         return true;
     }
 </script>
+
+@section Scripts {
+    <script>
+        // Regular expressions for email and password validation
+        const emailPattern = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+        const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@@$!%*?&])[A-Za-z\d@@$!%*?&]{8,}$/;
+
+        document.getElementById("pass1").addEventListener("blur", validatePassword);
+        document.getElementById("pass2").addEventListener("blur", validateConfirmPassword);
+
+
+        function validatePassword() {
+            const password = document.getElementById("pass1");
+            if (!passwordPattern.test(password.value.trim())) {
+                password.classList.add("is-invalid");
+                return false;
+            } else {
+                password.classList.remove("is-invalid");
+                return true;
+            }
+        }
+
+        function validateConfirmPassword() {
+            const password = document.getElementById("pass1");
+            const confirmPassword = document.getElementById("pass2");
+            if (confirmPassword.value.trim() !== password.value.trim()) {
+                confirmPassword.classList.add("is-invalid");
+                return false;
+            } else {
+                confirmPassword.classList.remove("is-invalid");
+                return true;
+            }
+        }
+    </script>
+}
