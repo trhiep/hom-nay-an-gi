@@ -64,7 +64,7 @@ namespace HomNayAnGiAPI.Controllers
                 .Where(x => x.RecipeId == id).Include(x => x.Ingredient)
                 .Select(item => new RecipeIngredientDTO
                 {
-                    RecipeIngredientId = item.IngredientId,
+                    RecipeIngredientId = item.RecipeIngredientId,
                     RecipeId = item.RecipeId,
                     IngredientId = item.IngredientId,
                     IngredientName = item.Ingredient.IngredientName,
@@ -80,30 +80,24 @@ namespace HomNayAnGiAPI.Controllers
         // PUT: api/RecipeIngredients/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRecipeIngredient(int id, RecipeIngredient recipeIngredient)
+        public async Task<IActionResult> PutRecipeIngredient(int id, RecipeIngredientDTO recipeIngredient)
         {
-            if (id != recipeIngredient.RecipeId)
+            if (id != recipeIngredient.RecipeIngredientId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(recipeIngredient).State = EntityState.Modified;
+            var editRI = await _context.RecipeIngredients.Where(x => x.RecipeIngredientId == recipeIngredient.RecipeIngredientId).FirstOrDefaultAsync();
 
-            try
+            if (editRI == null)
             {
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RecipeIngredientExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+
+            editRI.Quantity = recipeIngredient.Quantity;
+            editRI.Unit = recipeIngredient.Unit;
+            _context.RecipeIngredients.Update(editRI);
+            await _context.SaveChangesAsync();  
 
             return NoContent();
         }

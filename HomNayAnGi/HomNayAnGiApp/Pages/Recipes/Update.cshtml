@@ -1,0 +1,1049 @@
+﻿@page
+@model HomNayAnGiApp.Pages.Recipes.UpdateModel
+@{
+}
+
+<style>
+    #editor {
+        width: 100%;
+        min-height: 200px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-top: 10px;
+    }
+
+
+    /* Ẩn các nút tăng giảm trên Chrome, Safari, Edge, Opera */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Ẩn các nút tăng giảm trên Firefox */
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+
+    /* Điều chỉnh độ rộng của modal */
+    .modal-dialog {
+        max-width: 70%;
+    }
+
+    /* Nếu muốn modal cực rộng */
+    .modal-lg {
+        max-width: 80%;
+    }
+
+</style>
+
+<div class="row g-5 mt-3">
+    <div class="col-lg-1"></div>
+    <div class="col-lg-10">
+        <div class="border-start border-5 border-primary ps-5 mb-5">
+            <h1 class="text-uppercase mb-0">CẬP NHẬT CÔNG THỨC MÓN @Model.RecipeUpdate.RecipeName</h1>
+        </div>
+            <div class="row g-3">
+                <div class="col-12">
+                    <input asp-for="RecipeUpdate.Username" class="form-control bg-white border-0 px-4" style="height: 55px;" id="username" type="hidden" required>
+                    <input asp-for="RecipeUpdate.RecipeId" class="form-control bg-white border-0 px-4" style="height: 55px;" id="recipeId" type="hidden" required>
+                </div>
+                <div class="col-12">
+                    <div class="row">
+                        <label>Danh mục món ăn</label>
+                        <div class="col-8">
+                            <select asp-for="RecipeUpdate.CategoryId" class="form-control bg-white border-0 px-4" style="height: 55px;" id="slcCategoryId" disabled></select>
+                        </div>
+                        <div class="col-4">
+                            <button type="button" class="btn btn-outline-primary w-100" style="height: 55px;" data-bs-toggle="modal" data-bs-target="#createCategoryModal" disabled>TẠO DANH MỤC</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 mb-3">
+                    <label for="recipeName">Tên món ăn</label>
+                    <input asp-for="RecipeUpdate.RecipeName" id="recipeName" class="form-control bg-white border-0 px-4" style="height: 55px;" required disabled>
+                    <div class="invalid-feedback">
+                        Vui lòng nhập tên món ăn.
+                    </div>
+                </div>
+
+                <div class="col-12 mb-3">
+                    <label for="description">Mô tả</label>
+                    <div id="editor" contenteditable="false" class="form-control bg-white border-0 px-4" style="min-height: 75px;"></div>
+                    <input asp-for="RecipeUpdate.Description" type="hidden" id="description" required>
+                    <div class="invalid-feedback">
+                        Vui lòng nhập mô tả.
+                    </div>
+                </div>
+
+                <div class="col-12 mb-3">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="cookTime">Thời gian nấu (phút)</label>
+                            <input asp-for="RecipeUpdate.CookTime" id="cookTime" type="number" class="form-control bg-white border-0 px-4" style="height: 55px;" min="1" required disabled>
+                            <div class="invalid-feedback">
+                                Thời gian nấu phải lớn hơn 0.
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label for="prepTime">Thời gian chuẩn bị (phút)</label>
+                            <input asp-for="RecipeUpdate.PrepTime" id="prepTime" type="number" class="form-control bg-white border-0 px-4" style="height: 55px;" min="1" required disabled>
+                            <div class="invalid-feedback">
+                                Thời gian chuẩn bị phải lớn hơn 0.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 mb-3">
+                    <label for="servings">Phục vụ cho số người</label>
+                    <input asp-for="RecipeUpdate.Servings" id="servings" type="number" class="form-control bg-white border-0 px-4" style="height: 55px;" min="1" required disabled>
+                    <div class="invalid-feedback">
+                        Số người phục vụ phải lớn hơn 0.
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label>Độ khó</label>
+                    <select asp-for="RecipeUpdate.DifficultyLevel" class="form-control bg-white border-0 px-4" style="height: 55px;" id="slcDifficultyLevel" disabled>
+                        <option value="Dễ">Dễ</option>
+                        <option value="Trung bình">Trung bình</option>
+                        <option value="Khó">Khó</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label>Hình ảnh</label>
+                    <div class="row">
+                        <div class="col-10">
+                            <input asp-for="RecipeUpdate.Image" id="imageInput" class="form-control bg-white border-0 px-4" style="height: 55px;" readonly data-bs-toggle="modal" data-bs-target="#imageModal" disabled>
+                        </div>
+                        <div class="col-2">
+                        <img src="@Model.RecipeUpdate.Image" class="img-fluid" style="max-height: 55px" data-fancybox="RecipeImage" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 mt-3">
+                    <button class="btn btn-outline-primary w-100 py-3" type="submit">CHỈNH SỬA</button>
+                </div>
+            </div>
+    </div>
+    <div class="col-lg-1"></div>
+</div>
+
+<div class="row g-5 mt-3">
+    <div class="col-lg-1"></div>
+    <div class="col-lg-10">
+        <div class="border-start border-5 border-primary ps-5 mb-5">
+            <h1 class="text-uppercase mb-0">CẬP NHẬT DANH SÁCH NGUYÊN LIỆU CHO MÓN @Model.RecipeUpdate.RecipeName</h1>
+        </div>
+        <div class="row g-3">
+            <div class="col-12 mt-3">
+                <table class="table table-bordered text-center bg-white rounded" id="recipeIngredientTable">
+                    <thead>
+                        <tr>
+                            <th class="text-content">STT</th>
+                            <th class="text-content">Tên Nguyên Liệu</th>
+                            <th class="text-content">Số Lượng</th>
+                            <th class="text-content">Đơn Vị</th>
+                            <th class="text-content">Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Nước mắm</td>
+                            <td>2</td>
+                            <td>muỗng</td>
+                            <td>
+                                <button class="btn btn-outline-success">Chỉnh sửa</button>
+                                <button class="btn btn-outline-danger">Xoá</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-12 mt-3">
+                <button class="btn btn-outline-primary w-100" type="button" data-bs-toggle="modal" data-bs-target="#ingredientModal">
+                    THÊM NGUYÊN LIỆU CHO MÓN ĂN
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-1"></div>
+</div>
+
+<div class="row g-5 mt-3">
+    <div class="col-lg-1"></div>
+    <div class="col-lg-10">
+        <div class="border-start border-5 border-primary ps-5 mb-5">
+            <h1 class="text-uppercase mb-0">CẬP NHẬT DANH SÁCH CÁC BƯỚC THỰC HIỆN CHO MÓN @Model.RecipeUpdate.RecipeName</h1>
+        </div>
+        <div class="row g-3">
+            <div class="col-12 mt-3">
+                <table class="table table-bordered text-center bg-white rounded" id="recipeStepTable">
+                    <thead>
+                        <tr>
+                            <th class="text-content">Bước Số</th>
+                            <th class="text-content">Hướng dẫn</th>
+                            <th class="text-content">Hình Ảnh</th>
+                            <th class="text-content">Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-12 mt-3">
+                <button class="btn btn-outline-primary w-100" type="button" onclick="openStepModal()">
+                    THÊM CÁC BƯỚC THỰC HIỆN CHO MÓN ĂN
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-1"></div>
+</div>
+
+<!-- Modal thêm nguyên liệu -->
+<div class="modal fade" id="ingredientModal" tabindex="-1" aria-labelledby="ingredientModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <!-- Sử dụng modal-lg để modal rộng hơn -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ingredientModalLabel">THÊM CÁC NGUYÊN LIỆU CHO MÓN ĂN</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="ingredientForm">
+                    <!-- Chọn tên nguyên liệu -->
+                    <div class="mb-3">
+                        <label for="ingredientSelect" class="form-label">Tên Nguyên Liệu</label>
+                        <div class="d-flex">
+                            <select class="form-select" id="ingredientSelect" required>
+                                <option value="">Chọn nguyên liệu</option>
+                            </select>
+                            <button type="button" class="btn btn-outline-secondary ms-2" id="createIngredientBtn" style="min-width: 200px" data-bs-toggle="modal" data-bs-target="#createIngredientModal">Tạo Nguyên Liệu</button>
+                        </div>
+                    </div>
+                    <!-- Số lượng nguyên liệu -->
+                    <div class="mb-3">
+                        <label for="ingredientQuantity" class="form-label">Số Lượng</label>
+                        <input type="number" class="form-control" id="ingredientQuantity" required>
+                    </div>
+                    <!-- Đơn vị -->
+                    <div class="mb-3">
+                        <label for="ingredientUnit" class="form-label">Đơn Vị</label>
+                        <input type="text" class="form-control" id="ingredientUnit" required>
+                    </div>
+                    <!-- Thêm nguyên liệu khác -->
+                    <button type="button" class="btn btn-outline-secondary w-100" id="addIngredientBtn">THÊM VÀO DANH SÁCH</button>
+
+                    <!-- Bảng hiển thị các nguyên liệu đã thêm -->
+                    <hr>
+                    <table class="table table-bordered" id="ingredientListTable">
+                        <h5>DANH SÁCH NGUYÊN LIỆU MỚI</h5>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Tên Nguyên Liệu</th>
+                                <th>Số Lượng</th>
+                                <th>Đơn Vị</th>
+                                <th>Hành Động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Các nguyên liệu sẽ được hiển thị tại đây -->
+                        </tbody>
+                    </table>
+
+                    <hr>
+                    <button type="button" class="btn btn-outline-success w-100" id="saveIngredientsBtn">LƯU TẤT CẢ</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal để tạo nguyên liệu mới -->
+<div class="modal fade" id="createIngredientModal" tabindex="-1" aria-labelledby="createIngredientModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createIngredientModalLabel">Tạo Nguyên Liệu Mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="newIngredientName" class="form-label">Tên Nguyên Liệu</label>
+                    <input type="text" class="form-control" id="newIngredientName" required>
+                </div>
+                <button type="button" class="btn btn-outline-primary" id="saveNewIngredientBtn">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Ingredient Modal -->
+<div class="modal fade" id="editIngredientModal" tabindex="-1" aria-labelledby="editIngredientModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editIngredientModalLabel">Edit Ingredient</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editIngredientForm">
+                    <input type="hidden" id="editRecipeIngredientId">
+                    <div class="mb-3">
+                        <label for="editIngredientSelect" class="form-label">Ingredient Name</label>
+                        <select id="editIngredientSelect" class="form-select">
+                            <!-- Populate options dynamically -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editQuantity" class="form-label">Quantity</label>
+                        <input type="number" id="editQuantity" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editUnit" class="form-label">Unit</label>
+                        <input type="text" id="editUnit" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="saveEditedIngredient()">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal thêm bước -->
+<div class="modal fade" id="stepModal" tabindex="-1" aria-labelledby="stepModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="stepModalLabel">THÊM BƯỚC <span id="stepNumber"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Input cho hướng dẫn -->
+                <div class="mb-3">
+                    <label for="instructionInput" class="form-label">Hướng dẫn</label>
+                    <input type="text" class="form-control" id="instructionInput" placeholder="Nhập hướng dẫn cho bước...">
+                </div>
+
+                <!-- Input chọn ảnh -->
+                <div class="mb-3">
+                    <label class="form-label">Hình ảnh</label>
+                    <input type="text" class="form-control" placeholder="Chọn hoặc nhập link ảnh" readonly id="imageInputInModal" data-bs-toggle="modal" data-bs-target="#imageModal">
+                </div>
+
+                <!-- Nút thêm bước với spinner -->
+                <button type="button" class="btn btn-primary w-100" id="addStepButton" onclick="addRecipeStep()">
+                    <span class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true" id="loadingSpinner"></span>
+                    THÊM BƯỚC
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Step Modal -->
+<div class="modal fade" id="editStepModal" tabindex="-1" aria-labelledby="editStepModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editStepModalLabel">Chỉnh sửa Bước</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editStepForm">
+                    <div class="mb-3">
+                        <label for="editStepNumber" class="form-label">Bước Số</label>
+                        <input type="number" class="form-control" id="editStepNumber" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editInstruction" class="form-label">Hướng dẫn</label>
+                        <textarea class="form-control" id="editInstruction" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editImageLink" class="form-label">Ảnh</label>
+                        <input type="text" class="form-control" id="editImageLink" placeholder="Nhập đường dẫn ảnh">
+                        <input type="hidden" class="form-control" id="editStepImageId">
+                        <input type="hidden" class="form-control" id="editStepId">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="saveEditedStep()">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Bootstrap Upload Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Chọn cách tải ảnh lên</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <button class="btn btn-primary w-100 mb-3" onclick="showLinkInput()">Nhập đường dẫn</button>
+                <button class="btn btn-secondary w-100 mb-3" onclick="showFileInput()">Chọn tệp ảnh từ máy</button>
+
+                <!-- Input for URL -->
+                <div id="linkInput" style="display: none;">
+                    <input type="text" id="imageUrl" class="form-control" placeholder="Nhập đường dẫn ảnh">
+                    <button class="btn btn-success mt-2 w-100" onclick="confirmLink()">Xác nhận</button>
+                </div>
+
+                <!-- Input for File -->
+                <div id="fileInput" style="display: none;">
+                    <input type="file" id="fileUpload" class="form-control" accept="image/*">
+                    <button class="btn btn-success mt-2 w-100" onclick="uploadFile()">Tải lên</button>
+
+                    <!-- Loading Spinner -->
+                    <div id="loadingSpinner" class="spinner-border text-primary mt-2" role="status" style="display: none;">
+                        <span class="visually-hidden">Đang tải...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<input id="LoggedInUsername" value="@Model.LoggedInUsername" type="hidden" />
+<input id="LoggedInUserId" value="@Model.LoggedInUserId" type="hidden" />
+<input id="SelectedCategory" value="@Model.RecipeUpdate.CategoryId" type="hidden" />
+<input id="SelectedDifficultyLevel" value="@Model.RecipeUpdate.DifficultyLevel" type="hidden" />
+<input id="SelectedRecipeId" value="@Model.RecipeUpdate.RecipeId" type="hidden" />
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            var element = document.getElementById("mainbody");
+            if (element) {
+                element.classList.remove("container");
+                element.classList.add("container-fluid");
+            } else {
+                console.log('Element not found');
+            }
+
+            loadRecipeCategories();
+
+            const slcDifficultyLevel = document.getElementById("slcDifficultyLevel");
+            slcDifficultyLevel.value = document.getElementById("SelectedDifficultyLevel").value;
+
+            const editor = document.getElementById("editor");
+            editor.innerHTML = document.getElementById("description").value;
+
+            loadRecipeIngredients();
+            fetchRecipeSteps();
+        });
+
+        let currentStepNumber = 1;
+
+        // Hàm mở modal thêm bước mới hoặc chỉnh sửa bước
+        function openStepModal() {
+            // Kiểm tra số lượng bước hiện tại và đặt số thứ tự mới
+            const rows = document.querySelectorAll("#recipeStepTable tbody tr");
+            currentStepNumber = rows.length + 1; // Nếu bảng có 3 bước thì bước mới sẽ là 4
+            document.getElementById("stepNumber").innerText = currentStepNumber;
+
+            // Reset input trong modal
+            document.getElementById("instructionInput").value = "";
+            document.getElementById("imageInput").value = "";
+
+            // Hiển thị modal
+            let stepModal = new bootstrap.Modal(document.getElementById('stepModal'));
+            stepModal.show();
+        }
+
+        function showLinkInput() {
+            document.getElementById("linkInput").style.display = "block";
+            document.getElementById("fileInput").style.display = "none";
+        }
+
+        function showFileInput() {
+            document.getElementById("linkInput").style.display = "none";
+            document.getElementById("fileInput").style.display = "block";
+        }
+
+        function confirmLink() {
+            const imageUrl = document.getElementById("imageUrl").value;
+            document.getElementById("imageInputInModal").value = imageUrl;
+            var modal = bootstrap.Modal.getInstance(document.getElementById('imageModal'));
+            modal.hide();
+        }
+
+        async function uploadFile() {
+            const file = document.getElementById("fileUpload").files[0];
+
+            if (!file) {
+                alert("Vui lòng chọn tệp ảnh");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            try {
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                const response = await fetch("/Recipes/Update?handler=UploadFile", {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        'RequestVerificationToken': token
+                    },
+                });
+
+                // Kiểm tra nếu phản hồi thành công
+                if (response.ok) {
+                    const data = await response.json();  // Chỉ gọi .json() nếu phản hồi là thành công
+                    document.getElementById("imageInput").value = data.secure_url;
+                } else {
+                    const errorText = await response.text();  // Đọc lỗi dưới dạng văn bản nếu phản hồi không thành công
+                    console.error("Lỗi tải ảnh:", errorText);
+                    alert("Tải ảnh lên thất bại: " + errorText);
+                }
+            } catch (error) {
+                console.error("Lỗi khi tải ảnh lên:", error);
+            }
+
+            var modal = bootstrap.Modal.getInstance(document.getElementById('imageModal'));
+            modal.hide();
+        }
+
+        // Hàm gửi dữ liệu lên API và đóng modal
+        async function addRecipeStep() {
+            const addStepButton = document.getElementById("addStepButton");
+            const loadingSpinner = document.getElementById("loadingSpinner");
+            const instruction = document.getElementById("instructionInput").value;
+            const imageLink = document.getElementById("imageInputInModal").value;
+            const recipeId = parseInt(document.getElementById('SelectedRecipeId').value);
+
+            const stepData = [{
+                recipeId: recipeId,
+                stepNumber: currentStepNumber,
+                instruction: instruction,
+                stepImages: [{ imageLink: imageLink }]
+            }];
+
+            // Hiển thị spinner khi đang gửi yêu cầu
+            loadingSpinner.classList.remove("d-none");
+            addStepButton.disabled = true;
+            
+            var steps = [{stepData: stepData}]
+            console.log(JSON.stringify(stepData))
+            try {
+                const response = await fetch("http://localhost:5000/api/RecipeSteps", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(stepData)
+                });
+
+                if (response.ok) {
+                    alert("Thêm bước thành công!");
+                    location.reload(); // Tải lại trang để cập nhật danh sách bước
+                } else {
+                    alert("Đã có lỗi xảy ra. Vui lòng thử lại.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Đã có lỗi xảy ra. Vui lòng thử lại.");
+            } finally {
+                // Ẩn spinner và bật lại nút sau khi hoàn tất
+                loadingSpinner.classList.add("d-none");
+                addStepButton.disabled = false;
+            }
+        }
+
+        function openEditStepModal(step) {
+            // Điền thông tin của bước vào các trường trong modal
+            document.getElementById('editStepNumber').value = step.stepNumber;
+            document.getElementById('editInstruction').value = step.instruction;
+            document.getElementById('editImageLink').value = step.stepImages[0] ? step.stepImages[0].imageLink : '';
+            document.getElementById('editStepImageId').value = step.stepImages[0] ? step.stepImages[0].stepImageId : '';
+            document.getElementById('editStepId').value = step.stepId;
+
+            // Hiển thị modal chỉnh sửa
+            const editStepModal = new bootstrap.Modal(document.getElementById('editStepModal'));
+            editStepModal.show();
+        }
+
+
+        async function saveEditedStep() {
+            const recipeId = parseInt(document.getElementById('SelectedRecipeId').value);
+            const stepNumber = parseInt(document.getElementById('editStepNumber').value);
+            const instruction = document.getElementById('editInstruction').value;
+            const imageLink = document.getElementById('editImageLink').value;
+            const stepImageId = document.getElementById('editStepImageId').value;
+            const stepId = document.getElementById('editStepId').value;
+
+            // Cấu trúc dữ liệu JSON để gửi lên API
+            const updatedStep = {
+                recipeId: recipeId,
+                stepId: stepId,
+                stepNumber: stepNumber,
+                instruction: instruction,
+                stepImages: [{ imageLink: imageLink, stepImageId: stepImageId }]
+            };
+
+            console.log(JSON.stringify(updatedStep))
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/RecipeSteps/` + stepId, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedStep)
+                });
+
+                if (response.ok) {
+                    // Cập nhật thành công, đóng modal và làm mới danh sách bước
+                    const editStepModal = bootstrap.Modal.getInstance(document.getElementById('editStepModal'));
+                    editStepModal.hide();
+                    await fetchRecipeSteps();
+                } else {
+                    console.error('Failed to update recipe step');
+                }
+            } catch (error) {
+                console.error('Error updating recipe step:', error);
+            }
+        }
+
+        // Hàm xử lý xoá bước
+        async function deleteRecipeStep(recipeStepId) {
+            // Sử dụng SweetAlert để xác nhận việc xóa
+            const result = await Swal.fire({
+                title: 'Bạn có chắc chắn muốn xoá bước này không?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Xoá',
+                cancelButtonText: 'Hủy',
+                reverseButtons: true
+            });
+
+            if (!result.isConfirmed) {
+                return; // Nếu người dùng chọn Hủy, thoát ra
+            }
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/RecipeSteps/${recipeStepId}`, {
+                    method: "DELETE"
+                });
+
+                if (response.ok) {
+                    await fetchRecipeSteps(); // Lấy lại danh sách các bước
+                    Swal.fire('Xoá thành công!', 'Bước đã được xóa.', 'success');
+                } else {
+                    Swal.fire('Lỗi', 'Đã có lỗi xảy ra. Vui lòng thử lại.', 'error');
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                Swal.fire('Lỗi', 'Đã có lỗi xảy ra. Vui lòng thử lại.', 'error');
+            }
+        }
+
+
+        // Hàm gọi API và cập nhật bảng
+        async function fetchRecipeSteps() {
+            try {
+                const recipeId = parseInt(document.getElementById('SelectedRecipeId').value);
+                const response = await fetch(`http://localhost:5000/api/RecipeSteps/recipe/${recipeId}`);
+                const data = await response.json();
+
+                const tableBody = document.querySelector('#recipeStepTable tbody');
+                tableBody.innerHTML = '';
+
+                data.forEach((step, index) => {
+                    const stepImages = step.stepImages.map(image =>
+                        `<img src="${image.imageLink}" data-fancybox="${step.stepId}" height="100px" alt="Step Image">`
+                    ).join(' ');
+
+                    const row = `
+                        <tr>
+                            <td>${step.stepNumber}</td>
+                            <td>${step.instruction}</td>
+                            <td>${stepImages}</td>
+                            <td>
+                                        <button class="btn btn-outline-success" onclick="openEditStepModal(${JSON.stringify(step).replace(/"/g, '&quot;')})">Chỉnh sửa</button>
+                                <button class="btn btn-outline-danger" onclick="deleteRecipeStep(${step.stepId})">Xóa</button>
+                            </td>
+                        </tr>
+                    `;
+
+                    tableBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error('Error fetching recipe steps:', error);
+            }
+        }
+
+
+        // Dữ liệu nguyên liệu đã chọn trong modal chính
+        let ingredientList = [];
+
+        // Lấy các nguyên liệu có sẵn từ API
+        async function fetchIngredients() {
+            var loggedInUsername = document.getElementById('LoggedInUsername').value
+            const response = await fetch('http://localhost:5000/api/Ingredients/user/' + loggedInUsername);
+            const ingredients = await response.json();
+
+            // Lấy thẻ select và thêm các nguyên liệu vào
+            const ingredientSelect = document.getElementById('ingredientSelect');
+            ingredients.forEach(ingredient => {
+                const option = document.createElement('option');
+                option.value = ingredient.ingredientId;
+                option.textContent = ingredient.ingredientName;
+                ingredientSelect.appendChild(option);
+            });
+        }
+
+        // Khi modal chính được hiển thị, load dữ liệu nguyên liệu
+        $('#ingredientModal').on('show.bs.modal', function () {
+            fetchIngredients();
+        });
+
+        // Hàm cập nhật bảng hiển thị nguyên liệu đã thêm
+        function updateIngredientListTable() {
+            const tableBody = document.querySelector('#ingredientListTable tbody');
+            tableBody.innerHTML = ''; // Xóa các dòng cũ
+
+            // Duyệt qua từng nguyên liệu trong ingredientList và thêm vào bảng
+            ingredientList.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.dataset.ingredientId = item.ingredientId;
+
+                const cellIndex = document.createElement('td');
+                cellIndex.textContent = index + 1;
+
+                const cellName = document.createElement('td');
+                cellName.classList.add('ingredientName');
+                cellName.textContent = item.ingredientName;
+
+                const cellQuantity = document.createElement('td');
+                cellQuantity.classList.add('quantity');
+                cellQuantity.textContent = item.quantity;
+
+                const cellUnit = document.createElement('td');
+                cellUnit.classList.add('unit');
+                cellUnit.textContent = item.unit;
+
+                const cellActions = document.createElement('td');
+                const editBtn = document.createElement('button');
+                editBtn.classList.add('btn', 'btn-outline-success', 'me-2');
+                editBtn.textContent = 'Sửa';
+                editBtn.addEventListener('click', () => editIngredient(index));
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.classList.add('btn', 'btn-outline-danger');
+                deleteBtn.textContent = 'Xóa';
+                deleteBtn.addEventListener('click', () => deleteIngredient(index));
+
+                cellActions.appendChild(editBtn);
+                cellActions.appendChild(deleteBtn);
+
+                row.appendChild(cellIndex);
+                row.appendChild(cellName);
+                row.appendChild(cellQuantity);
+                row.appendChild(cellUnit);
+                row.appendChild(cellActions);
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Lưu nguyên liệu và số lượng vào database
+        document.getElementById("saveIngredientsBtn").addEventListener("click", function () {
+            let recipeId = parseInt(document.getElementById("SelectedRecipeId").value);
+
+            
+
+            // Tạo đối tượng gửi lên API
+            const data = {
+                recipeId: recipeId,
+                recipeIngredients: ingredientList
+            };
+
+            console.log(JSON.stringify(data));
+            // Gửi yêu cầu POST tới API
+            fetch('http://localhost:5000/api/RecipeIngredients', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json()) // Đọc dữ liệu trả về từ API
+                .then(result => {
+                    console.log('Success:', result);
+                    $('#ingredientModal').modal('hide');
+                    loadRecipeIngredients();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Xử lý lỗi (thông báo lỗi)
+                });
+        });
+
+        // Thêm nguyên liệu mới vào danh sách
+        document.getElementById('addIngredientBtn').addEventListener('click', () => {
+            const ingredientSelect = document.getElementById('ingredientSelect');
+            const ingredientId = ingredientSelect.value;
+            const quantity = document.getElementById('ingredientQuantity').value;
+            const unit = document.getElementById('ingredientUnit').value;
+
+            // Kiểm tra thông tin đã đầy đủ chưa
+            if (!ingredientId || !quantity || !unit) {
+                alert('Vui lòng điền đầy đủ thông tin');
+                return;
+            }
+
+            // Tạo đối tượng nguyên liệu đã thêm
+            const ingredient = {
+                ingredientId: ingredientId,
+                ingredientName: ingredientSelect.options[ingredientSelect.selectedIndex].text, // Lấy tên nguyên liệu
+                quantity: parseFloat(quantity),
+                unit: unit
+            };
+
+            // Thêm vào danh sách ingredientList
+            ingredientList.push(ingredient);
+
+            // Cập nhật bảng hiển thị nguyên liệu đã thêm
+            updateIngredientListTable();
+
+            // Xóa các trường nhập
+            document.getElementById('ingredientQuantity').value = '';
+            document.getElementById('ingredientUnit').value = '';
+        });
+
+        // Chỉnh sửa nguyên liệu trong danh sách
+        function editIngredient(index) {
+            const ingredient = ingredientList[index];
+            document.getElementById('ingredientSelect').value = ingredient.ingredientId;
+            document.getElementById('ingredientQuantity').value = ingredient.quantity;
+            document.getElementById('ingredientUnit').value = ingredient.unit;
+
+            // Xóa nguyên liệu cũ khỏi danh sách để thay thế
+            ingredientList.splice(index, 1);
+            updateIngredientListTable();
+        }
+
+        // Xóa nguyên liệu khỏi danh sách
+        function deleteIngredient(index) {
+            ingredientList.splice(index, 1);
+            updateIngredientListTable();
+        }
+
+        // Lắng nghe sự kiện mở modal tạo nguyên liệu mới
+        document.getElementById('createIngredientBtn').addEventListener('click', () => {
+            // Ẩn modal thêm nguyên liệu
+            $('#ingredientModal').modal('hide');
+            // Mở modal tạo nguyên liệu mới
+            $('#createIngredientModal').modal('show');
+        });
+
+        // Tạo nguyên liệu mới từ modal con
+        document.getElementById('saveNewIngredientBtn').addEventListener('click', async () => {
+            const newIngredientName = document.getElementById('newIngredientName').value;
+            const userId = parseInt(document.getElementById('LoggedInUserId').value);
+
+            if (!newIngredientName) {
+                alert('Vui lòng nhập tên nguyên liệu');
+                return;
+            }
+
+            // Gửi POST request để tạo nguyên liệu mới
+            const response = await fetch('http://localhost:5000/api/Ingredients', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ ingredientName: newIngredientName, createdBy: userId }),
+            });
+
+            if (response.ok) {
+                // Khi lưu thành công, đóng modal con và reload lại modal chính
+                const newIngredient = await response.json();
+                const ingredientSelect = document.getElementById('ingredientSelect');
+                const option = document.createElement('option');
+                option.value = newIngredient.ingredientId;
+                option.textContent = newIngredient.ingredientName;
+                ingredientSelect.appendChild(option);
+
+                // Chọn nguyên liệu vừa tạo
+                ingredientSelect.value = newIngredient.ingredientId;
+
+                // Đóng modal tạo nguyên liệu
+                $('#createIngredientModal').modal('hide');
+                
+            } else {
+                alert('Có lỗi xảy ra khi tạo nguyên liệu');
+            }
+            
+        });
+
+        async function loadRecipeCategories() {
+            try {
+                var selectedUsername = document.getElementById('LoggedInUsername').value;
+                const res = await fetch("http://localhost:5000/api/RecipeCategories/user/" + selectedUsername);
+                const recipeCategories = await res.json();
+
+                // Get the select element
+                const categorySelect = document.getElementById('slcCategoryId');
+
+                // Clear any existing options (optional, if there might be any pre-existing options)
+                categorySelect.innerHTML = "";
+
+                // Populate the select with options
+                recipeCategories.forEach(item => {
+                    const option = document.createElement("option");
+                    option.value = item.categoryId;
+                    option.textContent = item.categoryName;
+                    categorySelect.appendChild(option);
+                });
+
+                categorySelect.value = parseInt(document.getElementById("SelectedCategory").value);
+            } catch (error) {
+                console.error('Error fetching recipe categories: ', error);
+            }
+        };
+
+
+        async function loadRecipeIngredients() {
+            try {
+                var recipeId = parseInt(document.getElementById("SelectedRecipeId").value);
+
+                const response = await fetch("http://localhost:5000/api/RecipeIngredients/recipe/" + recipeId);
+
+                if (!response.ok) {
+                    throw new Error("Có lỗi xảy ra khi lấy dữ liệu.");
+                }
+
+                const data = await response.json();
+                const tableBody = document.querySelector('#recipeIngredientTable tbody');
+                tableBody.innerHTML = '';
+
+                data.forEach((ingredient, index) => {
+                    const row = document.createElement('tr');
+
+                    const cellIndex = document.createElement('td');
+                    cellIndex.textContent = index + 1;
+
+                    const cellName = document.createElement('td');
+                    cellName.textContent = ingredient.ingredientName;
+
+                    const cellQuantity = document.createElement('td');
+                    cellQuantity.textContent = ingredient.quantity;
+
+                    const cellUnit = document.createElement('td');
+                    cellUnit.textContent = ingredient.unit;
+
+                    const cellActions = document.createElement('td');
+                    cellActions.innerHTML = `
+                        <button class="btn btn-outline-success" onclick="openEditModal(${ingredient.recipeIngredientId}, ${ingredient.ingredientId}, '${ingredient.ingredientName}', ${ingredient.quantity}, '${ingredient.unit}')">Chỉnh sửa</button>
+                        <button class="btn btn-outline-danger" onclick="deleteIngredient(${ingredient.recipeIngredientId})">Xoá</button>
+                    `;
+
+                    row.appendChild(cellIndex);
+                    row.appendChild(cellName);
+                    row.appendChild(cellQuantity);
+                    row.appendChild(cellUnit);
+                    row.appendChild(cellActions);
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Có lỗi xảy ra:', error);
+            }
+        }
+
+        function openEditModal(recipeIngredientId, ingredientId, ingredientName, quantity, unit) {
+            // Populate modal fields
+            document.getElementById('editRecipeIngredientId').value = recipeIngredientId;
+            document.getElementById('editQuantity').value = quantity;
+            document.getElementById('editUnit').value = unit;
+
+            // Populate the ingredient select with the current ingredient
+            const selectElement = document.getElementById('editIngredientSelect');
+            selectElement.innerHTML = `<option value="${ingredientId}" selected>${ingredientName}</option>`;
+            // Add other ingredient options here if needed
+
+            // Show the modal
+            const editModal = new bootstrap.Modal(document.getElementById('editIngredientModal'));
+            editModal.show();
+        }
+
+        async function saveEditedIngredient() {
+            const recipeIngredientId = document.getElementById('editRecipeIngredientId').value;
+            const selectElement = document.getElementById('editIngredientSelect');
+            const ingredientId = selectElement.value;
+            const ingredientName = selectElement.options[selectElement.selectedIndex].text;
+            const quantity = document.getElementById('editQuantity').value;
+            const unit = document.getElementById('editUnit').value;
+            const recipeId = parseInt(document.getElementById('SelectedRecipeId').value);
+
+            const editedData = {
+                recipeIngredientId: recipeIngredientId,
+                recipeId : recipeId,
+                ingredientId: parseInt(ingredientId),
+                quantity: parseFloat(quantity),
+                unit: unit,
+                ingredientName: ingredientName
+            };
+
+            console.log(JSON.stringify(editedData))
+            try {
+                const response = await fetch(`http://localhost:5000/api/RecipeIngredients/${recipeIngredientId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(editedData)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Có lỗi xảy ra khi lưu dữ liệu.");
+                }
+
+                loadRecipeIngredients(); // Refresh the ingredient list
+                const editModal = bootstrap.Modal.getInstance(document.getElementById('editIngredientModal'));
+                editModal.hide(); // Close the modal
+            } catch (error) {
+                console.error('Có lỗi xảy ra khi lưu:', error);
+            }
+        }
+
+        async function deleteIngredient(recipeIngredientId) {
+            try {
+                const response = await fetch(`http://localhost:5000/api/RecipeIngredients/${recipeIngredientId}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    throw new Error("Có lỗi xảy ra khi xoá dữ liệu.");
+                }
+
+                loadRecipeIngredients();
+            } catch (error) {
+                console.error('Có lỗi xảy ra khi xoá:', error);
+            }
+        }
+    </script>
+}
