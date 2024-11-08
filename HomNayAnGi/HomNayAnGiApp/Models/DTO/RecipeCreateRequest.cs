@@ -12,4 +12,18 @@ public class RecipeCreateRequest
     public string? Username { get; set; }
     public string? Image { get; set; }
     public string? Video { get; set; }
+    public override string ToString()
+    {
+        return $"RecipeCreateRequest: " +
+               $"CategoryId={CategoryId}, " +
+               $"RecipeName={RecipeName}, " +
+               $"Description={Description ?? "N/A"}, " +
+               $"CookTime={CookTime ?? 0} mins, " +
+               $"PrepTime={PrepTime ?? 0} mins, " +
+               $"Servings={Servings ?? 0}, " +
+               $"DifficultyLevel={DifficultyLevel ?? "N/A"}, " +
+               $"Username={Username ?? "Anonymous"}, " +
+               $"Image={Image ?? "No image"}, " +
+               $"Video={Video ?? "No video"}";
+    }
 }

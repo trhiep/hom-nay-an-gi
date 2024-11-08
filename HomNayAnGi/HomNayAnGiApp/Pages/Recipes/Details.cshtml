@@ -29,7 +29,7 @@
         }
         <h6>Đăng bởi: @Model.RecipeDTO.CreatedByUsername</h6>
         <h6>Ngày đăng: @Model.RecipeDTO.CreatedAt</h6>
-        <p class="text-content">@Model.RecipeDTO.Description</p>
+        <p>@Html.Raw(Model.RecipeDTO.Description)</p>
     </div>
 
 

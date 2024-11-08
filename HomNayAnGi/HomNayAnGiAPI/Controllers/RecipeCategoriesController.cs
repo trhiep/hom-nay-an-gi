@@ -119,10 +119,14 @@ namespace HomNayAnGiAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<RecipeCategory>> PostRecipeCategory(RecipeCategory recipeCategory)
         {
-          if (_context.RecipeCategories == null)
-          {
-              return Problem("Entity set 'HomNayAnGiContext.RecipeCategories'  is null.");
-          }
+            if (_context.RecipeCategories == null)
+            {
+                return Problem("Entity set 'HomNayAnGiContext.RecipeCategories'  is null.");
+            }
+            if (recipeCategory.CreatedBy == 0)
+            {
+                recipeCategory.CreatedBy = null;
+            }
             _context.RecipeCategories.Add(recipeCategory);
             await _context.SaveChangesAsync();
 
