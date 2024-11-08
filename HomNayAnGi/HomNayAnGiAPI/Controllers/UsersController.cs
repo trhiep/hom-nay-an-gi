@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiAPI.Models;
 using System.Numerics;
+using HomNayAnGiAPI.Utils;
 
 namespace HomNayAnGiAPI.Controllers
 {
@@ -77,6 +78,10 @@ namespace HomNayAnGiAPI.Controllers
             if (id != user.UserId)
             {
                 return BadRequest();
+            }
+
+            if (user.Password != null) { 
+                user.Password = PasswordHelper.HashPasswordSHA256(user.Password);
             }
 
             _context.Entry(user).State = EntityState.Modified;
