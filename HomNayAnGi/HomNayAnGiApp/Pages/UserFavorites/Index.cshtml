@@ -9,13 +9,13 @@
     <script>
         function confirmDelete(username, recipeId) {
             Swal.fire({
-                title: "Are you sure?",
-                text: "You won't be able to revert this!",
+                title: "Bạn chắn muốn xóa chứ?",
+                text: "Thôi đừng xóa để đấy biết đâu mai này nấu lại!",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
                 cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, delete it!"
+                confirmButtonText: "Vâng, bỏ nó đi!"
             }).then((result) => {
                 if (result.isConfirmed) {
                     document.getElementById("deleteUsername").value = username;
