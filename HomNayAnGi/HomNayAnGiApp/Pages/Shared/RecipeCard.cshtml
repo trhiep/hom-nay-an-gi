@@ -1,0 +1,12 @@
+﻿<div class="card mb-4 shadow-sm" style="width: 100%; max-width: 400px;">
+    <img src="@Model.ImageUrl ?? 'https://via.placeholder.com/400x200'" class="card-img-top" alt="@Model.RecipeName" style="height: 200px; object-fit: cover;">
+    <div class="card-body">
+        <h5 class="card-title text-truncate">@Model.RecipeName </h5>
+        <p class="card-text text-truncate">@Model.Description </p>
+        <p class="card-text"><small class="text-muted">Đăng bởi: @Model.UserName</small></p>
+    </div>
+    <div class="card-footer d-flex justify-content-between">
+        <a asp-page="Recipes/Details" asp-route-id="@Model.RecipeId" class="btn btn-primary btn-sm">Xem chi tiết</a>
+        <button class="btn btn-danger btn-sm" onclick="deleteFavorite('@Model.UserName', '@Model.RecipeId')">Xóa</button>
+    </div>
+</div>

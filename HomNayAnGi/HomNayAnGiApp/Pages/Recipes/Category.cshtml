@@ -1,0 +1,77 @@
+﻿@page
+@using HomNayAnGiApp.Models
+@model HomNayAnGiApp.Pages.Recipes.CategoryModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Quản lý Danh mục món ăn";
+    List<RecipeCategory> products = ViewData["recipeCate"] as List<RecipeCategory>;
+    string name = ViewData["name"] as string;
+}
+<h2>@ViewData["Title"]</h2>
+
+<div class="category-management">
+    <h3>Tạo mới danh mục món ăn</h3>
+    <form method="post" asp-page-handler="Add">
+        <label for="newCategory">Tên danh mục:</label>
+        <input type="text" id="newCategory" name="name" required />
+        <button type="submit">Tạo mới</button>
+    </form>
+
+    <h3>Danh sách danh mục đã tạo</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Tên danh mục</th>
+                <th>Người tạo</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in products)
+            {
+                <tr>
+                    <td>@category.CategoryName</td>
+                    <td>@(category.CreatedBy == null ? "Hệ thống" : name)</td>
+                    <td>
+                        <a asp-page="/Recipes/EditCategory" asp-route-id="@category.CategoryId" class="btn btn-primary">Cập nhật</a>
+
+                        <form method="post" asp-page-handler="Delete" asp-route-id="@category.CategoryId" style="display:inline;">
+                            <button type="submit" class="btn btn-link" style="padding: 0; border: none; background: none; color: blue; cursor: pointer;">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .category-management {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: auto;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    button {
+        padding: 5px 10px;
+        margin: 2px;
+        border: none;
+        background-color: #4CAF50;
+        color: white;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #45a049;
+    }
+</style>

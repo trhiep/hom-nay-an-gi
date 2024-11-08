@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using HomNayAnGiAPI.Models;
 using HomNayAnGiAPI.Models.APIModel;
 using HomNayAnGiAPI.Models.DTO.Recipe;
+using AutoMapper;
+using SQLitePCL;
 
 namespace HomNayAnGiAPI.Controllers
 {
@@ -16,10 +18,12 @@ namespace HomNayAnGiAPI.Controllers
     public class RecipeStepsController : ControllerBase
     {
         private readonly HomNayAnGiContext _context;
+        private readonly IMapper _mapper;
 
-        public RecipeStepsController(HomNayAnGiContext context)
+        public RecipeStepsController(HomNayAnGiContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/RecipeSteps
@@ -52,7 +56,7 @@ namespace HomNayAnGiAPI.Controllers
 
             return recipeStep;
         }
-        
+
         // GET: api/RecipeSteps/5
         [HttpGet("recipe/{id}")]
         public async Task<ActionResult<List<RecipeStepDTO>>> GetRecipeStepsByRecipeId(int id)
@@ -64,44 +68,44 @@ namespace HomNayAnGiAPI.Controllers
 
             var recipeSteps = await _context.RecipeSteps
                 .Where(x => x.RecipeId == id)
-                .Select(item => new RecipeStepDTO()
-                {
-                    StepId = item.StepId,
-                    Instruction = item.Instruction,
-                    RecipeId = item.RecipeId,
-                    StepNumber = item.StepNumber
-                })
                 .OrderBy(x => x.StepNumber)
+                .Include(x => x.StepImages)
                 .ToListAsync();
-    
-            return Ok(recipeSteps);
+
+            var recipeStepDto = _mapper.Map<List<RecipeStepDTO>>(recipeSteps);
+
+            return Ok(recipeStepDto);
         }
 
         // PUT: api/RecipeSteps/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRecipeStep(int id, RecipeStep recipeStep)
+        public async Task<IActionResult> PutRecipeStep(int id, RecipeStepDTO recipeStep)
         {
             if (id != recipeStep.StepId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(recipeStep).State = EntityState.Modified;
-
-            try
+            var editRecipeStep = await _context.RecipeSteps.Where(x => x.StepId == recipeStep.StepId).FirstOrDefaultAsync();
+            if (editRecipeStep == null)
             {
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
+
+            editRecipeStep.StepNumber = recipeStep.StepNumber;
+            editRecipeStep.Instruction = recipeStep.Instruction;
+            _context.RecipeSteps.Update(editRecipeStep);
+            await _context.SaveChangesAsync();
+
+            foreach (var img in recipeStep.StepImages)
             {
-                if (!RecipeStepExists(id))
+                var thisImg = await _context.StepImages.Where(x => x.StepImageId == img.StepImageId).FirstOrDefaultAsync();
+                if (thisImg != null)
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    thisImg.ImageLink = img.ImageLink;
+                    _context.StepImages.Update(thisImg);
+                    await _context.SaveChangesAsync();
                 }
             }
 
@@ -111,7 +115,7 @@ namespace HomNayAnGiAPI.Controllers
         // POST: api/RecipeSteps
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<int>>> PostRecipeStep(List<RecipeStep> recipeSteps)
+        public async Task<ActionResult<ApiResponse<int>>> PostRecipeStep(List<RecipeStepDTO> recipeSteps)
         {
             if (_context.RecipeSteps == null)
             {
@@ -127,6 +131,18 @@ namespace HomNayAnGiAPI.Controllers
                     Instruction = step.Instruction
                 };
                 _context.RecipeSteps.Add(recipeStep);
+                await _context.SaveChangesAsync();
+
+                foreach (var stepImg in step.StepImages)
+                {
+                    StepImage stepImage = new StepImage()
+                    {
+                        ImageLink = stepImg.ImageLink,
+                        StepId = recipeStep.StepId
+                    };
+                    _context.StepImages.Add(stepImage);
+                    await _context.SaveChangesAsync();
+                }
             }
 
             int results = await _context.SaveChangesAsync();
@@ -148,9 +164,28 @@ namespace HomNayAnGiAPI.Controllers
                 return NotFound();
             }
 
+            int recipeId = (int)recipeStep.RecipeId;
+
+            var stepImage = await _context.StepImages.Where(x => x.StepId == id).ToListAsync();
+            _context.StepImages.RemoveRange(stepImage);
+            await _context.SaveChangesAsync();
+
             _context.RecipeSteps.Remove(recipeStep);
             await _context.SaveChangesAsync();
 
+            var recipeSteps = await _context.RecipeSteps
+                .Where(x => x.RecipeId == recipeId)
+                .OrderBy(x => x.StepNumber)
+                .ToListAsync();
+            int count = 1;
+            foreach (var step in recipeSteps)
+            {
+                step.StepNumber = count;
+                count++;
+            }
+
+            _context.RecipeSteps.UpdateRange(recipeSteps);
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 

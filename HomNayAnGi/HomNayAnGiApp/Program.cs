@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using HomNayAnGiApp.Models;
 using Microsoft.EntityFrameworkCore;
+using HomNayAnGiApp.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<HomNayAnGiContext>(options =>
@@ -35,6 +36,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddRazorPages();
 builder.Services.AddCors();
 builder.Services.AddSession();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
 

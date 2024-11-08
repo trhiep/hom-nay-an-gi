@@ -130,6 +130,11 @@ namespace HomNayAnGiAPI.Models
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
+                entity.HasOne(d => d.ParentComment)
+                    .WithMany(p => p.InverseParentComment)
+                    .HasForeignKey(d => d.ParentCommentId)
+                    .HasConstraintName("FK_RecipeComment_ParentComment");
+
                 entity.HasOne(d => d.Recipe)
                     .WithMany(p => p.RecipeComments)
                     .HasForeignKey(d => d.RecipeId)

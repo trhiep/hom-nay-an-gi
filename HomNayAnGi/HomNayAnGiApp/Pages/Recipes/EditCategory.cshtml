@@ -1,0 +1,19 @@
+﻿@page
+@using HomNayAnGiApp.Models
+@model HomNayAnGiApp.Pages.Recipes.EditCategoryModel
+@{
+    ViewData["Title"] = "Cập nhật tên danh mục";
+    RecipeCategory products = ViewData["editCate"] as RecipeCategory;
+}
+<h2>@ViewData["Title"]</h2>
+
+<form method="post" asp-page-handler="Edit">
+    
+    <div class="form-group">
+        <label for="CategoryName">Tên danh mục</label>
+        <input type="text" name="name" value="@products.CategoryName" class="form-control" id="CategoryName" />
+        <input type="number" name="id" value="@products.CategoryId" hidden/>
+    </div>
+    <button type="submit" class="btn btn-primary">Cập nhật</button>
+</form>
+<a asp-page="./Index" class="btn btn-secondary">Quay lại</a>

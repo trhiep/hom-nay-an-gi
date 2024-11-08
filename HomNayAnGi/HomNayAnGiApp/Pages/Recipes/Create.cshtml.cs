@@ -1,4 +1,4 @@
-using CloudinaryDotNet.Actions;
+﻿using CloudinaryDotNet.Actions;
 using CloudinaryDotNet;
 using HomNayAnGiApp.Models;
 using HomNayAnGiApp.Models.DTO;
@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using System.Text.Json.Serialization;
+using HomNayAnGiApp.Models.APIModel;
 
 namespace HomNayAnGiApp.Pages.Recipes
 {
@@ -70,7 +71,11 @@ namespace HomNayAnGiApp.Pages.Recipes
             HttpResponseMessage response = await _httpClient.PostAsync(RecipesUrl, content);
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToPage("/Index");
+                string responseBody = await response.Content.ReadAsStringAsync();
+                ApiResponse<int> apiResponse = JsonConvert.DeserializeObject<ApiResponse<int>>(responseBody);
+
+                var data = apiResponse.Data;
+                return RedirectToPage($"/Recipes/Update",new { Id = data });
             }
             return Page();
         }

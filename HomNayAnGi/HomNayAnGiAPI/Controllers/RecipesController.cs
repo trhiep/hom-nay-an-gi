@@ -191,38 +191,60 @@ namespace HomNayAnGiAPI.Controllers
             return new ApiResponse<int>(result);
         }
 
-        // DELETE: api/Recipes/5
-        [HttpDelete("{id}")]
-        public async Task<ApiResponse<int>> DeleteRecipe(int id)
-        {
+		[HttpDelete("{id}")]
+		public async Task<ApiResponse<int>> DeleteRecipe(int id)
+		{
+			// Xóa RecipeIngredients
+			var recipeIngredients = await _context.RecipeIngredients.Where(x => x.RecipeId == id).ToListAsync();
+			if (recipeIngredients.Any())
+			{
+				_context.RecipeIngredients.RemoveRange(recipeIngredients);
+			}
 
-            var recipeIngredients = await _context.RecipeIngredients.Where(x => x.RecipeId == id).ToListAsync();
-            if (recipeIngredients != null)
-            {
-                _context.RecipeIngredients.RemoveRange(recipeIngredients);
-                await _context.SaveChangesAsync();
-            }
+			// Xóa RecipeSteps
+			var recipeSteps = await _context.RecipeSteps.Where(x => x.RecipeId == id).ToListAsync();
+			if (recipeSteps.Any())
+			{
+				_context.RecipeSteps.RemoveRange(recipeSteps);
+			}
 
-            var recipeSteps = await _context.RecipeSteps.Where(x => x.RecipeId == id).ToListAsync();
-            if (recipeSteps != null)
-            {
-                _context.RecipeSteps.RemoveRange(recipeSteps);
-                await _context.SaveChangesAsync();
-            }
-            
-            var recipe = await _context.Recipes.FindAsync(id);
-            if (recipe == null)
-            {
-                return new ApiResponse<int>(404, "Không tìm thấy recipe");
-            }
+			// Xóa RecipeComments
+			var recipeComments = await _context.RecipeComments.Where(x => x.RecipeId == id).ToListAsync();
+			if (recipeComments.Any())
+			{
+				_context.RecipeComments.RemoveRange(recipeComments);
+			}
 
-            _context.Recipes.Remove(recipe);
-            await _context.SaveChangesAsync();
+			// Xóa RecipeMeals
+			var recipeMeals = await _context.RecipeMeals.Where(x => x.RecipeId == id).ToListAsync();
+			if (recipeMeals.Any())
+			{
+				_context.RecipeMeals.RemoveRange(recipeMeals);
+			}
 
-            return new ApiResponse<int>(203);
-        }
+			// Xóa UserFavorites
+			var userFavorites = await _context.UserFavorites.Where(x => x.RecipeId == id).ToListAsync();
+			if (userFavorites.Any())
+			{
+				_context.UserFavorites.RemoveRange(userFavorites);
+			}
 
-        private bool RecipeExists(int id)
+			// Tìm Recipe
+			var recipe = await _context.Recipes.FindAsync(id);
+			if (recipe == null)
+			{
+				return new ApiResponse<int>(404, "Không tìm thấy recipe");
+			}
+
+			// Xóa Recipe
+			_context.Recipes.Remove(recipe);
+			await _context.SaveChangesAsync();
+
+			return new ApiResponse<int>(203, "Xóa recipe thành công");
+		}
+
+
+		private bool RecipeExists(int id)
         {
             return (_context.Recipes?.Any(e => e.RecipeId == id)).GetValueOrDefault();
         }
