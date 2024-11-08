@@ -12,7 +12,8 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
     public class IndexModel : PageModel
     {
         private readonly HomNayAnGiApp.Models.HomNayAnGiContext _context;
-
+        private readonly string IngredientFilmUrl = "http://localhost:5333/api/Ingredients";
+        private readonly HttpClient _httpClient;
         public IndexModel(HomNayAnGiApp.Models.HomNayAnGiContext context)
         {
             _context = context;
