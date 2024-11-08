@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using HomNayAnGiApp.Models;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json;
+using HomNayAnGiApp.Utils.JWTHelper;
 
 namespace HomNayAnGiApp.Pages.RecipeIngredients
 {
@@ -15,10 +17,17 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
     public class IndexModel : PageModel
     {
         private readonly HomNayAnGiApp.Models.HomNayAnGiContext _context;
-        private readonly string IngredientFilmUrl = "http://localhost:5333/api/Ingredients";
+        private readonly string IngredientUrl = "http://localhost:5000/api/Ingredients";
         private readonly HttpClient _httpClient;
-        public IndexModel(HomNayAnGiApp.Models.HomNayAnGiContext context)
+
+        private readonly IHttpContextAccessor _contextAccessor;
+        private string LoggedInUsername;
+        
+
+        public IndexModel(HomNayAnGiApp.Models.HomNayAnGiContext context, IHttpContextAccessor contextAccessor)
         {
+            _contextAccessor = contextAccessor;
+
             _context = context;
             _httpClient = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
@@ -26,13 +35,36 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
         }
 
         public IList<Ingredient> Ingredient { get;set; } = default!;
+        public int LoggedInUserId { get; set; }   =default!;
+        public string GetRole { get; set; } = default!;
 
         public async Task OnGetAsync()
         {
-            if (_context.Ingredients != null)
+
+            //Get user cookies
+            var accessToken = _contextAccessor.HttpContext?.Request.Cookies["accessToken"];
+            if (!string.IsNullOrEmpty(accessToken))
             {
-                Ingredient = await _context.Ingredients
-                .Include(i => i.CreatedByNavigation).ToListAsync();
+                _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer" + accessToken);
+            }
+            LoggedInUsername = JwtHelper.GetUsernameFromClaims(accessToken);
+            LoggedInUserId = int.Parse(JwtHelper.GetUserIdFromClaims(accessToken));
+            GetRole = JwtHelper.GetRoleFromJwt(accessToken);
+
+
+            HttpResponseMessage response = await _httpClient.GetAsync(IngredientUrl);
+            if (response.IsSuccessStatusCode)
+            {
+                string recipeDtoJSONString = await response.Content.ReadAsStringAsync();
+                
+                if(GetRole.Equals("ADMIN"))
+                {
+                    Ingredient = JsonConvert.DeserializeObject<IList<Ingredient>>(recipeDtoJSONString).ToList();
+                }
+                else
+                {
+                    Ingredient = JsonConvert.DeserializeObject<IList<Ingredient>>(recipeDtoJSONString).Where(x=>x.CreatedBy == LoggedInUserId).ToList();
+                }
             }
         }
     }
