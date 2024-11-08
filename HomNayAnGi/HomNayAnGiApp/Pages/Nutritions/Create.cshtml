@@ -9,6 +9,7 @@
         <div class="mb-3">
             <label class="form-label">Calo (kcal)</label>
             <input asp-for="NutritionFactDTO.Calories" class="form-control" />
+            <input asp-for="RecipeId" class="form-control" value="@Model.RecipeId" type="hidden" />
         </div>
         <div class="mb-3">
             <label class="form-label">Chất đạm (gam)</label>

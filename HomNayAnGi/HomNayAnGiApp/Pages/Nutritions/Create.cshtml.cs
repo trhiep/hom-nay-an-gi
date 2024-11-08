@@ -24,7 +24,10 @@ namespace HomNayAnGiApp.Pages.Nutritions
         [BindProperty]
         public NutritionFactDTO NutritionFactDTO { get; set; }
 
-        public async Task<IActionResult> OnGet()
+        [BindProperty(SupportsGet = true)]
+        public int RecipeId { get; set; }
+
+        public async Task<IActionResult> OnGet(int Id)
         {
             //// Lấy token từ cookie
             //var accessToken = _httpContextAccessor.HttpContext?.Request.Cookies["accessToken"];
@@ -37,6 +40,13 @@ namespace HomNayAnGiApp.Pages.Nutritions
             //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             //// Thực hiện các logic khác cho OnGet nếu cần, ví dụ: lấy danh mục giá trị dinh dưỡng từ API khác (nếu có)
+            ///
+            if (Id == 0)
+            {
+                return RedirectToPage("/Index");
+            }
+            RecipeId = Id;
+            await Console.Out.WriteLineAsync("RECIPE: " + RecipeId);
 
             return Page();
         }
@@ -48,7 +58,7 @@ namespace HomNayAnGiApp.Pages.Nutritions
                 return Page();
             }
 
-            NutritionFactDTO.RecipeId = 47;
+            NutritionFactDTO.RecipeId = RecipeId;
             // Serialize NutritionFactDTO thành JSON
             var jsonContent = JsonConvert.SerializeObject(NutritionFactDTO);
             var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
@@ -58,7 +68,7 @@ namespace HomNayAnGiApp.Pages.Nutritions
 
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToPage($"/Recipes/Details?id={NutritionFactDTO.RecipeId}"); // Chuyển hướng về trang Index nếu thành công
+                return RedirectToPage($"/Recipes/Update", new { Id = RecipeId });
                 //return Page();
             }
 

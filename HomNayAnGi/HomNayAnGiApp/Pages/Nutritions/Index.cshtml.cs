@@ -21,11 +21,13 @@ namespace HomNayAnGiApp.Pages.Nutritions
         [BindProperty]
         public NutritionFactDTO NutritionFactDTO { get; set; }
 
-        public int RecipeId { get; set; } = 47; // ID món A, bạn có thể thay bằng giá trị thực tế
+        [BindProperty(SupportsGet = true)]
+        public int RecipeId { get; set; }
 
         // Lấy dữ liệu dinh dưỡng của món ăn từ API
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(int Id)
         {
+            RecipeId = Id;
             // Thực hiện yêu cầu GET đến API để lấy giá trị dinh dưỡng cho món ăn cụ thể (theo RecipeId)
             var response = await _httpClient.GetAsync($"{NutritionUrl}/{RecipeId}");
 
@@ -51,6 +53,7 @@ namespace HomNayAnGiApp.Pages.Nutritions
         // Xử lý việc xóa giá trị dinh dưỡng
         public async Task<IActionResult> OnPostDeleteAsync()
         {
+            await Console.Out.WriteLineAsync("DELETE RECIPE: " +  RecipeId);
             // Gửi yêu cầu DELETE đến API để xóa giá trị dinh dưỡng cho món ăn (dựa trên RecipeId)
             var response = await _httpClient.DeleteAsync($"{NutritionUrl}/{RecipeId}");
 
