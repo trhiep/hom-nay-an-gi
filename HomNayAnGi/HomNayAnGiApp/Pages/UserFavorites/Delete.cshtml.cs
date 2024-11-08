@@ -1,4 +1,5 @@
 ﻿using HomNayAnGiApp.Utils.JWTHelper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http;
@@ -7,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace HomNayAnGiApp.Pages.UserFavorites
 {
+
+    
+
     public class DeleteModel : PageModel
     {
         private readonly HttpClient _httpClient;

@@ -26,7 +26,6 @@ namespace HomNayAnGiApp.Pages.Login
         public string? SuccessMessage { get; set; }
         public IActionResult OnGet()
         {
-            Response.Cookies.Delete("accessToken");
             Request.Cookies.TryGetValue("accessToken", out var accessToken);
             if (accessToken != null)
             {

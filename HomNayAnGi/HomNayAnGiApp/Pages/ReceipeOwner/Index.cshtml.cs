@@ -1,5 +1,6 @@
 ﻿using HomNayAnGiApp.Models.DTO;
 using HomNayAnGiApp.Utils.JWTHelper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -8,6 +9,7 @@ using System.Net.Http.Headers;
 
 namespace HomNayAnGiApp.Pages.ReceipeOwner
 {
+    [Authorize]
     public class IndexModel : PageModel
     {
 		private readonly HttpClient _httpClient;
@@ -94,6 +96,11 @@ namespace HomNayAnGiApp.Pages.ReceipeOwner
 			// Xóa thất bại, vẫn ở lại trang và có thể hiển thị thông báo lỗi nếu cần
 			ModelState.AddModelError(string.Empty, "Xóa công thức thất bại. Vui lòng thử lại.");
 			return RedirectToPage();
+		}
+
+		public async Task<IActionResult> OnPostUpdateRecipesAsync(int id)
+		{
+			return RedirectToPage("/Recipes/Update", new {Id = id});
 		}
 	}
 }

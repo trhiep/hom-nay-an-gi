@@ -1,5 +1,6 @@
 ﻿using HomNayAnGiApp.Models;
 using HomNayAnGiApp.Utils.JWTHelper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
@@ -9,6 +10,7 @@ using System.Xml.Linq;
 
 namespace HomNayAnGiApp.Pages.Recipes
 {
+    [Authorize]
     public class CategoryModel : PageModel
     {
         private readonly HttpClient _httpClient;
@@ -28,10 +30,14 @@ namespace HomNayAnGiApp.Pages.Recipes
         [BindProperty]
         public string LoggedInUsername { get; set; }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
             HttpClient _httpClient = new HttpClient();
             var accessToken = _httpContextAccessor.HttpContext?.Request.Cookies["accessToken"];
+            if (accessToken == null)
+            {
+                return RedirectToPage("/Login/Index");
+            }
             Console.WriteLine(accessToken);
             LoggedInUserId = int.Parse(JwtHelper.GetUserIdFromClaims(accessToken));
             HttpResponseMessage employSkillList = _httpClient.GetAsync("http://localhost:5000/api/RecipeCategories").Result;
@@ -40,7 +46,7 @@ namespace HomNayAnGiApp.Pages.Recipes
             //ViewData["recipeCate"] = employees;
             LoggedInUsername = JwtHelper.GetUsernameFromClaims(accessToken);
             ViewData["name"] = LoggedInUsername;
-
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAddAsync(string name)
@@ -57,7 +63,7 @@ namespace HomNayAnGiApp.Pages.Recipes
                     var updatedCategory = new RecipeCategory
                     {
                         CategoryName = name,
-                        CreatedBy= LoggedInUserId
+                        CreatedBy = LoggedInUserId
                         // Replace with the new name
                     };
 

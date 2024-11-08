@@ -5,11 +5,14 @@ using System.Text;
 using HomNayAnGiApp.Models;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiApp.Mappings;
+using static System.Net.WebRequestMethods;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<HomNayAnGiContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DBContext")));
 // Add services to the container.
+builder.Services.AddRazorPages();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -33,7 +36,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddRazorPages();
+
+
 builder.Services.AddCors();
 builder.Services.AddSession();
 builder.Services.AddAutoMapper(typeof(MappingProfile));

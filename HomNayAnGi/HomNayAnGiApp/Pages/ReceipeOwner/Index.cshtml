@@ -65,8 +65,8 @@
 							</div>
 		
 							<div>
-								<form method="post" asp-page-handler="UpdateRecipe" asp-route-id="@item.RecipeId">
-									<button type="submit" class="btn btn-danger btn-sm">Cập nhật</button>
+								<form method="post" asp-page-handler="UpdateRecipes" asp-route-id="@item.RecipeId">
+									<button type="submit" class="btn btn-outline-success btn-sm">Cập nhật</button>
 								</form>
 
 								<form method="post" asp-page-handler="DeleteRecipe" asp-route-id="@item.RecipeId" onsubmit="return confirm('Bạn có chắc chắn muốn xóa công thức này?');">

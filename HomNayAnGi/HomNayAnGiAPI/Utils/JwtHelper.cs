@@ -27,7 +27,7 @@ namespace HomNayAnGiAPI.Utils
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Audience"],
                 claims,
-                expires: DateTime.UtcNow.AddMinutes(5),
+                expires: DateTime.UtcNow.AddDays(7),
                 signingCredentials: signIn);
             return tokenHandler.WriteToken(token);
         }

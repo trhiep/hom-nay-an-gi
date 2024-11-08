@@ -1,4 +1,5 @@
 ﻿using HomNayAnGiApp.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
@@ -7,6 +8,7 @@ using System.Text;
 
 namespace HomNayAnGiApp.Pages.Nutritions
 {
+    [Authorize]
     public class CreateModel : PageModel
     {
         private readonly HttpClient _httpClient;

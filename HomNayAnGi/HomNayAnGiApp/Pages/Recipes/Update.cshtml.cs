@@ -9,9 +9,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HomNayAnGiApp.Pages.Recipes
 {
+    [Authorize]
     public class UpdateModel : PageModel
     {
         private readonly HttpClient _httpClient;
