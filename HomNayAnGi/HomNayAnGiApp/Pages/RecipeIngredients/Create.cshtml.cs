@@ -36,8 +36,6 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
                 return Page();
             }
 
-
-
             _context.Ingredients.Add(Ingredient);
             await _context.SaveChangesAsync();
 
