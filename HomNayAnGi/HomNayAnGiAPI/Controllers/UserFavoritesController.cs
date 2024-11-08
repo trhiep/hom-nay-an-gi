@@ -25,7 +25,7 @@ namespace HomNayAnGiAPI.Controllers
 
         // GET: api/UserFavorites/get-all-my-recipes/{username}
         [HttpGet("get-all-my-recipes/{username}")]
-        public async Task<ActionResult<IEnumerable<Recipe>>> GetUserFavorites(string username)
+        public async Task<IActionResult> GetUserFavorites(string username)
         {
             Console.WriteLine("đã vào đây");
             int? userId = await GetUserIdByName(username);
@@ -37,7 +37,18 @@ namespace HomNayAnGiAPI.Controllers
 
             var recipe = await _context.UserFavorites
                         .Where(uf => uf.UserId == userId) // Lọc các bản ghi UserFavorite theo userId
-                        .Select(uf=>uf.Recipe)
+                        .Include(x => x.User)
+                        .Include(x => x.Recipe)
+                        .Select(uf => new
+                        {
+                            UserFavoriteId = uf.UserFavoriteId,
+                            RecipeId = uf.RecipeId,
+                            CreateByUserName = uf.User.Username,
+                            CreateById = uf.Recipe.UserId,
+                            RecipeName = uf.Recipe.RecipeName,
+                            Description = uf.Recipe.Description,
+                            ImageUrl = uf.Recipe.Image,
+                        })
                         .ToListAsync(); // Chuyển đổi kết quả thành danh sách
 
             if (!recipe.Any())

@@ -26,6 +26,7 @@
         public string? Image { get; set; }
         public string? Video { get; set; }
         public int IsPublic { get; set; }
+        
         public virtual NutritionFactDTO? NutritionFact { get; set; }
         public virtual ICollection<RecipeIngredientDTO>? RecipeIngredients { get; set; }
         public virtual ICollection<RecipeStepDTO>? RecipeSteps { get; set; }
