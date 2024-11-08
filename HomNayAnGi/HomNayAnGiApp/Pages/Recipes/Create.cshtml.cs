@@ -1,3 +1,5 @@
+using CloudinaryDotNet.Actions;
+using CloudinaryDotNet;
 using HomNayAnGiApp.Models;
 using HomNayAnGiApp.Models.DTO;
 using HomNayAnGiApp.Utils.JWTHelper;
@@ -8,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
+using System.Text.Json.Serialization;
 
 namespace HomNayAnGiApp.Pages.Recipes
 {
@@ -28,6 +31,12 @@ namespace HomNayAnGiApp.Pages.Recipes
 
         [BindProperty]
         public RecipeCreateRequest RecipeCreateRequestModel { get; set; }
+
+        [BindProperty]
+        public string LoggedInUsername { get; set; }
+
+        [BindProperty]
+        public int LoggedInUserId { get; set; }
         public async Task<IActionResult> OnGet()
         {
             var accessToken = _httpContextAccessor.HttpContext?.Request.Cookies["accessToken"];
@@ -36,9 +45,10 @@ namespace HomNayAnGiApp.Pages.Recipes
             {
                 return RedirectToPage("/Login/Index");
             }
+            LoggedInUsername = JwtHelper.GetUsernameFromClaims(accessToken);
+            LoggedInUserId = int.Parse(JwtHelper.GetUserIdFromClaims(accessToken));
 
-            var CategoryId = JwtHelper.GetUsernameFromClaims(accessToken);
-            HttpResponseMessage responseCategories = await _httpClient.GetAsync($"{CategoriesUrl}/user/{CategoryId}");
+            HttpResponseMessage responseCategories = await _httpClient.GetAsync($"{CategoriesUrl}/user/{LoggedInUsername}");
             if (responseCategories.IsSuccessStatusCode)
             {
                 string jsonString = await responseCategories.Content.ReadAsStringAsync();
@@ -48,5 +58,47 @@ namespace HomNayAnGiApp.Pages.Recipes
 
             return Page();
         }
+
+        public async Task<IActionResult> OnPostAsync()
+        {
+            string jsonStr = JsonConvert.SerializeObject(RecipeCreateRequestModel);
+            var content = new StringContent(jsonStr, System.Text.Encoding.UTF8, "application/json");
+
+            string contentString = await content.ReadAsStringAsync();
+            Console.WriteLine(contentString);
+
+            HttpResponseMessage response = await _httpClient.PostAsync(RecipesUrl, content);
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToPage("/Index");
+            }
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostUploadFile(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest(new { error = "Không có tệp nào được chọn." });
+            }
+
+            // Upload ảnh lên Cloudinary
+            var cloudinary = new Cloudinary(new Account("dpnvzshsh", "785631258213433", "VR3-KnUWxuPyGs2kVTFLtsrF8mY"));
+            string folderPath = "HomNayAnGi";
+            var uploadParams = new ImageUploadParams()
+            {
+                File = new FileDescription(file.FileName, file.OpenReadStream()),
+                Folder = folderPath
+            };
+            var uploadResult = await cloudinary.UploadAsync(uploadParams);
+
+            if (uploadResult.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return new JsonResult(new { secure_url = uploadResult.SecureUri.ToString() });
+            }
+
+            return BadRequest(new { error = "Tải ảnh lên thất bại" });
+        }
+
     }
 }
