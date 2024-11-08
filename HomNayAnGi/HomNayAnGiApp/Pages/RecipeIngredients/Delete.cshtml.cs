@@ -6,15 +6,22 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiApp.Models;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
+using System.Net.WebSockets;
 
 namespace HomNayAnGiApp.Pages.RecipeIngredients
 {
     public class DeleteModel : PageModel
     {
         private readonly HomNayAnGiApp.Models.HomNayAnGiContext _context;
-
+        private readonly string IngredientUrl = "http://localhost:5000/api/Ingredients/";
+        private readonly HttpClient _httpClient;
         public DeleteModel(HomNayAnGiApp.Models.HomNayAnGiContext context)
         {
+            _httpClient = new HttpClient();
+            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
+            _httpClient.DefaultRequestHeaders.Accept.Add(contentType);
             _context = context;
         }
 
@@ -23,40 +30,39 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.Ingredients == null)
+            
+            
+            HttpResponseMessage response = await _httpClient.GetAsync(IngredientUrl + id);
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonStr = await response.Content.ReadAsStringAsync();
+                Ingredient = JsonConvert.DeserializeObject<Ingredient>(jsonStr);
+                return Page();
+            }
+
+            if (Ingredient == null)
             {
                 return NotFound();
             }
-
-            var ingredient = await _context.Ingredients.FirstOrDefaultAsync(m => m.IngredientId == id);
-
-            if (ingredient == null)
-            {
-                return NotFound();
-            }
-            else 
-            {
-                Ingredient = ingredient;
-            }
+          
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
-            if (id == null || _context.Ingredients == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var ingredient = await _context.Ingredients.FindAsync(id);
-
-            if (ingredient != null)
+            HttpResponseMessage response = await _httpClient.DeleteAsync(IngredientUrl+id);
+            if (response.IsSuccessStatusCode)
             {
-                Ingredient = ingredient;
-                _context.Ingredients.Remove(Ingredient);
-                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
             }
-
-            return RedirectToPage("./Index");
+            else
+            {
+                return Page();
+            }
         }
     }
 }

@@ -7,16 +7,22 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiApp.Models;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
 
 namespace HomNayAnGiApp.Pages.RecipeIngredients
 {
     public class EditModel : PageModel
     {
         private readonly HomNayAnGiApp.Models.HomNayAnGiContext _context;
-
+        private readonly string IngredientUrl = "http://localhost:5000/api/Ingredients/";
+        private readonly HttpClient _httpClient;
         public EditModel(HomNayAnGiApp.Models.HomNayAnGiContext context)
         {
-            _context = context;
+            _context = context; 
+            _httpClient = new HttpClient();
+            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
+            _httpClient.DefaultRequestHeaders.Accept.Add(contentType);
         }
 
         [BindProperty]
@@ -24,18 +30,22 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.Ingredients == null)
+            if (id == null)
             {
                 return NotFound();
+            }
+            HttpResponseMessage response = await _httpClient.GetAsync(IngredientUrl + id);
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonStr = await response.Content.ReadAsStringAsync();
+                Ingredient = JsonConvert.DeserializeObject<Ingredient>(jsonStr);
+                return Page();
             }
 
-            var ingredient =  await _context.Ingredients.FirstOrDefaultAsync(m => m.IngredientId == id);
-            if (ingredient == null)
+            if (Ingredient == null)
             {
                 return NotFound();
             }
-            Ingredient = ingredient;
-           ViewData["CreatedBy"] = new SelectList(_context.Users, "UserId", "UserId");
             return Page();
         }
 
@@ -43,30 +53,14 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
         // For more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
+            string jsonStr = JsonConvert.SerializeObject(Ingredient);
+            var content = new StringContent(jsonStr, System.Text.Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _httpClient.PutAsync(IngredientUrl+Ingredient.IngredientId, content);
+            if (response.IsSuccessStatusCode)
             {
-                return Page();
+                return RedirectToPage("./Index");
             }
-
-            _context.Attach(Ingredient).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!IngredientExists(Ingredient.IngredientId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return RedirectToPage("./Index");
+            return Page();
         }
 
         private bool IngredientExists(int id)

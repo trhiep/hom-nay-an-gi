@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiAPI.Models;
+using HomNayAnGiAPI.Models.DTO.Recipe;
 
 namespace HomNayAnGiAPI.Controllers
 {
@@ -49,47 +50,75 @@ namespace HomNayAnGiAPI.Controllers
             return nutritionFact;
         }
 
-        // PUT: api/NutritionFacts/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutNutritionFact(int id, NutritionFact nutritionFact)
+		// PUT: api/NutritionFacts/5
+		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+		[HttpPut("{id}")]
+		public async Task<IActionResult> PutNutritionFact(int id, NutritionFactDTO nutritionFactDTO)
+		{
+			
+
+			// Kiểm tra xem NutritionFact có tồn tại không trước khi cập nhật
+			var nutritionFact = await _context.NutritionFacts.FindAsync(id);
+			if (nutritionFact == null)
+			{
+				return NotFound();
+			}
+
+			// Cập nhật các thuộc tính của NutritionFact từ NutritionFactDTO
+			nutritionFact.RecipeId = id;
+			nutritionFact.Calories = nutritionFactDTO.Calories;
+			nutritionFact.Protein = nutritionFactDTO.Protein;
+			nutritionFact.Fat = nutritionFactDTO.Fat;
+			nutritionFact.Carbohydrates = nutritionFactDTO.Carbohydrates;
+			nutritionFact.Fiber = nutritionFactDTO.Fiber;
+			nutritionFact.Sugar = nutritionFactDTO.Sugar;
+
+			// Đánh dấu đối tượng đã thay đổi để lưu lại
+			_context.Entry(nutritionFact).State = EntityState.Modified;
+
+			try
+			{
+				await _context.SaveChangesAsync();
+			}
+			catch (DbUpdateConcurrencyException)
+			{
+				if (!NutritionFactExists(id))
+				{
+					return NotFound();
+				}
+				else
+				{
+					throw;
+				}
+			}
+
+			return NoContent();
+		}
+
+		// POST: api/NutritionFacts
+		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+		[HttpPost]
+        public async Task<ActionResult<NutritionFact>> PostNutritionFact(NutritionFactDTO nutritionFact)
         {
-            if (id != nutritionFact.RecipeId)
+
+
+			NutritionFact nutri = new NutritionFact
+			{
+				RecipeId = nutritionFact.RecipeId,
+				Calories = nutritionFact.Calories,
+				Protein = nutritionFact.Protein,
+				Fat = nutritionFact.Fat,
+				Carbohydrates = nutritionFact.Carbohydrates,
+				Fiber = nutritionFact.Fiber,
+				Sugar = nutritionFact.Sugar
+			};
+
+
+			if (_context.NutritionFacts == null)
             {
-                return BadRequest();
-            }
-
-            _context.Entry(nutritionFact).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!NutritionFactExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/NutritionFacts
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<NutritionFact>> PostNutritionFact(NutritionFact nutritionFact)
-        {
-          if (_context.NutritionFacts == null)
-          {
               return Problem("Entity set 'HomNayAnGiContext.NutritionFacts'  is null.");
-          }
-            _context.NutritionFacts.Add(nutritionFact);
+            }
+            _context.NutritionFacts.Add(nutri);
             try
             {
                 await _context.SaveChangesAsync();
