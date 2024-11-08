@@ -181,7 +181,8 @@ namespace HomNayAnGiAPI.Controllers
                     : recipeCreateRequestModel.DifficultyLevel,
                 UserId = user?.UserId,
                 CategoryId = recipeCreateRequestModel.CategoryId == 0 ? null : recipeCreateRequestModel.CategoryId,
-                Image = recipeCreateRequestModel.Image == "" ? null : recipeCreateRequestModel.Image
+                Image = recipeCreateRequestModel.Image == "" ? null : recipeCreateRequestModel.Image,
+                Servings = recipeCreateRequestModel.Servings == 0 ? null : recipeCreateRequestModel.Servings
             };
 
             _context.Recipes.Add(newRecipe);
