@@ -1,5 +1,6 @@
 ﻿@page
 @model HomNayAnGiApp.Pages.Recipes.DetailsModel
+
 @{
     ViewData["Title"] = $"Cách làm món {Model.RecipeDTO.RecipeName.ToLower()} ngon";
 }
@@ -182,8 +183,7 @@
                     }
                 </ol>
             </div>
-        }
-        
+        } 
     </div>
 
     @if (Model.RecipeDTO.RecipeSteps != null && Model.RecipeDTO.RecipeSteps.Count() > 0)
@@ -213,6 +213,77 @@
             </div>
         </div>
     }
+    @* ----------------------------------------------------------------------------------------------------------------------------------------------------------------- *@
+    <!-- Recipe Details Section -->
+  @*   <h1>@Model.RecipeDTO?.Name</h1>
+    <p>@Model.RecipeDTO?.Description< *@/p>
+
+    <!-- Comments Section -->
+    <h2>Comments</h2>
+
+    @if (Model.RecipeComment != null && Model.RecipeComment.Count > 0)
+    {
+        <div class="comments-section">
+            @foreach (var comment in Model.RecipeComment.Where(c => c.ParentCommentId == null))
+            {
+                <!-- Render each top-level (parent) comment -->
+                @Html.Partial("Comment", comment)
+            }
+        </div>
+    }
+
+    <!-- Input for adding a new comment -->
+    <div class="add-comment">
+        <textarea id="newComment" rows="3" placeholder="Add a comment..."></textarea>
+        <button class="btn btn-primary mt-2" onclick="addComment()">Submit</button>
+    </div>
+
+    @section Scripts {
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            // Toggle replies display
+            function toggleReplies(commentId) {
+                const repliesSection = document.getElementById(`replies-${commentId}`);
+                repliesSection.style.display = repliesSection.style.display === "none" ? "block" : "none";
+            }
+
+            // Open reply input for a specific comment
+            function openReplyInput(commentId) {
+                const replyInput = document.getElementById(`replyInput-${commentId}`);
+                replyInput.style.display = replyInput.style.display === "none" ? "block" : "none";
+            }
+
+            // Add new comment function (simplified for demonstration)
+            async function addComment() {
+                const commentContent = document.getElementById("newComment").value;
+                if (!commentContent) {
+                    Swal.fire("Comment cannot be empty", "", "warning");
+                    return;
+                }
+
+                // Make API call to add the comment (implement the API call in backend)
+                const response = await fetch("/api/RecipeComments", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        recipeId: @Model.RecipeDTO.RecipeId,
+                        comment: commentContent,
+                        parentCommentId: null // Top-level comment
+                    })
+                });
+
+                if (response.ok) {
+                    Swal.fire("Comment added successfully", "", "success");
+                    location.reload(); // Reload to fetch new comments
+                } else {
+                    Swal.fire("Failed to add comment", "", "error");
+                }
+            }
+        </script>
+    }
+    @* ----------------------------------------------------------------------------------------------------------------------------------------------------------------- *@
 </div>
 
 

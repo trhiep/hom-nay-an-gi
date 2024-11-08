@@ -1,0 +1,22 @@
+﻿.card {
+    min-height: 350px; /* Đảm bảo chiều cao đồng nhất cho các card */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-body {
+    flex-grow: 1; /* Chiếm không gian trống để cố định chiều cao */
+}
+
+.card-text.text-truncate, .card-title.text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-img-top {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}

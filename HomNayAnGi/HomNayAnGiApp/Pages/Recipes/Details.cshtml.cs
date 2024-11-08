@@ -11,6 +11,8 @@ namespace HomNayAnGiApp.Pages.Recipes
     {
         private readonly HttpClient _httpClient;
         private readonly string RecipeUrl = "http://localhost:5000/api/Recipes";
+        private readonly string RecipeCommentUrl = "http://localhost:5000/api/RecipeComments";
+
         public DetailsModel()
         {
             _httpClient = new HttpClient();
@@ -20,6 +22,9 @@ namespace HomNayAnGiApp.Pages.Recipes
 
         [BindProperty]
         public RecipeDTO RecipeDTO { get; set; }
+
+        [BindProperty]
+        public IList<RecipeCommentDTO> RecipeComment { get; set; }
 
         public async Task<IActionResult> OnGet(int? Id)
         {
@@ -33,10 +38,21 @@ namespace HomNayAnGiApp.Pages.Recipes
                     var recipeDtoApiResponse = JsonConvert.DeserializeObject<ApiResponse<RecipeDTO>>(responseJsonString);
                     if (recipeDtoApiResponse != null)
                     {
-                        RecipeDTO = recipeDtoApiResponse.Data;
-                        return Page();
+                        RecipeDTO = recipeDtoApiResponse.Data;                       
                     }
                 }
+                //cái này dành cho comment
+                HttpResponseMessage responseComments = await _httpClient.GetAsync($"{RecipeCommentUrl}/{72}");
+                if (responseComments.IsSuccessStatusCode)
+                {
+                    string responseJsonString = await responseComments.Content.ReadAsStringAsync();
+                    var recipeCommentDtoApiResponse = JsonConvert.DeserializeObject<IList<RecipeCommentDTO>>(responseJsonString);
+                    if (recipeCommentDtoApiResponse != null)
+                    {
+                        RecipeComment = recipeCommentDtoApiResponse;
+                    }
+                }
+                return Page();
             }
             return RedirectToPage("/Index");
         }

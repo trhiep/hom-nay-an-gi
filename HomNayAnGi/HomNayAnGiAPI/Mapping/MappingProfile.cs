@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HomNayAnGiAPI.Models;
+using HomNayAnGiAPI.Models.DTO;
 using HomNayAnGiAPI.Models.DTO.Recipe;
 
 namespace HomNayAnGiAPI.Mapping
@@ -24,7 +25,7 @@ namespace HomNayAnGiAPI.Mapping
 
             CreateMap<StepImage, StepImageDTO>().ReverseMap();
 
-
+            CreateMap<RecipeComment, RecipeCommentDTO>().ReverseMap();
         }
     }
 }

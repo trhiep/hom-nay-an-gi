@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiAPI.Models;
+using HomNayAnGiAPI.Models.APIModel;
 using HomNayAnGiAPI.Models.DTO;
 
 namespace HomNayAnGiAPI.Controllers
@@ -14,37 +16,61 @@ namespace HomNayAnGiAPI.Controllers
     public class RecipeCommentsController : ControllerBase
     {
         private readonly HomNayAnGiContext _context;
+        private readonly IMapper _mapper;
 
-        public RecipeCommentsController(HomNayAnGiContext context)
+        public RecipeCommentsController(HomNayAnGiContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        // GET: api/RecipeComments/{recipeId}
         [HttpGet("{recipeId}")]
         public async Task<ActionResult<IEnumerable<RecipeCommentDTO>>> GetAllRecipeCommentsByRecipeId(string recipeId)
         {
             var recipeComments = await _context.RecipeComments
                 .Include(rc => rc.User)
                 .Where(rc => rc.RecipeId == int.Parse(recipeId))
-                .Select(rc => new RecipeCommentDTO
-                {
-                    CommentId = rc.CommentId.ToString(),
-                    RecipeId = rc.RecipeId.ToString(),
-                    UserId = rc.UserId.ToString(),
-                    Username = rc.User.Username,
-                    Comment = rc.Comment,
-                    Rating = rc.Rating.ToString(),
-                    CreatedAt = rc.CreatedAt.ToString(),
-                    ParentCommentId = rc.ParentCommentId.ToString()
-                })
-                .OrderByDescending(rc => rc.CreatedAt) // Newest comments first
+                .OrderByDescending(rc => rc.CreatedAt)
                 .ToListAsync();
 
-            return Ok(recipeComments);
+            if (recipeComments == null)
+            {
+                return NotFound();
+            }
+
+            // Lấy tất cả các comment cha ban đầu (ParentCommentId == null)
+            var parentComments = recipeComments
+                .Where(rc => rc.ParentCommentId == null)
+                .Select(rc => MapToDto(rc, recipeComments))
+                .ToList();
+
+            return Ok(parentComments);
         }
 
-        // POST: api/RecipeComments
+        // Hàm đệ quy để ánh xạ comment và các comment con của nó
+        private RecipeCommentDTO MapToDto(RecipeComment comment, List<RecipeComment> allComments)
+        {
+            return new RecipeCommentDTO
+            {
+                CommentId = comment.CommentId.ToString(),
+                RecipeId = comment.RecipeId.ToString(),
+                UserId = comment.UserId.ToString(),
+                Username = comment.User.Username,
+                Comment = comment.Comment,
+                Rating = comment.Rating.ToString(),
+                CreatedAt = comment.CreatedAt.ToString(),
+                ParentCommentId = comment.ParentCommentId?.ToString(),
+        
+                // Đệ quy lấy các comment con của comment hiện tại
+                Replies = allComments
+                    .Where(c => c.ParentCommentId == comment.CommentId)
+                    .Select(c => MapToDto(c, allComments)) // Gọi đệ quy để lấy comment con
+                    .OrderByDescending(c => c.CreatedAt)
+                    .ToList()
+            };
+        }
+
+
         [HttpPost]
         public async Task<ActionResult<RecipeCommentDTO>> PostRecipeComment(RecipeCommentDTO recipeCommentDto)
         {
@@ -53,30 +79,40 @@ namespace HomNayAnGiAPI.Controllers
                 return Problem("Entity set 'HomNayAnGiContext.RecipeComments' is null.");
             }
 
+            // Chuyển đổi `ParentCommentId` một cách an toàn
+            int? parentCommentId = null;
+            if (!string.IsNullOrEmpty(recipeCommentDto.ParentCommentId) && int.TryParse(recipeCommentDto.ParentCommentId, out int parsedParentId))
+            {
+                parentCommentId = parsedParentId;
+            }
+
             var recipeComment = new RecipeComment
             {
                 RecipeId = int.Parse(recipeCommentDto.RecipeId),
                 UserId = int.Parse(recipeCommentDto.UserId),
                 Comment = recipeCommentDto.Comment,
-                Rating = recipeCommentDto.Rating == null ? 0 : int.Parse(recipeCommentDto.Rating),
-                CreatedAt = DateTime.Now
+                Rating = string.IsNullOrEmpty(recipeCommentDto.Rating) ? 0 : int.Parse(recipeCommentDto.Rating),
+                CreatedAt = DateTime.Now,
+                ParentCommentId = parentCommentId,
             };
 
-            _context.RecipeComments.Add(recipeComment);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.RecipeComments.Add(recipeComment);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
 
-            recipeCommentDto.CommentId = recipeComment.CommentId.ToString();
             return Ok(recipeCommentDto);
         }
 
         // DELETE: api/RecipeComments/delete-comment/{recipeCommentId}/{username}/{recipeId}
         [HttpDelete("delete-comment/{recipeCommentId}/{username}/{recipeId}")]
-        public async Task<IActionResult> DeleteRecipeComment(string recipeCommentId, string username, string recipeId)
+        public async Task<ApiResponse<int>> DeleteRecipeComment(string recipeCommentId, string username, string recipeId)
         {
-            if (_context.RecipeComments == null)
-            {
-                return NotFound();
-            }
             var recipeComment = await _context.RecipeComments
                 .Include(x => x.User)
                 .Where(rc => rc.CommentId == int.Parse(recipeCommentId)
@@ -85,39 +121,42 @@ namespace HomNayAnGiAPI.Controllers
 
             if (recipeComment == null || recipeComment.RecipeId != int.Parse(recipeId))
             {
-                return NotFound();
+                return new ApiResponse<int>(404, "Không tìm thấy recipe comment");
             }
 
             _context.RecipeComments.Remove(recipeComment);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return new ApiResponse<int>(203);
         }
 
         // PUT: api/RecipeComments/update-comment/{recipeCommentId}/{username}/{recipeId}
         [HttpPut("update-comment/{recipeCommentId}/{username}/{recipeId}")]
         public async Task<IActionResult> UpdateRecipeComment(string recipeCommentId, string username, string recipeId, RecipeCommentDTO recipeCommentDto)
         {
-            if (recipeCommentId != recipeCommentDto.CommentId || recipeId != recipeCommentDto.RecipeId)
+            // Chuyển đổi an toàn các giá trị ID
+            if (!int.TryParse(recipeCommentId, out int commentId) || !int.TryParse(recipeId, out int parsedRecipeId))
             {
-                return BadRequest();
+                return BadRequest("Invalid Comment ID or Recipe ID format.");
             }
 
             var recipeComment = await _context.RecipeComments
                 .Include(x => x.User)
-                .Where(rc => rc.CommentId == int.Parse(recipeCommentId)
-                && rc.User.Username.Equals(username)
-                && rc.RecipeId == int.Parse(recipeId)).FirstOrDefaultAsync();
+                .Where(rc => rc.CommentId == commentId
+                             && rc.User != null
+                             && rc.User.Username.Equals(username)
+                             && rc.RecipeId == parsedRecipeId)
+                .FirstOrDefaultAsync();
 
-            if (recipeComment == null || recipeComment.RecipeId != int.Parse(recipeId))
+            if (recipeComment == null)
             {
-                return NotFound();
+                return NotFound("Comment not found or username mismatch.");
             }
 
+            // Cập nhật nội dung bình luận
             recipeComment.Comment = recipeCommentDto.Comment;
-            recipeComment.Rating = Int32.Parse(recipeCommentDto.Rating);
-            recipeComment.CreatedAt = DateTime.Parse(recipeCommentDto.CreatedAt);
 
+            // Đánh dấu thực thể là đã thay đổi
             _context.Entry(recipeComment).State = EntityState.Modified;
 
             try
@@ -126,22 +165,22 @@ namespace HomNayAnGiAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!RecipeCommentExists(int.Parse(recipeCommentId)))
+                if (!RecipeCommentExists(commentId))
                 {
-                    return NotFound();
+                    return NotFound("Comment no longer exists.");
                 }
                 else
                 {
-                    throw;
+                    throw; // Ném ngoại lệ nếu không phải do comment không tồn tại
                 }
             }
 
             return Ok(recipeCommentDto);
         }
-
         private bool RecipeCommentExists(int id)
         {
             return (_context.RecipeComments?.Any(e => e.CommentId == id)).GetValueOrDefault();
         }
+
     }
 }

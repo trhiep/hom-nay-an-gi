@@ -1,0 +1,26 @@
+﻿@model HomNayAnGiApp.Models.DTO.RecipeCommentDTO
+
+<div class="comment mb-3" style="border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+    <!-- Main comment content -->
+    <strong>@Model.Username</strong> <small>@Model.CreatedAt</small>
+    <p>@Model.Comment</p>
+
+    <!-- Buttons to toggle replies and add a reply -->
+    <button class="btn btn-link" onclick="toggleReplies('@Model.CommentId')">View Replies (@Model.Replies.Count)</button>
+    <button class="btn btn-link" onclick="openReplyInput('@Model.CommentId')">Reply</button>
+
+    <!-- Reply input box -->
+    <div id="replyInput-@Model.CommentId" class="reply-input mt-2" style="display: none;">
+        <textarea rows="2" placeholder="Write a reply..." class="form-control mb-2"></textarea>
+        <button class="btn btn-primary btn-sm">Submit</button>
+    </div>
+
+    <!-- Nested replies -->
+    <div id="replies-@Model.CommentId" class="replies ml-4 mt-3" style="display: none;">
+        @foreach (var reply in Model.Replies)
+        {
+            <!-- Render reply recursively -->
+            @Html.Partial("Comment", reply)
+        }
+    </div>
+</div>

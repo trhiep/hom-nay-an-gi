@@ -1,0 +1,74 @@
+﻿@page
+@model HomNayAnGiApp.Pages.UserFavorites.IndexModel
+@{
+    ViewData["Title"] = "Công thức yêu thích của tôi";
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmDelete(username, recipeId) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById("deleteUsername").value = username;
+                    document.getElementById("deleteRecipeId").value = recipeId;
+                    document.getElementById("deleteForm").submit();
+                }
+            });
+        }
+    </script>
+}
+
+<!-- Form ẩn để gửi dữ liệu đến DeleteModel -->
+<form id="deleteForm" method="post" asp-page="/UserFavorites/Delete">
+    <input type="hidden" id="deleteUsername" name="Username" />
+    <input type="hidden" id="deleteRecipeId" name="RecipeId" />
+</form>
+
+<div class="container mt-auto">
+    <div class="row align-items-center mb-4">
+        <div class="col-md-6">
+            <h1 class="text-center">@ViewData["Title"]</h1>
+        </div>
+        <!-- Bộ lọc tìm kiếm -->
+        <div class="col-md-6 text-end">
+            <form method="get" class="d-flex">
+                <input type="text" asp-for="SearchTerm" placeholder="Tìm kiếm..." class="form-control me-2" />
+                <select asp-for="SearchBy" class="form-select me-2">
+                    <option value="name">Tên công thức</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Hiển thị các card công thức -->
+    <div class="row">
+        @foreach (var item in Model.UserFavorites)
+        {
+            <div class="col-lg-4 col-md-6 d-flex">
+                <div class="card mb-4 shadow-sm" style="width: 100%; max-width: 400px;">
+                    <img src="@item.ImageUrl ?? 'https://via.placeholder.com/400x200'" class="card-img-top" alt="@item.RecipeName" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title text-truncate">@item.RecipeName</h5>
+                        <p class="card-text text-truncate">@item.Description</p>
+                        <p class="card-text"><small class="text-muted">Đăng bởi: @item.CreateByUserName</small></p>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <a asp-page="/Recipes/Details" asp-route-Id="@item.RecipeId" class="btn btn-primary btn-sm">Xem chi tiết</a>
+                        @* <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('@User.Identity.Name', @item.RecipeId)">Xóa</button> *@
+                        <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('tranhiep', @item.RecipeId)">Xóa</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
