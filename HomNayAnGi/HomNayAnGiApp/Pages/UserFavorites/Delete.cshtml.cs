@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using HomNayAnGiApp.Utils.JWTHelper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -9,11 +10,14 @@ namespace HomNayAnGiApp.Pages.UserFavorites
     public class DeleteModel : PageModel
     {
         private readonly HttpClient _httpClient;
+        private readonly IHttpContextAccessor _httpContextAccessor;//this is for get username or id logined
 
-        public DeleteModel()
+        public DeleteModel(IHttpContextAccessor httpContextAccessor)
         {
             _httpClient = new HttpClient();
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
+            _httpClient.DefaultRequestHeaders.Accept.Add(contentType);
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [BindProperty(SupportsGet = true)]
@@ -24,8 +28,19 @@ namespace HomNayAnGiApp.Pages.UserFavorites
 
         public async Task<IActionResult> OnPostAsync()
         {
+            //----------------------------------------------------------------------------------
+            var accessToken = _httpContextAccessor.HttpContext?.Request.Cookies["accessToken"];
+            Console.WriteLine(accessToken);
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                return RedirectToPage("/Login/Index");
+            }
+            var LoggedInUsername = JwtHelper.GetUsernameFromClaims(accessToken);
+            var LoggedInUserId = int.Parse(JwtHelper.GetUserIdFromClaims(accessToken));
+            //----------------------------------------------------------------------------------
+            Username = LoggedInUsername;
             var url = $"http://localhost:5000/api/UserFavorites/delete/{Username}/{RecipeId}";
-            var response = await _httpClient.DeleteAsync(url);
+            HttpResponseMessage response = await _httpClient.DeleteAsync(url);
 
             if (response.IsSuccessStatusCode)
             {

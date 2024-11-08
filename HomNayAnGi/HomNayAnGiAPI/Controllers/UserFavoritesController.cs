@@ -36,9 +36,9 @@ namespace HomNayAnGiAPI.Controllers
             }
 
             var recipe = await _context.UserFavorites
+                        .Where(uf => uf.UserId == userId) // Lọc các bản ghi UserFavorite theo userId
                         .Include(x => x.User)
                         .Include(x => x.Recipe)
-                        .Where(uf => uf.UserId == userId) // Lọc các bản ghi UserFavorite theo userId
                         .Select(uf => new
                         {
                             UserFavoriteId = uf.UserFavoriteId,

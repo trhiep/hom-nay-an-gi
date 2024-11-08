@@ -1,46 +1,65 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using HomNayAnGiApp.Models;
+using System.Net.Http.Headers;
+using HomNayAnGiApp.Utils.JWTHelper;
+using Newtonsoft.Json;
 
 namespace HomNayAnGiApp.Pages.UserFavorites
 {
     public class CreateModel : PageModel
     {
-        private readonly HomNayAnGiApp.Models.HomNayAnGiContext _context;
+        private readonly HttpClient _httpClient;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private string UserFavoriteUrl = "http://localhost:5000/api/UserFavorites";
 
-        public CreateModel(HomNayAnGiApp.Models.HomNayAnGiContext context)
+        public CreateModel(IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
+            _httpClient = new HttpClient();
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGet(int recipeId)
         {
-        ViewData["RecipeId"] = new SelectList(_context.Recipes, "RecipeId", "RecipeId");
-        ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId");
-            return Page();
+            return await OnPostAsync(recipeId.ToString());
         }
 
-        [BindProperty]
-        public UserFavorite UserFavorite { get; set; } = default!;
-        
-
-        // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(string recipeId)
         {
-          if (!ModelState.IsValid || _context.UserFavorites == null || UserFavorite == null)
+            var accessToken = _httpContextAccessor.HttpContext?.Request.Cookies["accessToken"];
+            if (string.IsNullOrEmpty(accessToken))
             {
-                return Page();
+                return RedirectToPage("/Login/Index");
             }
 
-            _context.UserFavorites.Add(UserFavorite);
-            await _context.SaveChangesAsync();
+            var LoggedInUserId = JwtHelper.GetUserIdFromClaims(accessToken);
+            var LoggedInUsername = JwtHelper.GetUsernameFromClaims(accessToken);
 
-            return RedirectToPage("./Index");
+            // Check for duplicate
+            HttpResponseMessage res = await _httpClient.GetAsync($"{UserFavoriteUrl}/{LoggedInUsername}/{recipeId}");
+            if (res.IsSuccessStatusCode && !string.IsNullOrEmpty(await res.Content.ReadAsStringAsync()))
+            {
+                // Duplicate found, redirecting
+                return RedirectToPage("/UserFavorites/Index");
+            }
+
+            // Add new recipe to favorites
+            var userFavoriteDTO = new
+            {
+                userId = LoggedInUserId,
+                recipeId = recipeId
+            };
+
+            var jsonStr = JsonConvert.SerializeObject(userFavoriteDTO);
+            var content = new StringContent(jsonStr, System.Text.Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await _httpClient.PostAsync(UserFavoriteUrl, content);
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToPage("/UserFavorites/Index");
+            }
+
+            return RedirectToPage("/Recipes/List");
         }
     }
 }

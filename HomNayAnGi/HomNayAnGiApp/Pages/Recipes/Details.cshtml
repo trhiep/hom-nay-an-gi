@@ -19,18 +19,25 @@
 
 <div class="bg-light p-3">
     <div class="card-body">
-        <h1 class="card-title text-uppercase">Món @Model.RecipeDTO.RecipeName.ToLower()</h1>
-        @if (Model.RecipeDTO.CategoryName != null)
-        {
-            <h6>Thể loại: @Model.RecipeDTO.CategoryName</h6>
-        }
-        @if (Model.RecipeDTO.RecipeMeals != "")
-        {
-            <h6>Phù hợp với: @Model.RecipeDTO.RecipeMeals</h6>
-        }
-        <h6>Đăng bởi: @Model.RecipeDTO.CreatedByUsername</h6>
-        <h6>Ngày đăng: @Model.RecipeDTO.CreatedAt</h6>
-        <p>@Html.Raw(Model.RecipeDTO.Description)</p>
+        <div class="row">
+            <div class="col-6">
+                <h1 class="card-title text-uppercase">Món @Model.RecipeDTO.RecipeName.ToLower()</h1>
+                @if (Model.RecipeDTO.CategoryName != null)
+                {
+                    <h6>Thể loại: @Model.RecipeDTO.CategoryName</h6>
+                }
+                @if (Model.RecipeDTO.RecipeMeals != "")
+                {
+                    <h6>Phù hợp với: @Model.RecipeDTO.RecipeMeals</h6>
+                }
+                <h6>Đăng bởi: @Model.RecipeDTO.CreatedByUsername</h6>
+                <h6>Ngày đăng: @Model.RecipeDTO.CreatedAt</h6>
+                <p>@Html.Raw(Model.RecipeDTO.Description)</p>
+            </div>
+            <div class="col-6 d-flex justify-content-end align-items-start">
+                <a asp-page="/UserFavorites/Create" asp-route-recipeId="@Model.RecipeDTO.RecipeId" class="btn btn-primary">Thêm vào yêu thích </a>
+            </div>
+        </div>
     </div>
 
 
@@ -183,7 +190,7 @@
                     }
                 </ol>
             </div>
-        } 
+        }
     </div>
 
     @if (Model.RecipeDTO.RecipeSteps != null && Model.RecipeDTO.RecipeSteps.Count() > 0)
@@ -213,85 +220,17 @@
             </div>
         </div>
     }
-    @* ----------------------------------------------------------------------------------------------------------------------------------------------------------------- *@
-    <!-- Recipe Details Section -->
-  @*   <h1>@Model.RecipeDTO?.Name</h1>
-    <p>@Model.RecipeDTO?.Description< *@/p>
 
     <!-- Comments Section -->
     <h2>Comments</h2>
-
-    @if (Model.RecipeComment != null && Model.RecipeComment.Count > 0)
-    {
-        <div class="comments-section">
-            @foreach (var comment in Model.RecipeComment.Where(c => c.ParentCommentId == null))
-            {
-                <!-- Render each top-level (parent) comment -->
-                @Html.Partial("Comment", comment)
-            }
-        </div>
-    }
-
-    <!-- Input for adding a new comment -->
-    <div class="add-comment">
-        <textarea id="newComment" rows="3" placeholder="Add a comment..."></textarea>
-        <button class="btn btn-primary mt-2" onclick="addComment()">Submit</button>
-    </div>
-
-    @section Scripts {
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script>
-            // Toggle replies display
-            function toggleReplies(commentId) {
-                const repliesSection = document.getElementById(`replies-${commentId}`);
-                repliesSection.style.display = repliesSection.style.display === "none" ? "block" : "none";
-            }
-
-            // Open reply input for a specific comment
-            function openReplyInput(commentId) {
-                const replyInput = document.getElementById(`replyInput-${commentId}`);
-                replyInput.style.display = replyInput.style.display === "none" ? "block" : "none";
-            }
-
-            // Add new comment function (simplified for demonstration)
-            async function addComment() {
-                const commentContent = document.getElementById("newComment").value;
-                if (!commentContent) {
-                    Swal.fire("Comment cannot be empty", "", "warning");
-                    return;
-                }
-
-                // Make API call to add the comment (implement the API call in backend)
-                const response = await fetch("/api/RecipeComments", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        recipeId: @Model.RecipeDTO.RecipeId,
-                        comment: commentContent,
-                        parentCommentId: null // Top-level comment
-                    })
-                });
-
-                if (response.ok) {
-                    Swal.fire("Comment added successfully", "", "success");
-                    location.reload(); // Reload to fetch new comments
-                } else {
-                    Swal.fire("Failed to add comment", "", "error");
-                }
-            }
-        </script>
-    }
-    @* ----------------------------------------------------------------------------------------------------------------------------------------------------------------- *@
+    <div class="row mt-3" id="comment-part"></div>
 </div>
-
-
 
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             //loadRecipeIngredients();
+            loadAllCommentByRecipeId();
         });
 
         async function loadRecipeIngredients() {
@@ -326,5 +265,115 @@
             }
         }
 
+        // this method call api to load all comment
+        async function loadAllCommentByRecipeId() {
+            try {
+                const res = await fetch("http://localhost:5000/api/RecipeComments/" + @Model.RecipeDTO.RecipeId.ToString());
+                const listComment = await res.json();
+                console.log(listComment);
+                const commentsContainer = document.getElementById('comment-part');
+                commentsContainer.innerHTML = ''; // Clear existing comments
+
+                // Recursive function to render a comment and its replies
+                function renderComment(comment) {
+                    // Create the main comment div
+                    const commentDiv = document.createElement('div');
+                    commentDiv.className = 'comment';
+
+                    commentDiv.innerHTML = `
+                        <div class="comment-header">
+                            <strong>${comment.username}</strong> <span>${comment.createdAt}</span>
+                        </div>
+                        <div class="comment-body">
+                            <p>${comment.comment}</p>
+                        </div>
+                        <div class="comment-actions">
+                            <button onclick="replyToComment('${comment.commentId}')">Reply</button>
+                            <button onclick="editComment('${comment.commentId}')">Edit</button>
+                            <button onclick="deleteMyComment('${comment.commentId}')">Delete</button>
+                        </div>
+                    `;
+
+                    // Render replies if they exist
+                    if (comment.replies && comment.replies.length > 0) {
+                        const repliesContainer = document.createElement('div');
+                        repliesContainer.className = 'replies';
+                        comment.replies.forEach(reply => {
+                            const replyDiv = renderComment(reply); // Recursively render each reply
+                            repliesContainer.appendChild(replyDiv);
+                        });
+                        commentDiv.appendChild(repliesContainer);
+                    }
+
+                    return commentDiv;
+                }
+
+                // Render all top-level comments
+                listComment.forEach(comment => {
+                    const commentElement = renderComment(comment);
+                    commentsContainer.appendChild(commentElement);
+                });
+
+            } catch (error) {
+                console.error('Error fetching recipe comment:', error);
+            }
+        }
+
+        // Trigger function to reply to a comment
+        function replyToComment(parentCommentId) {
+            const replyInput = document.createElement('input');
+            replyInput.type = 'text';
+            replyInput.placeholder = 'Write a reply...';
+
+            const replyButton = document.createElement('button');
+            replyButton.textContent = 'Reply';
+            replyButton.onclick = async () => {
+                const replyText = replyInput.value;
+                if (!replyText) return;
+
+                try {
+                    await postMyComment(parentCommentId, replyText);
+                    loadAllCommentByRecipeId(); // Refresh comments after posting
+                } catch (error) {
+                    console.error('Error posting reply:', error);
+                }
+            };
+
+            document.getElementById(parentCommentId).appendChild(replyInput);
+            document.getElementById(parentCommentId).appendChild(replyButton);
+        }
+        // this method using to post comment
+        async function postMyComment() {
+            try {
+                const res = await fetch("http://localhost:5000/api/RecipeComments/");
+                const listComment = await res.json();
+
+                //do all thing then loadAllCommentByRecipeId()
+            } catch (error) {
+                console.error('Error fetching recipe comment:', error);
+            }
+        }                                        
+        // this method using to delete
+        async function deleteMyComment() {
+            try {
+                const res = await fetch("http://localhost:5000/api/RecipeComments/delete-comment/" + `${recipeCommentId}/${@Model.UsernameLogin}/${@Model.RecipeDTO.RecipeId.ToString()}`);
+                const listComment = await res.json();
+
+                //do all thing then loadAllCommentByRecipeId()
+            } catch (error) {
+                console.error('Error fetching recipe comment:', error);
+            }
+        }
+        // this method using to update
+        async function updateMyComment() {
+            try {
+                const res = await fetch("http://localhost:5000/api/RecipeComments/update-comment/" + `${recipeCommentId}/${@Model.UsernameLogin}/${@Model.RecipeDTO.RecipeId.ToString()}`);
+                const listComment = await res.json();
+
+                //do all thing then loadAllCommentByRecipeId()
+            } catch (error) {
+                console.error('Error fetching recipe comment:', error);
+            }
+        }
     </script>
 }
