@@ -5,6 +5,7 @@
 @{
     ViewData["Title"] = "Quản lý Danh mục món ăn";
     List<RecipeCategory> products = ViewData["recipeCate"] as List<RecipeCategory>;
+    string name = ViewData["name"] as string;
 }
 <h2>@ViewData["Title"]</h2>
 
@@ -30,7 +31,7 @@
             {
                 <tr>
                     <td>@category.CategoryName</td>
-                    <td>@category.CreatedBy</td>
+                    <td>@(category.CreatedBy == null ? "Hệ thống" : name)</td>
                     <td>
                         <a asp-page="/Recipes/EditCategory" asp-route-id="@category.CategoryId" class="btn btn-primary">Cập nhật</a>
 
