@@ -43,6 +43,8 @@
         <div class="border-start border-5 border-primary ps-5 mb-5">
             <h1 class="text-uppercase mb-0">CẬP NHẬT CÔNG THỨC MÓN @Model.RecipeUpdate.RecipeName</h1>
         </div>
+        <a class="btn btn-outline-primary" href="/Nutritions/Index?Id=@Model.RecipeUpdate.RecipeId">XEM THÔNG TIN DINH DƯỠNG</a>
+        <form method="post" id="recipeForm" novalidate>
             <div class="row g-3">
                 <div class="col-12">
                     <input asp-for="RecipeUpdate.Username" class="form-control bg-white border-0 px-4" style="height: 55px;" id="username" type="hidden" required>
@@ -118,7 +120,7 @@
                             <input asp-for="RecipeUpdate.Image" id="imageInput" class="form-control bg-white border-0 px-4" style="height: 55px;" readonly data-bs-toggle="modal" data-bs-target="#imageModal" disabled>
                         </div>
                         <div class="col-2">
-                        <img src="@Model.RecipeUpdate.Image" class="img-fluid" style="max-height: 55px" data-fancybox="RecipeImage" />
+                            <img src="@Model.RecipeUpdate.Image" class="img-fluid" style="max-height: 55px" data-fancybox="RecipeImage" />
                         </div>
                     </div>
                 </div>
@@ -126,6 +128,7 @@
                     <button class="btn btn-outline-primary w-100 py-3" type="submit">CHỈNH SỬA</button>
                 </div>
             </div>
+            </form>
     </div>
     <div class="col-lg-1"></div>
 </div>
@@ -501,7 +504,7 @@
 
             try {
                 var token = $('input[name="__RequestVerificationToken"]').val();
-                const response = await fetch("/Recipes/Update?handler=UploadFile", {
+                const response = await fetch("/Recipes/Create?handler=UploadFile", {
                     method: "POST",
                     body: formData,
                     headers: {
@@ -512,7 +515,7 @@
                 // Kiểm tra nếu phản hồi thành công
                 if (response.ok) {
                     const data = await response.json();  // Chỉ gọi .json() nếu phản hồi là thành công
-                    document.getElementById("imageInput").value = data.secure_url;
+                    document.getElementById("imageInputInModal").value = data.secure_url;
                 } else {
                     const errorText = await response.text();  // Đọc lỗi dưới dạng văn bản nếu phản hồi không thành công
                     console.error("Lỗi tải ảnh:", errorText);
@@ -696,6 +699,14 @@
         }
 
 
+
+
+
+
+
+
+
+        // =======================================  RECIPE INGREDIENTS   ===================================================
         // Dữ liệu nguyên liệu đã chọn trong modal chính
         let ingredientList = [];
 
@@ -794,6 +805,8 @@
                 .then(result => {
                     console.log('Success:', result);
                     $('#ingredientModal').modal('hide');
+                    ingredientList = [];
+                    updateIngredientListTable();
                     loadRecipeIngredients();
                 })
                 .catch(error => {
@@ -893,6 +906,7 @@
 
                 // Đóng modal tạo nguyên liệu
                 $('#createIngredientModal').modal('hide');
+                $('#ingredientModal').modal('show');
                 
             } else {
                 alert('Có lỗi xảy ra khi tạo nguyên liệu');
@@ -1031,18 +1045,49 @@
         }
 
         async function deleteIngredient(recipeIngredientId) {
-            try {
-                const response = await fetch(`http://localhost:5000/api/RecipeIngredients/${recipeIngredientId}`, {
-                    method: 'DELETE'
-                });
+            // Hiển thị hộp thoại xác nhận trước khi xóa
+            const result = await Swal.fire({
+                title: 'Bạn có chắc chắn muốn xoá?',
+                text: "Thao tác này không thể hoàn tác!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Xoá',
+                cancelButtonText: 'Hủy'
+            });
 
-                if (!response.ok) {
-                    throw new Error("Có lỗi xảy ra khi xoá dữ liệu.");
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`http://localhost:5000/api/RecipeIngredients/${recipeIngredientId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Có lỗi xảy ra khi xoá dữ liệu.");
+                    }
+
+                    // Hiển thị thông báo thành công khi xoá
+                    await Swal.fire({
+                        title: 'Xóa thành công!',
+                        text: 'Nguyên liệu đã được xóa.',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+
+                    loadRecipeIngredients(); // Tải lại danh sách nguyên liệu
+                } catch (error) {
+                    console.error('Có lỗi xảy ra khi xoá:', error);
+
+                    // Hiển thị thông báo lỗi khi xoá thất bại
+                    Swal.fire({
+                        title: 'Xóa thất bại!',
+                        text: error.message || 'Có lỗi xảy ra khi xoá nguyên liệu.',
+                        icon: 'error',
+                        confirmButtonText: 'Đóng'
+                    });
                 }
-
-                loadRecipeIngredients();
-            } catch (error) {
-                console.error('Có lỗi xảy ra khi xoá:', error);
             }
         }
     </script>

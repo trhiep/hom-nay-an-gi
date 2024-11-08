@@ -171,6 +171,7 @@
 </div>
 
 <input type="hidden" value="@Model.LoggedInUsername" id="LoggedInUsername" />
+<input type="hidden" value="@Model.LoggedInUserId" id="LoggedInUserId" />
 
 <script>
     function showLinkInput() {
@@ -311,6 +312,7 @@
     async function submitCategory() {
         const categoryNameInput = document.getElementById("categoryName");
         const categoryName = categoryNameInput.value.trim();
+        const userId = parseInt(document.getElementById("LoggedInUserId").value);
 
         // Kiểm tra xem trường có trống không
         if (!categoryName) {
@@ -326,7 +328,7 @@
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ categoryName: categoryName, createdBy: @Model.LoggedInUserId })
+            body: JSON.stringify({ categoryName: categoryName, createdBy: userId })
         })
             .then(response => {
                 if (response.ok) {
