@@ -41,9 +41,6 @@
 			</div>
 		</form>
 
-		<button type="button" class="btn btn-secondary mb-4" onclick="window.location.href='?MyRecipes=true'">
-			Công thức của bạn
-		</button>
 
 		<div class="row" id="recipeList">
 			@foreach (var item in Model.Recipe)
@@ -69,11 +66,17 @@
 							</div>
 
 							<!-- Điều kiện hiển thị nút xóa -->
-							@if (item.UserId == Model.CurrentUserId || Model.IsAdmin)
+							@if (Model.IsAdmin)
 							{
+
+								<form method="post" asp-page-handler="UpdateRecipe" asp-route-id="@item.RecipeId" >
+									<button type="submit" class="btn btn-danger btn-sm">Cập nhật</button>
+								</form>
+
 								<form method="post" asp-page-handler="DeleteRecipe" asp-route-id="@item.RecipeId" onsubmit="return confirm('Bạn có chắc chắn muốn xóa công thức này?');">
 									<button type="submit" class="btn btn-danger btn-sm">Xóa</button>
 								</form>
+
 							}
 						</div>
 					</div>

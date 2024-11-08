@@ -66,7 +66,17 @@ namespace HomNayAnGiApp.Pages.RecipeManage
             {
                 string filmsJSONString = await response.Content.ReadAsStringAsync();
                 //Hiển thị những recipe đc public
-				Recipe = JsonConvert.DeserializeObject<IList<RecipeDTO>>(filmsJSONString).Where(x=>x.IsPublic==1).ToList();
+				if (IsAdmin)
+				{
+					Recipe = JsonConvert.DeserializeObject<IList<RecipeDTO>>(filmsJSONString).ToList();
+				}
+				else
+				{
+					Recipe = JsonConvert.DeserializeObject<IList<RecipeDTO>>(filmsJSONString).Where(x => x.IsPublic == 1).ToList();
+				}
+				
+
+				
 
             }
             if (!string.IsNullOrEmpty(SearchTerm))
@@ -83,12 +93,12 @@ namespace HomNayAnGiApp.Pages.RecipeManage
 
 			if (MyRecipes)
 			{
-                //var token = _httpContextAccessor.HttpContext?.Request.Cookies["accessToken"];
+                var token = _httpContextAccessor.HttpContext?.Request.Cookies["accessToken"];
 
-                //var logger = JwtHelper.GetUserIdFromClaims(token);
+                int logger = int.Parse(JwtHelper.GetUserIdFromClaims(token));
 				
-				int userId = 1;
-				Recipe = Recipe.Where(r => r.UserId == userId).ToList();
+		
+				Recipe = Recipe.Where(r => r.UserId == logger).ToList();
 			}
 
 		}
