@@ -71,7 +71,7 @@ namespace HomNayAnGiApp.Pages.Nutritions
             if (response.IsSuccessStatusCode)
             {
                 // Chuyển hướng về trang Index sau khi cập nhật thành công
-                return RedirectToPage("/Nutritions/Index");
+                return RedirectToPage($"/Nutritions/Index", new { Id = recipeId });
             }
 
             // Nếu có lỗi khi cập nhật, thêm lỗi vào ModelState
