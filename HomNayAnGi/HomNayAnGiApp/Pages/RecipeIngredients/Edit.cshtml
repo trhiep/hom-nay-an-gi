@@ -1,54 +1,37 @@
 ﻿@page
-@model HomNayAnGiApp.Pages.RecipeIngredients.EditModel
+@model HomNayAnGiApp.Pages.RecipeIngredients.DetailsModel
 
 @{
-    ViewData["Title"] = "Chỉnh Sửa Nguyên Liệu";
+    ViewData["Title"] = "Chi Tiết Nguyên Liệu";
 }
 
 <div class="container my-5">
     <!-- Tiêu đề -->
-    <div class="border-start border-5 border-primary ps-4 mb-4">
-        <h1 class="text-uppercase">Chỉnh Sửa Nguyên Liệu</h1>
+    <div class="border-start border-5 border-primary ps-4 mb-5">
+        <h1 class="text-uppercase">Chi Tiết Nguyên Liệu</h1>
     </div>
 
-    <!-- Form chỉnh sửa -->
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <form method="post" class="bg-light p-5 rounded shadow-sm">
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+    <!-- Thông tin chi tiết -->
+    <div class="bg-light p-5 rounded shadow-sm">
+        <h4 class="mb-4 text-primary">Thông tin Nguyên Liệu</h4>
+        <dl class="row">
+            <!-- Tên Nguyên Liệu -->
+            <dt class="col-sm-3 fw-bold text-dark">Tên Nguyên Liệu</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Ingredient.IngredientName)</dd>
 
-                <input type="hidden" asp-for="Ingredient.IngredientId" />
+            <!-- Mô Tả -->
+            <dt class="col-sm-3 fw-bold text-dark">Mô Tả</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Ingredient.Description)</dd>
 
-                <!-- Tên Nguyên Liệu -->
-                <div class="mb-4">
-                    <label asp-for="Ingredient.IngredientName" class="form-label fw-bold">Tên Nguyên Liệu</label>
-                    <input asp-for="Ingredient.IngredientName" class="form-control bg-white border border-primary px-4" required />
-                    <span asp-validation-for="Ingredient.IngredientName" class="text-danger"></span>
-                </div>
+            <!-- Người Tạo -->
+            <dt class="col-sm-3 fw-bold text-dark">Người Tạo</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Ingredient.CreatedByNavigation.UserId)</dd>
+        </dl>
+    </div>
 
-                <!-- Mô Tả -->
-                <div class="mb-4">
-                    <label asp-for="Ingredient.Description" class="form-label fw-bold">Mô Tả</label>
-                    <input asp-for="Ingredient.Description" class="form-control bg-white border border-primary px-4" required />
-                    <span asp-validation-for="Ingredient.Description" class="text-danger"></span>
-                </div>
-
-                <!-- Nút lưu -->
-                <div class="d-grid">
-                    <input type="submit" value="Lưu" class="btn btn-primary btn-lg text-white fw-bold" />
-                </div>
-            </form>
-
-            <!-- Liên kết Quay lại -->
-            <div class="text-center mt-4">
-                <a asp-page="./Index" class="text-primary text-decoration-none">Quay lại danh sách</a>
-            </div>
-        </div>
+    <!-- Nút hành động -->
+    <div class="mt-4">
+        <a asp-page="./Edit" asp-route-id="@Model.Ingredient?.IngredientId" class="btn btn-primary me-2">Chỉnh Sửa</a>
+        <a asp-page="./Index" class="btn btn-outline-secondary">Quay Lại Danh Sách</a>
     </div>
 </div>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
