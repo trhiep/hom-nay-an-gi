@@ -7,13 +7,14 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using HomNayAnGiApp.Models;
 using System.Net.Http.Headers;
+using Newtonsoft.Json;
 
 namespace HomNayAnGiApp.Pages.RecipeIngredients
 {
     public class CreateModel : PageModel
     {
         private readonly HomNayAnGiApp.Models.HomNayAnGiContext _context;
-        private readonly string IngredientFilmUrl = "http://localhost:5333/api/Ingredients";
+        private readonly string IngredientUrl = "http://localhost:5000/api/Ingredients";
         private readonly HttpClient _httpClient;
         public CreateModel(HomNayAnGiApp.Models.HomNayAnGiContext context)
         {
@@ -23,11 +24,10 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
             _context = context;
         }
 
-        public IActionResult OnGet()
-        {
-        ViewData["CreatedBy"] = new SelectList(_context.Users, "UserId", "UserId");
-            return Page();
-        }
+        //public IActionResult OnGet()
+        //{
+            
+        //}
 
         [BindProperty]
         public Ingredient Ingredient { get; set; } = default!;
@@ -36,15 +36,19 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-          if (!ModelState.IsValid || _context.Ingredients == null || Ingredient == null)
+            string jsonStr = JsonConvert.SerializeObject(Ingredient);
+            var jsonContent = new StringContent(jsonStr, System.Text.Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _httpClient.PostAsync(IngredientUrl, jsonContent);
+            if (response.IsSuccessStatusCode)
             {
-                return Page();
+                return RedirectToPage("./Index");
+            }
+            else
+            {
+                return BadRequest();
             }
 
-            _context.Ingredients.Add(Ingredient);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
+          
         }
     }
 }

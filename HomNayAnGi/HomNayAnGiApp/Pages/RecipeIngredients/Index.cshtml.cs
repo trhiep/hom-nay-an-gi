@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiApp.Models;
+using System.Net.Http.Headers;
 
 namespace HomNayAnGiApp.Pages.RecipeIngredients
 {
@@ -17,6 +18,9 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
         public IndexModel(HomNayAnGiApp.Models.HomNayAnGiContext context)
         {
             _context = context;
+            _httpClient = new HttpClient();
+            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
+            _httpClient.DefaultRequestHeaders.Accept.Add(contentType);
         }
 
         public IList<Ingredient> Ingredient { get;set; } = default!;

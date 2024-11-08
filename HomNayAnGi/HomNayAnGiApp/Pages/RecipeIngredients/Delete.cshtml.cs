@@ -6,15 +6,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiApp.Models;
+using System.Net.Http.Headers;
 
 namespace HomNayAnGiApp.Pages.RecipeIngredients
 {
     public class DeleteModel : PageModel
     {
         private readonly HomNayAnGiApp.Models.HomNayAnGiContext _context;
-
+        private readonly string IngredientFilmUrl = "http://localhost:5333/api/Ingredients";
+        private readonly HttpClient _httpClient;
         public DeleteModel(HomNayAnGiApp.Models.HomNayAnGiContext context)
         {
+            _httpClient = new HttpClient();
+            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
+            _httpClient.DefaultRequestHeaders.Accept.Add(contentType);
             _context = context;
         }
 
