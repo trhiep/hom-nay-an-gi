@@ -1,6 +1,5 @@
-﻿ @page
- @model HomNayAnGiApp.Pages.RecipeManage.ListModel
-
+﻿@page
+@model HomNayAnGiApp.Pages.ReceipeOwner.IndexModel
 @{
 	ViewData["Title"] = "List";
 }
@@ -64,20 +63,17 @@
 								<i class="bi bi-person-fill" style="font-size: 23px; color: black!important;"></i>
 								<span style="color: black!important;"> @item.UserName </span>
 							</div>
-
-							<!-- Điều kiện hiển thị nút xóa -->
-							@if (Model.IsAdmin)
-							{
-
-								<form method="post" asp-page-handler="UpdateRecipe" asp-route-id="@item.RecipeId" >
+		
+							<div>
+								<form method="post" asp-page-handler="UpdateRecipe" asp-route-id="@item.RecipeId">
 									<button type="submit" class="btn btn-danger btn-sm">Cập nhật</button>
 								</form>
 
 								<form method="post" asp-page-handler="DeleteRecipe" asp-route-id="@item.RecipeId" onsubmit="return confirm('Bạn có chắc chắn muốn xóa công thức này?');">
 									<button type="submit" class="btn btn-danger btn-sm">Xóa</button>
 								</form>
-
-							}
+							</div>
+								
 						</div>
 					</div>
 				</a>

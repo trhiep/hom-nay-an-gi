@@ -21,16 +21,24 @@ namespace HomNayAnGiApp.Pages.RecipeManage
 		private string RecipeUrl = "http://localhost:5000/api/Recipes";
 		private string UserDtoUrl = "http://localhost:5000/api/Users/";
 
+
+
 		private readonly IHttpContextAccessor _httpContextAccessor;
 
-		public ListModel(HomNayAnGiApp.Models.HomNayAnGiContext context)
+		public ListModel(HomNayAnGiApp.Models.HomNayAnGiContext context, IHttpContextAccessor httpContextAccessor)
         {
             _httpClient = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             _httpClient.DefaultRequestHeaders.Accept.Add(contentType);
 
-			CurrentUserId = 1;
-			IsAdmin = false;
+			_httpContextAccessor = httpContextAccessor;
+
+			var accessToken = _httpContextAccessor.HttpContext?.Request.Cookies["accessToken"];
+			CurrentUserId = int.Parse(JwtHelper.GetUserIdFromClaims(accessToken));
+			
+			string isAd = JwtHelper.GetRoleFromJwt(accessToken);
+
+			IsAdmin = isAd.Equals("USER") ? false : true; 
 		}
 
         public IList<RecipeDTO> Recipe { get;set; } = default!;  
@@ -58,7 +66,17 @@ namespace HomNayAnGiApp.Pages.RecipeManage
             {
                 string filmsJSONString = await response.Content.ReadAsStringAsync();
                 //Hiển thị những recipe đc public
-				Recipe = JsonConvert.DeserializeObject<IList<RecipeDTO>>(filmsJSONString).Where(x=>x.IsPublic==1).ToList();
+				if (IsAdmin)
+				{
+					Recipe = JsonConvert.DeserializeObject<IList<RecipeDTO>>(filmsJSONString).ToList();
+				}
+				else
+				{
+					Recipe = JsonConvert.DeserializeObject<IList<RecipeDTO>>(filmsJSONString).Where(x => x.IsPublic == 1).ToList();
+				}
+				
+
+				
 
             }
             if (!string.IsNullOrEmpty(SearchTerm))
@@ -75,12 +93,12 @@ namespace HomNayAnGiApp.Pages.RecipeManage
 
 			if (MyRecipes)
 			{
-                //var token = _httpContextAccessor.HttpContext?.Request.Cookies["accessToken"];
+                var token = _httpContextAccessor.HttpContext?.Request.Cookies["accessToken"];
 
-                //var logger = JwtHelper.GetUserIdFromClaims(token);
+                int logger = int.Parse(JwtHelper.GetUserIdFromClaims(token));
 				
-				int userId = 1;
-				Recipe = Recipe.Where(r => r.UserId == userId).ToList();
+		
+				Recipe = Recipe.Where(r => r.UserId == logger).ToList();
 			}
 
 		}
