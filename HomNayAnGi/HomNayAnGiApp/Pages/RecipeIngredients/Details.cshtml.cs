@@ -7,13 +7,14 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using HomNayAnGiApp.Models;
 using System.Net.Http.Headers;
+using Newtonsoft.Json;
 
 namespace HomNayAnGiApp.Pages.RecipeIngredients
 {
     public class DetailsModel : PageModel
     {
         private readonly HomNayAnGiApp.Models.HomNayAnGiContext _context;
-        private readonly string IngredientFilmUrl = "http://localhost:5333/api/Ingredients";
+        private readonly string IngredientUrl = "http://localhost:5000/api/Ingredients/";
         private readonly HttpClient _httpClient;
         public DetailsModel(HomNayAnGiApp.Models.HomNayAnGiContext context)
         {
@@ -27,19 +28,17 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.Ingredients == null)
+            HttpResponseMessage response = await _httpClient.GetAsync(IngredientUrl + id);
+            if (response.IsSuccessStatusCode)
             {
-                return NotFound();
+                string jsonStr = await response.Content.ReadAsStringAsync();
+                Ingredient = JsonConvert.DeserializeObject<Ingredient>(jsonStr);
+                return Page();
             }
 
-            var ingredient = await _context.Ingredients.FirstOrDefaultAsync(m => m.IngredientId == id);
-            if (ingredient == null)
+            if (Ingredient == null)
             {
                 return NotFound();
-            }
-            else 
-            {
-                Ingredient = ingredient;
             }
             return Page();
         }
