@@ -4,7 +4,11 @@
 @{
     ViewData["Title"] = "Chỉnh Sửa Nguyên Liệu";
 }
+<head>
 
+    <!-- Tuan Anh css-->
+    <link href="~/css/tuananh.css" rel="stylesheet" />
+</head>
 <div class="container my-5">
     <!-- Tiêu đề -->
     <div class="border-start border-5 border-primary ps-4 mb-4">
@@ -32,7 +36,7 @@
                     <input asp-for="Ingredient.Description" class="form-control bg-white border border-primary px-4" required />
                     <span asp-validation-for="Ingredient.Description" class="text-danger"></span>
                 </div>
-
+                <input asp-for="Ingredient.CreatedBy" value="@Model.Ingredient.CreatedBy" class="form-control bg-white border border-primary px-4" hidden />
                 <!-- Nút lưu -->
                 <div class="d-grid">
                     <input type="submit" value="Lưu" class="btn btn-primary btn-lg text-white fw-bold" />

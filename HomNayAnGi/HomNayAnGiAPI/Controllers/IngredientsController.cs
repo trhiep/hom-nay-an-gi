@@ -138,6 +138,8 @@ namespace HomNayAnGiAPI.Controllers
           }
 
           Console.WriteLine("SUBMITED: " + ingredient.CreatedBy);
+
+            ingredient.CreatedBy = ingredient.CreatedBy == 0 ? null : ingredient.CreatedBy;
             _context.Ingredients.Add(ingredient);
             await _context.SaveChangesAsync();
 

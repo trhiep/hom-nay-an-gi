@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace HomNayAnGiApp.Utils.JWTHelper
 {
@@ -77,6 +78,19 @@ namespace HomNayAnGiApp.Utils.JWTHelper
                 Console.WriteLine($"Error when read JWT: {ex.Message}");
             }
             return "";
+        }
+        public static string GetRoleFromJwt(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadToken(token) as JwtSecurityToken;
+
+            if (jwtToken == null)
+                return null;
+
+            // Retrieve the role claim (or use ClaimTypes.Role if your JWT uses standard claims)
+            var roleClaim = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "role" || claim.Type == ClaimTypes.Role);
+
+            return roleClaim?.Value;
         }
     }
 }

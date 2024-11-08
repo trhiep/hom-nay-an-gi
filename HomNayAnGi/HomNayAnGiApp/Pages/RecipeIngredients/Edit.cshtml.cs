@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using HomNayAnGiApp.Models;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
+using HomNayAnGiApp.Utils.JWTHelper;
 
 namespace HomNayAnGiApp.Pages.RecipeIngredients
 {
@@ -17,8 +18,14 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
         private readonly HomNayAnGiApp.Models.HomNayAnGiContext _context;
         private readonly string IngredientUrl = "http://localhost:5000/api/Ingredients/";
         private readonly HttpClient _httpClient;
-        public EditModel(HomNayAnGiApp.Models.HomNayAnGiContext context)
+        private string LoggedInUsername;
+        private string GetRole;
+        private int LoggedInUserId;
+        private readonly IHttpContextAccessor _contextAccessor;
+
+        public EditModel(HomNayAnGiApp.Models.HomNayAnGiContext context, IHttpContextAccessor contextAccessor)
         {
+            _contextAccessor = contextAccessor;
             _context = context; 
             _httpClient = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
@@ -30,6 +37,18 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+
+            //Get user cookies
+            var accessToken = _contextAccessor.HttpContext?.Request.Cookies["accessToken"];
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer" + accessToken);
+            }
+            LoggedInUsername = JwtHelper.GetUsernameFromClaims(accessToken);
+            LoggedInUserId = int.Parse(JwtHelper.GetUserIdFromClaims(accessToken));
+            GetRole = JwtHelper.GetRoleFromJwt(accessToken);
+
+
             if (id == null)
             {
                 return NotFound();
@@ -39,13 +58,15 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
             {
                 string jsonStr = await response.Content.ReadAsStringAsync();
                 Ingredient = JsonConvert.DeserializeObject<Ingredient>(jsonStr);
-                return Page();
+
             }
 
-            if (Ingredient == null)
+            if (Ingredient.CreatedBy != LoggedInUserId && !GetRole.Equals("ADMIN"))
             {
-                return NotFound();
+                return BadRequest();
             }
+          
+
             return Page();
         }
 
@@ -53,7 +74,19 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
         // For more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+
+            //Get user cookies
+            var accessToken = _contextAccessor.HttpContext?.Request.Cookies["accessToken"];
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer" + accessToken);
+            }
+            LoggedInUsername = JwtHelper.GetUsernameFromClaims(accessToken);
+            LoggedInUserId = int.Parse(JwtHelper.GetUserIdFromClaims(accessToken));
+            GetRole = JwtHelper.GetRoleFromJwt(accessToken);
+
             string jsonStr = JsonConvert.SerializeObject(Ingredient);
+            
             var content = new StringContent(jsonStr, System.Text.Encoding.UTF8, "application/json");
             HttpResponseMessage response = await _httpClient.PutAsync(IngredientUrl+Ingredient.IngredientId, content);
             if (response.IsSuccessStatusCode)
