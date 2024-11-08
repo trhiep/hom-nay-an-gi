@@ -1,0 +1,39 @@
+﻿@page
+@model HomNayAnGiApp.Pages.Nutritions.UpdateModel
+@{
+}
+
+<div class="col-lg-6 col-sm-12 mt-3">
+    <h4>Cập nhật giá trị dinh dưỡng</h4>
+
+    <form method="post">
+        <div class="mb-3">
+            <label class="form-label">Calo (kcal)</label>
+            <input asp-for="NutritionFactDTO.Calories" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Chất đạm (gam)</label>
+            <input asp-for="NutritionFactDTO.Protein" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Chất béo (miligam)</label>
+            <input asp-for="NutritionFactDTO.Fat" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Chất đường bột (gam)</label>
+            <input asp-for="NutritionFactDTO.Carbohydrates" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Chất xơ (gam)</label>
+            <input asp-for="NutritionFactDTO.Fiber" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Đường (gam)</label>
+            <input asp-for="NutritionFactDTO.Sugar" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Cập nhật</button>
+        </div>
+    </form>
+</div>
