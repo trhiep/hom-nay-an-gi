@@ -1,0 +1,37 @@
+﻿@page
+@model HomNayAnGiApp.Pages.RecipeIngredients.DetailsModel
+
+@{
+    ViewData["Title"] = "Chi Tiết Nguyên Liệu";
+}
+
+<div class="container my-5">
+    <!-- Tiêu đề -->
+    <div class="border-start border-5 border-primary ps-4 mb-5">
+        <h1 class="text-uppercase">Chi Tiết Nguyên Liệu</h1>
+    </div>
+
+    <!-- Thông tin chi tiết -->
+    <div class="bg-light p-5 rounded shadow-sm">
+        <h4 class="mb-4 text-primary">Thông tin Nguyên Liệu</h4>
+        <dl class="row">
+            <!-- Tên Nguyên Liệu -->
+            <dt class="col-sm-3 fw-bold text-dark">Tên Nguyên Liệu</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Ingredient.IngredientName)</dd>
+
+            <!-- Mô Tả -->
+            <dt class="col-sm-3 fw-bold text-dark">Mô Tả</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Ingredient.Description)</dd>
+
+            <!-- Người Tạo -->
+            <dt class="col-sm-3 fw-bold text-dark">Người Tạo</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Ingredient.CreatedByNavigation.UserId)</dd>
+        </dl>
+    </div>
+
+    <!-- Nút hành động -->
+    <div class="mt-4">
+        <a asp-page="./Edit" asp-route-id="@Model.Ingredient?.IngredientId" class="btn btn-primary me-2">Chỉnh Sửa</a>
+        <a asp-page="./Index" class="btn btn-outline-secondary">Quay Lại Danh Sách</a>
+    </div>
+</div>

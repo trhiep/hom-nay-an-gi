@@ -1,0 +1,54 @@
+﻿@page
+@model HomNayAnGiApp.Pages.RecipeIngredients.EditModel
+
+@{
+    ViewData["Title"] = "Chỉnh Sửa Nguyên Liệu";
+}
+
+<div class="container my-5">
+    <!-- Tiêu đề -->
+    <div class="border-start border-5 border-primary ps-4 mb-4">
+        <h1 class="text-uppercase">Chỉnh Sửa Nguyên Liệu</h1>
+    </div>
+
+    <!-- Form chỉnh sửa -->
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form method="post" class="bg-light p-5 rounded shadow-sm">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <input type="hidden" asp-for="Ingredient.IngredientId" />
+
+                <!-- Tên Nguyên Liệu -->
+                <div class="mb-4">
+                    <label asp-for="Ingredient.IngredientName" class="form-label fw-bold">Tên Nguyên Liệu</label>
+                    <input asp-for="Ingredient.IngredientName" class="form-control bg-white border border-primary px-4" required />
+                    <span asp-validation-for="Ingredient.IngredientName" class="text-danger"></span>
+                </div>
+
+                <!-- Mô Tả -->
+                <div class="mb-4">
+                    <label asp-for="Ingredient.Description" class="form-label fw-bold">Mô Tả</label>
+                    <input asp-for="Ingredient.Description" class="form-control bg-white border border-primary px-4" required />
+                    <span asp-validation-for="Ingredient.Description" class="text-danger"></span>
+                </div>
+
+                <!-- Nút lưu -->
+                <div class="d-grid">
+                    <input type="submit" value="Lưu" class="btn btn-primary btn-lg text-white fw-bold" />
+                </div>
+            </form>
+
+            <!-- Liên kết Quay lại -->
+            <div class="text-center mt-4">
+                <a asp-page="./Index" class="text-primary text-decoration-none">Quay lại danh sách</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

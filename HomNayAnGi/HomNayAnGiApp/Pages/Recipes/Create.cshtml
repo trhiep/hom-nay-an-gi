@@ -1,0 +1,367 @@
+﻿@page
+@model HomNayAnGiApp.Pages.Recipes.CreateModel
+@{
+}
+
+<style>
+    #editor {
+        width: 100%;
+        min-height: 200px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-top: 10px;
+    }
+
+
+    /* Ẩn các nút tăng giảm trên Chrome, Safari, Edge, Opera */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Ẩn các nút tăng giảm trên Firefox */
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+
+</style>
+
+<div class="row g-5 mt-3">
+    <div class="col-lg-3"></div>
+    <div class="col-lg-6">
+        <div class="border-start border-5 border-primary ps-5 mb-5" style="max-width: 600px;">
+            <h1 class="text-uppercase mb-0">TẠO CÔNG THỨC MỚI</h1>
+        </div>
+        <form method="post" id="recipeForm" novalidate>
+            <div class="row g-3">
+                <div class="col-12">
+                    <input asp-for="RecipeCreateRequestModel.Username" class="form-control bg-white border-0 px-4" style="height: 55px;" id="username" type="hidden" value="@Model.LoggedInUsername" required>
+                </div>
+                <div class="col-12">
+                    <div class="row">
+                        <label>Danh mục món ăn</label>
+                        <div class="col-8">
+                            <select asp-for="RecipeCreateRequestModel.CategoryId" class="form-control bg-white border-0 px-4" style="height: 55px;" id="slcCategoryId"></select>
+                        </div>
+                        <div class="col-4">
+                            <button type="button" class="btn btn-outline-primary w-100" style="height: 55px;" data-bs-toggle="modal" data-bs-target="#createCategoryModal">TẠO DANH MỤC</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 mb-3">
+                    <label for="recipeName">Tên món ăn</label>
+                    <input asp-for="RecipeCreateRequestModel.RecipeName" id="recipeName" class="form-control bg-white border-0 px-4" style="height: 55px;" required>
+                    <div class="invalid-feedback">
+                        Vui lòng nhập tên món ăn.
+                    </div>
+                </div>
+
+                <div class="col-12 mb-3">
+                    <label for="description">Mô tả</label>
+                    <div id="editor" contenteditable="true" class="form-control bg-white border-0 px-4" style="min-height: 75px;"></div>
+                    <input asp-for="RecipeCreateRequestModel.Description" type="hidden" id="description" required>
+                    <div class="invalid-feedback">
+                        Vui lòng nhập mô tả.
+                    </div>
+                </div>
+
+                <div class="col-12 mb-3">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="cookTime">Thời gian nấu (phút)</label>
+                            <input asp-for="RecipeCreateRequestModel.CookTime" id="cookTime" type="number" class="form-control bg-white border-0 px-4" style="height: 55px;" min="1" required>
+                            <div class="invalid-feedback">
+                                Thời gian nấu phải lớn hơn 0.
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label for="prepTime">Thời gian chuẩn bị (phút)</label>
+                            <input asp-for="RecipeCreateRequestModel.PrepTime" id="prepTime" type="number" class="form-control bg-white border-0 px-4" style="height: 55px;" min="1" required>
+                            <div class="invalid-feedback">
+                                Thời gian chuẩn bị phải lớn hơn 0.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 mb-3">
+                    <label for="servings">Phục vụ cho số người</label>
+                    <input asp-for="RecipeCreateRequestModel.Servings" id="servings" type="number" class="form-control bg-white border-0 px-4" style="height: 55px;" min="1" required>
+                    <div class="invalid-feedback">
+                        Số người phục vụ phải lớn hơn 0.
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label>Độ khó</label>
+                    <select asp-for="RecipeCreateRequestModel.DifficultyLevel" class="form-control bg-white border-0 px-4" style="height: 55px;">
+                        <option value="Dễ">Dễ</option>
+                        <option value="Trung bình">Trung bình</option>
+                        <option value="Khó">Khó</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label>Hình ảnh</label>
+                    <input asp-for="RecipeCreateRequestModel.Image" id="imageInput" class="form-control bg-white border-0 px-4" style="height: 55px;" readonly data-bs-toggle="modal" data-bs-target="#imageModal">
+                </div>
+                <div class="col-12 mt-3">
+                    <button class="btn btn-primary w-100 py-3 text-white" type="submit">TẠO MỚI</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-3"></div>
+</div>
+
+<!-- Create category modal -->
+<div class="modal fade" id="createCategoryModal" tabindex="-1" aria-labelledby="createCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createCategoryModalLabel">Tạo Danh Mục</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="categoryName">Tên danh mục</label>
+                    <input type="text" id="categoryName" class="form-control" placeholder="Nhập tên danh mục" required>
+                    <div class="invalid-feedback">
+                        Vui lòng nhập tên danh mục.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="submitCategory()">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Uplaod Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Chọn cách tải ảnh lên</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <button class="btn btn-primary w-100 mb-3" onclick="showLinkInput()">Nhập đường dẫn</button>
+                <button class="btn btn-secondary w-100 mb-3" onclick="showFileInput()">Chọn tệp ảnh từ máy</button>
+
+                <!-- Input for URL -->
+                <div id="linkInput" style="display: none;">
+                    <input type="text" id="imageUrl" class="form-control" placeholder="Nhập đường dẫn ảnh">
+                    <button class="btn btn-success mt-2 w-100" onclick="confirmLink()">Xác nhận</button>
+                </div>
+
+                <!-- Input for File -->
+                <div id="fileInput" style="display: none;">
+                    <input type="file" id="fileUpload" class="form-control" accept="image/*">
+                    <button class="btn btn-success mt-2 w-100" onclick="uploadFile()">Tải lên</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" value="@Model.LoggedInUsername" id="LoggedInUsername" />
+
+<script>
+    function showLinkInput() {
+        document.getElementById("linkInput").style.display = "block";
+        document.getElementById("fileInput").style.display = "none";
+    }
+
+    function showFileInput() {
+        document.getElementById("linkInput").style.display = "none";
+        document.getElementById("fileInput").style.display = "block";
+    }
+
+    function confirmLink() {
+        const imageUrl = document.getElementById("imageUrl").value;
+        document.getElementById("imageInput").value = imageUrl;
+        var modal = bootstrap.Modal.getInstance(document.getElementById('imageModal'));
+        modal.hide();
+    }
+
+    async function uploadFile() {
+        const file = document.getElementById("fileUpload").files[0];
+
+        if (!file) {
+            alert("Vui lòng chọn tệp ảnh");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            var token = $('input[name="__RequestVerificationToken"]').val();
+            const response = await fetch("/Recipes/Create?handler=UploadFile", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    'RequestVerificationToken': token
+                },
+            });
+
+            // Kiểm tra nếu phản hồi thành công
+            if (response.ok) {
+                const data = await response.json();  // Chỉ gọi .json() nếu phản hồi là thành công
+                document.getElementById("imageInput").value = data.secure_url;
+            } else {
+                const errorText = await response.text();  // Đọc lỗi dưới dạng văn bản nếu phản hồi không thành công
+                console.error("Lỗi tải ảnh:", errorText);
+                alert("Tải ảnh lên thất bại: " + errorText);
+            }
+        } catch (error) {
+            console.error("Lỗi khi tải ảnh lên:", error);
+        }
+
+        var modal = bootstrap.Modal.getInstance(document.getElementById('imageModal'));
+        modal.hide();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        loadRecipeCategories();
+        const form = document.getElementById('recipeForm');
+
+        // Hàm để kiểm tra và hiển thị lỗi dựa trên id của trường
+        function validateFieldById(id) {
+            const input = document.getElementById(id);
+
+            // Kiểm tra tính hợp lệ của input
+            if (!input.checkValidity()) {
+                input.classList.add('is-invalid');
+            } else {
+                input.classList.remove('is-invalid');
+            }
+        }
+
+        // Kiểm tra khi rời khỏi từng trường
+        ['recipeName',, 'cookTime', 'prepTime', 'servings'].forEach(id => {
+            const element = document.getElementById(id);
+            element.addEventListener('blur', function () {
+                validateFieldById(id);
+            });
+        });
+
+        // Kiểm tra khi submit form
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const editorContent = document.getElementById('editor').innerHTML.trim();
+            const descriptionInput = document.getElementById('description');
+            descriptionInput.value = editorContent;
+
+            // Kiểm tra từng trường dựa trên id
+            let isValid = true;
+            ['recipeName',, 'cookTime', 'prepTime', 'servings'].forEach(id => {
+                validateFieldById(id);
+                if (!document.getElementById(id).checkValidity()) {
+                    isValid = false;
+                }
+            });
+
+            if (isValid) {
+                // Submit form nếu hợp lệ
+                form.classList.add('was-validated');
+                form.submit();
+            } else {
+                event.stopPropagation();
+            }
+        });
+    });
+
+    function getHtmlContent() {
+        const editorContent = document.getElementById("editor").innerHTML;
+        document.getElementById("output").textContent = editorContent;
+    }
+
+    async function loadRecipeCategories() {
+        try {
+            var selectedUsername = document.getElementById('LoggedInUsername').value;
+            const res = await fetch("http://localhost:5000/api/RecipeCategories/user/" + selectedUsername);
+            const recipeCategories = await res.json();
+
+            // Get the select element
+            const categorySelect = document.getElementById('slcCategoryId');
+
+            // Clear any existing options (optional, if there might be any pre-existing options)
+            categorySelect.innerHTML = "";
+
+            // Populate the select with options
+            recipeCategories.forEach(item => {
+                const option = document.createElement("option");
+                option.value = item.categoryId;
+                option.textContent = item.categoryName;
+                categorySelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error fetching recipe categories: ', error);
+        }
+    }
+
+    async function submitCategory() {
+        const categoryNameInput = document.getElementById("categoryName");
+        const categoryName = categoryNameInput.value.trim();
+
+        // Kiểm tra xem trường có trống không
+        if (!categoryName) {
+            categoryNameInput.classList.add("is-invalid");
+            return;
+        } else {
+            categoryNameInput.classList.remove("is-invalid");
+        }
+
+        // Gửi dữ liệu lên API nếu hợp lệ
+        fetch('http://localhost:5000/api/RecipeCategories', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ categoryName: categoryName, createdBy: @Model.LoggedInUserId })
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json(); // Return the JSON response to the next .then block
+                } else {
+                    throw new Error("Có lỗi xảy ra, vui lòng thử lại.");
+                }
+            })
+            .then(newCategory => {
+                // Gọi lại hàm load để cập nhật danh sách
+                loadRecipeCategories().then(() => {
+                    // Tự động chọn category vừa tạo
+                    const categorySelect = document.getElementById('slcCategoryId');
+                    categorySelect.value = newCategory.categoryId;
+
+                    // Xóa dữ liệu input
+                    categoryNameInput.value = "";
+
+                    // Đóng modal
+                    const modalElement = document.getElementById("createCategoryModal");
+                    const myModal = bootstrap.Modal.getInstance(modalElement); // Get the existing instance
+                    if (myModal) {
+                        myModal.hide();
+                    } else {
+                        console.error("Modal instance not found.");
+                    }
+
+                    console.log("Danh mục đã được tạo thành công!");
+                });
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+    }
+
+
+</script>
+
