@@ -15,6 +15,141 @@
     .text-content {
         color: black;
     }
+
+    <style >
+    .comment-section {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .comment-box {
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+
+        .comment-box:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+    .comment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .comment-author {
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 1.1em;
+    }
+
+    .comment-date {
+        font-size: 0.85em;
+        color: #95a5a6;
+    }
+
+    .comment-content {
+        color: #34495e;
+        line-height: 1.6;
+        margin-bottom: 12px;
+    }
+
+    .comment-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .comment-button {
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 0.9em;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+        background: none;
+        color: #3498db;
+    }
+
+        .comment-button:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+
+    .delete-button {
+        color: #e74c3c;
+    }
+
+        .delete-button:hover {
+            color: #c0392b;
+        }
+
+    .reply-container {
+        margin-left: 40px;
+        border-left: 2px solid #e0e0e0;
+        padding-left: 20px;
+    }
+
+    .nested-reply {
+        margin-left: 40px;
+        border-left: 2px solid #e0e0e0;
+        padding-left: 20px;
+    }
+
+    .comment-input-container {
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .comment-textarea {
+        width: 100%;
+        min-height: 100px;
+        padding: 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        resize: vertical;
+    }
+
+    .post-button {
+        background-color: #3498db;
+        color: white;
+        padding: 8px 20px;
+        border: none;
+        border-radius: 4px;
+        float: right;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+        .post-button:hover {
+            background-color: #2980b9;
+        }
+
+    .reply-input {
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+    }
+
+    /* Clear float after post button */
+    .clearfix::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+</style>
 </style>
 
 <div class="bg-light p-3">
@@ -222,8 +357,16 @@
     }
 
     <!-- Comments Section -->
-    <h2>Comments</h2>
-    <div class="row mt-3" id="comment-part"></div>
+    <div class="comment-section">
+        <h2>Comments</h2>
+        <div class="comment-input-container">
+            <textarea id="newCommentText" class="comment-textarea" placeholder="Add a comment..."></textarea>
+            <div class="clearfix">
+                <button class="post-button" onclick="postMyComment(null)">Post</button>
+            </div>
+        </div>
+        <div id="comment-part"></div>
+    </div>
 </div>
 
 @section Scripts {
@@ -265,114 +408,135 @@
             }
         }
 
-        // this method call api to load all comment
+        // Load comments with nested replies
         async function loadAllCommentByRecipeId() {
             try {
                 const res = await fetch("http://localhost:5000/api/RecipeComments/" + @Model.RecipeDTO.RecipeId.ToString());
                 const listComment = await res.json();
-                console.log(listComment);
                 const commentsContainer = document.getElementById('comment-part');
-                commentsContainer.innerHTML = ''; // Clear existing comments
+                commentsContainer.innerHTML = '';
 
-                // Recursive function to render a comment and its replies
-                function renderComment(comment) {
-                    // Create the main comment div
-                    const commentDiv = document.createElement('div');
-                    commentDiv.className = 'comment';
-
-                    commentDiv.innerHTML = `
-                        <div class="comment-header">
-                            <strong>${comment.username}</strong> <span>${comment.createdAt}</span>
-                        </div>
-                        <div class="comment-body">
-                            <p>${comment.comment}</p>
-                        </div>
-                        <div class="comment-actions">
-                            <button onclick="replyToComment('${comment.commentId}')">Reply</button>
-                            <button onclick="editComment('${comment.commentId}')">Edit</button>
-                            <button onclick="deleteMyComment('${comment.commentId}')">Delete</button>
-                        </div>
-                    `;
-
-                    // Render replies if they exist
-                    if (comment.replies && comment.replies.length > 0) {
-                        const repliesContainer = document.createElement('div');
-                        repliesContainer.className = 'replies';
-                        comment.replies.forEach(reply => {
-                            const replyDiv = renderComment(reply); // Recursively render each reply
-                            repliesContainer.appendChild(replyDiv);
-                        });
-                        commentDiv.appendChild(repliesContainer);
-                    }
-
-                    return commentDiv;
-                }
-
-                // Render all top-level comments
                 listComment.forEach(comment => {
-                    const commentElement = renderComment(comment);
-                    commentsContainer.appendChild(commentElement);
+                    renderComment(comment, commentsContainer);
                 });
-
             } catch (error) {
                 console.error('Error fetching recipe comment:', error);
             }
         }
 
-        // Trigger function to reply to a comment
-        function replyToComment(parentCommentId) {
-            const replyInput = document.createElement('input');
-            replyInput.type = 'text';
-            replyInput.placeholder = 'Write a reply...';
+        function renderComment(comment, container, level = 0) {
+            const commentWrapper = document.createElement('div');
+            commentWrapper.classList.add('comment-box');
 
-            const replyButton = document.createElement('button');
-            replyButton.textContent = 'Reply';
-            replyButton.onclick = async () => {
-                const replyText = replyInput.value;
-                if (!replyText) return;
+            // Add appropriate nesting class based on level
+            if (level > 0) {
+                const nestedContainer = document.createElement('div');
+                nestedContainer.classList.add(level === 1 ? 'reply-container' : 'nested-reply');
+                container.appendChild(nestedContainer);
+                container = nestedContainer;
+            }
 
-                try {
-                    await postMyComment(parentCommentId, replyText);
-                    loadAllCommentByRecipeId(); // Refresh comments after posting
-                } catch (error) {
-                    console.error('Error posting reply:', error);
-                }
+            commentWrapper.innerHTML = `
+                <div class="comment-header">
+                    <span class="comment-author">${comment.username}</span>
+                    <span class="comment-date">${new Date(comment.createdAt).toLocaleDateString()}</span>
+                </div>
+                <div class="comment-content">
+                    <p>${comment.comment}</p>
+                </div>
+                <div class="comment-actions">
+                    <button class="comment-button" onclick="showReplyInput(${comment.commentId})">Reply</button>
+                    ${comment.username === "@Model.UsernameLogin" ? `
+                        <button class="comment-button" onclick="editComment(${comment.commentId})">Edit</button>
+                        <button class="comment-button delete-button" onclick="deleteMyComment(${comment.commentId})">Delete</button>
+                    ` : ''}
+                </div>
+                <div id="reply-input-${comment.commentId}" class="reply-input" style="display:none;">
+                    <textarea id="replyText-${comment.commentId}" class="comment-textarea" placeholder="Reply to this comment..."></textarea>
+                    <div class="clearfix">
+                        <button class="post-button" onclick="postMyComment(${comment.commentId})">Post Reply</button>
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(commentWrapper);
+
+            // Render nested replies with increased level
+            if (comment.replies && comment.replies.length > 0) {
+                comment.replies.forEach(reply => renderComment(reply, container, level + 1));
+            }
+        }
+
+        // Show input for replying to a comment
+        function showReplyInput(commentId) {
+            const replyInput = document.getElementById(`reply-input-${commentId}`);
+            replyInput.style.display = replyInput.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Post a new comment or reply
+        async function postMyComment(parentCommentId) {
+            const textInputId = parentCommentId ? `replyText-${parentCommentId}` : 'newCommentText';
+            const commentText = document.getElementById(textInputId).value;
+
+            if (!commentText.trim()) return alert("Comment cannot be empty!");
+
+            // Tạo đối tượng commentData mà không có parentCommentId
+            const commentData = {
+                recipeId: "@Model.RecipeDTO.RecipeId",
+                userId: "@Model.UserIdLogin",
+                comment: commentText
             };
 
-            document.getElementById(parentCommentId).appendChild(replyInput);
-            document.getElementById(parentCommentId).appendChild(replyButton);
-        }
-        // this method using to post comment
-        async function postMyComment() {
-            try {
-                const res = await fetch("http://localhost:5000/api/RecipeComments/");
-                const listComment = await res.json();
-
-                //do all thing then loadAllCommentByRecipeId()
-            } catch (error) {
-                console.error('Error fetching recipe comment:', error);
+            // Chỉ thêm parentCommentId nếu có giá trị
+            if (parentCommentId != null) {
+                commentData.parentCommentId = parentCommentId.toString();
             }
-        }                                        
-        // this method using to delete
-        async function deleteMyComment() {
-            try {
-                const res = await fetch("http://localhost:5000/api/RecipeComments/delete-comment/" + `${recipeCommentId}/${@Model.UsernameLogin}/${@Model.RecipeDTO.RecipeId.ToString()}`);
-                const listComment = await res.json();
 
-                //do all thing then loadAllCommentByRecipeId()
+            // Kiểm tra dữ liệu JSON sau khi stringify
+            const jsonData = JSON.stringify(commentData);
+            console.log("JSON payload:", jsonData);
+
+            try {
+                await fetch("http://localhost:5000/api/RecipeComments/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: jsonData,
+                });
+                loadAllCommentByRecipeId();
             } catch (error) {
-                console.error('Error fetching recipe comment:', error);
+                console.error('Error posting comment:', error);
             }
         }
-        // this method using to update
-        async function updateMyComment() {
-            try {
-                const res = await fetch("http://localhost:5000/api/RecipeComments/update-comment/" + `${recipeCommentId}/${@Model.UsernameLogin}/${@Model.RecipeDTO.RecipeId.ToString()}`);
-                const listComment = await res.json();
 
-                //do all thing then loadAllCommentByRecipeId()
+        // Edit a comment
+        async function editComment(commentId) {
+            const commentText = prompt("Edit your comment:");
+            if (!commentText) return;
+
+            const commentData = { comment: commentText };
+
+            fetch(`http://localhost:5000/api/RecipeComments/update-comment/${commentId}/${"@Model.UsernameLogin"}/${"@Model.RecipeDTO.RecipeId"}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(commentData),
+            }).then(loadAllCommentByRecipeId)
+                .catch(error => console.error('Error updating comment:', error));
+        }
+
+        // Delete a comment
+        async function deleteMyComment(commentId) {
+            try {
+                const response = await fetch(`http://localhost:5000/api/RecipeComments/delete-comment/${commentId}/${"@Model.UsernameLogin"}/${"@Model.RecipeDTO.RecipeId"}`, {
+                    method: "DELETE",
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error deleting comment: ${response.status} ${response.statusText}`);
+                }
+
+                loadAllCommentByRecipeId();
             } catch (error) {
-                console.error('Error fetching recipe comment:', error);
+                console.error('Error deleting comment:', error);
             }
         }
     </script>
