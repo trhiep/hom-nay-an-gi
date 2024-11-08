@@ -51,7 +51,10 @@ namespace HomNayAnGiApp.Pages.UsersPage
                         UserId = LoggedInUserId,  // Replace with the ID of the category to update
                         Password = pass1,
                         Role = user?.Role!,
-                        Username = user?.Username!
+                        Username = user?.Username!,
+                        Email = user?.Email,
+                        CreatedAt = user?.CreatedAt,
+                        IsActive = user.IsActive,
                     };
 
                     string jsonContent = JsonSerializer.Serialize(updatedUser);
