@@ -22,6 +22,9 @@ namespace HomNayAnGiApp.Pages.Signup
         }
 
         [BindProperty]
+        public string? LoggedInUsername { get; set; }
+
+        [BindProperty]
         SignupRequestDto signupRequestDto { get; set; }
         public IActionResult OnGet()
         {

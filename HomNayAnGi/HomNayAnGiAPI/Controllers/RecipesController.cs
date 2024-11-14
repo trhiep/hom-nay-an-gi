@@ -163,6 +163,35 @@ namespace HomNayAnGiAPI.Controllers
             return NoContent();
         }
 
+        // PUT: api/Recipes/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("visibility/{id}")]
+        public async Task<IActionResult> PutRecipeIsPublic(int id, RecipeUpdateRequest recipe)
+        {
+            if (id != recipe.RecipeId)
+            {
+                return BadRequest();
+            }
+
+            var updateRecipe = await _context.Recipes.Where(x => x.RecipeId == id).FirstOrDefaultAsync();
+            if (updateRecipe != null)
+            {
+                if (updateRecipe.IsPublic == 1)
+                {
+                    updateRecipe.IsPublic = 0;
+                } else
+                {
+                    updateRecipe.IsPublic = 1;
+                }
+                _context.Recipes.Update(updateRecipe);
+                await _context.SaveChangesAsync();
+            } else
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
         // POST: api/Recipes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]

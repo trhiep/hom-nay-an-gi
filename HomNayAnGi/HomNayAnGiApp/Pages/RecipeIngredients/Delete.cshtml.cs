@@ -28,6 +28,9 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
         }
 
         [BindProperty]
+        public string? LoggedInUsername { get; set; }
+
+        [BindProperty]
       public Ingredient Ingredient { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)

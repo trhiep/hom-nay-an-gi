@@ -20,6 +20,9 @@ namespace HomNayAnGiApp.Pages.Recipes
             ViewData["editCate"] = employees;
         }
 
+        [BindProperty]
+        public string? LoggedInUsername { get; set; }
+
         public async Task<IActionResult> OnPostEditAsync(string name, int id)
         {
             using (HttpClient client = new HttpClient())

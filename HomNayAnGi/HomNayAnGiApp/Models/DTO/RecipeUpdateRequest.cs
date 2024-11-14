@@ -13,6 +13,7 @@
         public string? Username { get; set; }
         public string? Image { get; set; }
         public string? Video { get; set; }
+        public int IsPublic { get; set; }
 
         public override string ToString()
         {

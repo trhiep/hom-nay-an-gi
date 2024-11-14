@@ -30,6 +30,9 @@ namespace HomNayAnGiApp.Pages.UserFavorites
         [BindProperty(SupportsGet = true)]
         public int RecipeId { get; set; }
 
+        [BindProperty]
+        public string? LoggedInUsername { get; set; }
+
         public async Task<IActionResult> OnPostAsync()
         {
             //----------------------------------------------------------------------------------

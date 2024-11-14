@@ -30,6 +30,9 @@ namespace HomNayAnGiApp.Pages.UsersPage
 
         [BindProperty]
         public int LoggedInUserId { get; set; }
+
+        [BindProperty]
+        public string? LoggedInUsername { get; set; }
         public async Task<IActionResult> OnPost(string oldpass, string pass1, string pass2)
         {
             var accessToken = _httpContextAccessor.HttpContext?.Request.Cookies["accessToken"];

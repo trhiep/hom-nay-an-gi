@@ -21,7 +21,6 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
         private readonly HttpClient _httpClient;
 
         private readonly IHttpContextAccessor _contextAccessor;
-        private string LoggedInUsername;
         
 
         public IndexModel(HomNayAnGiApp.Models.HomNayAnGiContext context, IHttpContextAccessor contextAccessor)
@@ -37,6 +36,8 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
         public IList<Ingredient> Ingredient { get;set; } = default!;
         public int LoggedInUserId { get; set; }   =default!;
         public string GetRole { get; set; } = default!;
+        [BindProperty]
+        public string? LoggedInUsername { get; set; }
 
         public async Task OnGetAsync()
         {

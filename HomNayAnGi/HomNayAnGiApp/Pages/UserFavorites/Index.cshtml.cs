@@ -32,6 +32,9 @@ namespace HomNayAnGiApp.Pages.UserFavorites
         [BindProperty(SupportsGet = true)]
         public string SearchBy { get; set; } // "name" or "category"
 
+        [BindProperty]
+        public string? LoggedInUsername { get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
             //----------------------------------------------------------------------------------

@@ -19,6 +19,9 @@ namespace HomNayAnGiApp.Pages.Login
             _httpClient.DefaultRequestHeaders.Accept.Add(contentType);
         }
 
+        [BindProperty]
+        public string? LoggedInUsername { get; set; }
+
         [BindProperty(SupportsGet = true)]
         public string? ErrorMessage { get; set; }
 

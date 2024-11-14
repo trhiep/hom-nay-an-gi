@@ -21,7 +21,6 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
         private readonly string IngredientUrl = "http://localhost:5000/api/Ingredients";
         private readonly HttpClient _httpClient;
         private readonly IHttpContextAccessor _contextAccessor;
-        private string LoggedInUsername;
         private string GetRole;
         private int LoggedInUserId;
         public CreateModel(HomNayAnGiApp.Models.HomNayAnGiContext context, IHttpContextAccessor contextAccessor)
@@ -36,8 +35,11 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
 
         //public IActionResult OnGet()
         //{
-            
+
         //}
+
+        [BindProperty]
+        public string LoggedInUsername { get; set; }
 
         [BindProperty]
         public Ingredient Ingredient { get; set; } = default!;
@@ -61,6 +63,9 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
             if (GetRole.Equals("ADMIN"))
             {
                 Ingredient.CreatedBy = 0;
+            } else
+            {
+                Ingredient.CreatedBy = LoggedInUserId;
             }
 
             string jsonStr = JsonConvert.SerializeObject(Ingredient);

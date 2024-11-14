@@ -31,7 +31,7 @@
             {
                 <tr>
                     <td>@category.CategoryName</td>
-                    <td>@(category.CreatedBy == null ? "Hệ thống" : name)</td>
+                    <td>@(category.CreatedBy == null ? "Hệ thống" : "Người dùng")</td>
                     <td>
                         <a asp-page="/Recipes/EditCategory" asp-route-id="@category.CategoryId" class="btn btn-primary">Cập nhật</a>
 

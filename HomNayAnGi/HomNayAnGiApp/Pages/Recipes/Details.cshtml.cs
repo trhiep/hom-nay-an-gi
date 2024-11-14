@@ -38,6 +38,8 @@ namespace HomNayAnGiApp.Pages.Recipes
 
         [BindProperty]
         public string UsernameLogin { get; set; }//for comment
+        [BindProperty]
+        public string? LoggedInUsername { get; set; }
 
         [BindProperty]
         public int UserIdLogin { get; set; }//for comment

@@ -20,7 +20,6 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
         private readonly HomNayAnGiApp.Models.HomNayAnGiContext _context;
         private readonly string IngredientUrl = "http://localhost:5000/api/Ingredients/";
         private readonly HttpClient _httpClient;
-        private string LoggedInUsername;
         private string GetRole;
         private int LoggedInUserId;
         private readonly IHttpContextAccessor _contextAccessor;
@@ -33,6 +32,9 @@ namespace HomNayAnGiApp.Pages.RecipeIngredients
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             _httpClient.DefaultRequestHeaders.Accept.Add(contentType);
         }
+
+        [BindProperty]
+        public string? LoggedInUsername { get; set; }
 
         [BindProperty]
         public Ingredient Ingredient { get; set; } = default!;

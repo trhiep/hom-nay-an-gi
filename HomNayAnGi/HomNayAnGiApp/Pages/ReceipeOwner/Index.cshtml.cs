@@ -36,8 +36,10 @@ namespace HomNayAnGiApp.Pages.ReceipeOwner
 
 			IsAdmin = isAd.Equals("USER") ? false : true;
 		}
+        [BindProperty]
+        public string? LoggedInUsername { get; set; }
 
-		public IList<RecipeDTO> Recipe { get; set; } = default!;
+        public IList<RecipeDTO> Recipe { get; set; } = default!;
 
 		[BindProperty(SupportsGet = true)]
 		public string SearchTerm { get; set; }

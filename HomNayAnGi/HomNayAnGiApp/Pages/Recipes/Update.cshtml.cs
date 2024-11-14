@@ -44,10 +44,13 @@ namespace HomNayAnGiApp.Pages.Recipes
         public RecipeUpdateRequest RecipeUpdate { get; set; }
 
         [BindProperty]
-        public string LoggedInUsername { get; set; }
+        public string? LoggedInUsername { get; set; }
 
         [BindProperty]
         public int LoggedInUserId { get; set; }
+
+        [BindProperty]
+        public int IsPublic { get; set; }
         public async Task<IActionResult> OnGet()
         {
             if (Id != 0)
@@ -69,6 +72,7 @@ namespace HomNayAnGiApp.Pages.Recipes
                     if (recipeDtoApiResponse != null)
                     {
                         await Console.Out.WriteLineAsync("DTO: " + recipeDtoApiResponse.Data.ToString());
+                        IsPublic = recipeDtoApiResponse.Data.IsPublic;
                         RecipeUpdate = _mapper.Map<RecipeUpdateRequest>(recipeDtoApiResponse.Data);
                         await Console.Out.WriteLineAsync(RecipeUpdate.ToString());
                         return Page();

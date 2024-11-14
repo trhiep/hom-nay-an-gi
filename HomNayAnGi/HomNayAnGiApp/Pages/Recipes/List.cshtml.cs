@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace HomNayAnGiApp.Pages.RecipeManage
 {
+	[Authorize]
     public class ListModel : PageModel
     {
         private readonly HttpClient _httpClient;
@@ -58,7 +59,10 @@ namespace HomNayAnGiApp.Pages.RecipeManage
 
 		public bool IsAdmin { get; set; }
 
-		public async Task OnGetAsync()
+        [BindProperty]
+        public string? LoggedInUsername { get; set; }
+
+        public async Task OnGetAsync()
         {
 
 

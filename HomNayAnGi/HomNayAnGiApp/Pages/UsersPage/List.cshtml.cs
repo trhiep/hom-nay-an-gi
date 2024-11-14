@@ -8,6 +8,8 @@ namespace HomNayAnGiApp.Pages.UsersPage
     [Authorize]
     public class ListModel : PageModel
     {
+        [BindProperty]
+        public string? LoggedInUsername { get; set; }
         public void OnGet()
         {
             HttpClient _httpClient = new HttpClient();

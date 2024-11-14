@@ -36,7 +36,7 @@ namespace HomNayAnGiApp.Pages.Recipes
         public RecipeCreateRequest RecipeCreateRequestModel { get; set; }
 
         [BindProperty]
-        public string LoggedInUsername { get; set; }
+        public string? LoggedInUsername { get; set; }
 
         [BindProperty]
         public int LoggedInUserId { get; set; }

@@ -19,6 +19,8 @@ namespace HomNayAnGiApp.Pages.Nutritions
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             _httpClient.DefaultRequestHeaders.Accept.Add(contentType);
         }
+        [BindProperty]
+        public string? LoggedInUsername { get; set; }
 
         [BindProperty]
         public NutritionFactDTO NutritionFactDTO { get; set; }

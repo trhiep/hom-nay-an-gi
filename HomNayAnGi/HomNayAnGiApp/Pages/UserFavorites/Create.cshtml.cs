@@ -21,6 +21,9 @@ namespace HomNayAnGiApp.Pages.UserFavorites
             _httpContextAccessor = httpContextAccessor;
         }
 
+        [BindProperty]
+        public string? LoggedInUsername { get; set; }
+
         public async Task<IActionResult> OnGet(int recipeId)
         {
             return await OnPostAsync(recipeId.ToString());

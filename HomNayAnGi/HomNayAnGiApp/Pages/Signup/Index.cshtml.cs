@@ -24,6 +24,9 @@ namespace HomNayAnGiApp.Pages.Signup
         }
 
         [BindProperty]
+        public string? LoggedInUsername { get; set; }
+
+        [BindProperty]
         public SignupViewModel SignupViewModel { get; set; }
         public bool IsEmailExisted { get; set; }
         public bool IsUsernameExisted { get; set; }

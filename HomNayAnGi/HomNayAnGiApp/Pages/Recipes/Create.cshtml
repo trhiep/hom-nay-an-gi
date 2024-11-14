@@ -160,7 +160,11 @@
                 <!-- Input for File -->
                 <div id="fileInput" style="display: none;">
                     <input type="file" id="fileUpload" class="form-control" accept="image/*">
-                    <button class="btn btn-success mt-2 w-100" onclick="uploadFile()">Tải lên</button>
+                    <!-- Button for File Upload with Spinner -->
+                    <button id="uploadButton" class="btn btn-success mt-2 w-100" onclick="uploadFile()">
+                        <span id="uploadSpinner" class="spinner-border spinner-border-sm me-2" style="display: none;" role="status" aria-hidden="true"></span>
+                        Tải lên
+                    </button>
                 </div>
             </div>
             <div class="modal-footer">
@@ -199,6 +203,12 @@
             return;
         }
 
+        // Bắt đầu hiển thị spinner và vô hiệu hóa nút
+        const uploadButton = document.getElementById("uploadButton");
+        const uploadSpinner = document.getElementById("uploadSpinner");
+        uploadSpinner.style.display = "inline-block";
+        uploadButton.disabled = true;
+
         const formData = new FormData();
         formData.append("file", file);
 
@@ -212,17 +222,20 @@
                 },
             });
 
-            // Kiểm tra nếu phản hồi thành công
             if (response.ok) {
-                const data = await response.json();  // Chỉ gọi .json() nếu phản hồi là thành công
+                const data = await response.json();
                 document.getElementById("imageInput").value = data.secure_url;
             } else {
-                const errorText = await response.text();  // Đọc lỗi dưới dạng văn bản nếu phản hồi không thành công
+                const errorText = await response.text();
                 console.error("Lỗi tải ảnh:", errorText);
                 alert("Tải ảnh lên thất bại: " + errorText);
             }
         } catch (error) {
             console.error("Lỗi khi tải ảnh lên:", error);
+        } finally {
+            // Ẩn spinner và kích hoạt lại nút sau khi kết thúc tải lên
+            uploadSpinner.style.display = "none";
+            uploadButton.disabled = false;
         }
 
         var modal = bootstrap.Modal.getInstance(document.getElementById('imageModal'));
@@ -332,7 +345,7 @@
         })
             .then(response => {
                 if (response.ok) {
-                    return response.json(); // Return the JSON response to the next .then block
+                    return response.json();
                 } else {
                     throw new Error("Có lỗi xảy ra, vui lòng thử lại.");
                 }

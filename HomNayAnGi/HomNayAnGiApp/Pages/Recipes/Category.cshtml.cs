@@ -28,7 +28,7 @@ namespace HomNayAnGiApp.Pages.Recipes
         [BindProperty]
         public int LoggedInUserId { get; set; }
         [BindProperty]
-        public string LoggedInUsername { get; set; }
+        public string? LoggedInUsername { get; set; }
 
         public IActionResult OnGet()
         {
@@ -42,7 +42,14 @@ namespace HomNayAnGiApp.Pages.Recipes
             LoggedInUserId = int.Parse(JwtHelper.GetUserIdFromClaims(accessToken));
             HttpResponseMessage employSkillList = _httpClient.GetAsync("http://localhost:5000/api/RecipeCategories").Result;
             var employees = employSkillList.Content.ReadFromJsonAsync<List<RecipeCategory>>().Result;
-            ViewData["recipeCate"] = employees.Where(x => x.CreatedBy == LoggedInUserId || x.CreatedBy == null).ToList();
+            var role = JwtHelper.GetRoleFromJwt(accessToken);
+            if(role.Equals("USER"))
+            {
+                ViewData["recipeCate"] = employees.Where(x => x.CreatedBy == LoggedInUserId).ToList();
+            } else
+            {
+                ViewData["recipeCate"] = employees;
+            }
             //ViewData["recipeCate"] = employees;
             LoggedInUsername = JwtHelper.GetUsernameFromClaims(accessToken);
             ViewData["name"] = LoggedInUsername;

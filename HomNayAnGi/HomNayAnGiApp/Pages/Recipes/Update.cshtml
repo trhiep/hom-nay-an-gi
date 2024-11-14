@@ -44,6 +44,16 @@
             <h1 class="text-uppercase mb-0">CẬP NHẬT CÔNG THỨC MÓN @Model.RecipeUpdate.RecipeName</h1>
         </div>
         <a class="btn btn-outline-primary" href="/Nutritions/Index?Id=@Model.RecipeUpdate.RecipeId">XEM THÔNG TIN DINH DƯỠNG</a>
+        @if (Model.IsPublic == 0)
+        {
+            <button class="btn btn-outline-warning" onclick="changeVisibility()">CHUYỂN SANG CÔNG KHAI</button>
+        }
+
+        @if (Model.IsPublic == 1)
+        {
+            <button class="btn btn-outline-success" onclick="changeVisibility()">CHUYỂN SANG RIÊNG TƯ</button>
+        }
+        
         <form method="post" id="recipeForm" novalidate>
             <div class="row g-3">
                 <div class="col-12">
@@ -1088,6 +1098,34 @@
                         confirmButtonText: 'Đóng'
                     });
                 }
+            }
+        }
+
+        async function changeVisibility() {
+            const recipeId = parseInt(document.getElementById('SelectedRecipeId').value);
+
+            const editedData = {
+                recipeId: recipeId,
+                isPublic: 1
+            };
+
+            console.log(JSON.stringify(editedData))
+            try {
+                const response = await fetch(`http://localhost:5000/api/Recipes/visibility/${recipeId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(editedData)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Có lỗi xảy ra khi lưu dữ liệu.");
+                }
+
+                location.reload();
+            } catch (error) {
+                console.error('Có lỗi xảy ra khi lưu:', error);
             }
         }
     </script>
